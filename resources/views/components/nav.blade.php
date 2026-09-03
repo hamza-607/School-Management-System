@@ -4,6 +4,7 @@
 'guardian' => null,
 'staff' => null,
 'section' => null,
+'session' => null,
 ])
 
 @php
@@ -34,16 +35,24 @@ $showUrl = route('sections.show', $section->id);
 $filesUrl = route('sections.addFile', $section->id);
 }
 
+if($section){
+$showUrl = route('studySchedules.show', [$session->id,$section->id]);
+$filesUrl = route('studySchedules.addFile', [$session->id, $section->id]);
+}
+
 $showActive = request()->routeIs('students.show')
 || request()->routeIs('subjects.show')
 || request()->routeIs('staff_members.show')
 || request()->routeIs('guardians.show')
-|| request()->routeIs('sections.show');
+|| request()->routeIs('sections.show')
+|| request()->routeIs('studySchedules.show');
+
 $filesActive = request()->routeIs('student.addFile')
 || request()->routeIs('subject.addFile')
 || request()->routeIs('staff_members.addFile')
 || request()->routeIs('guardian.addFile')
-|| request()->routeIs('sections.addFile');
+|| request()->routeIs('sections.addFile')
+|| request()->routeIs('studySchedules.addFile');
 @endphp
 
 <ul class="nav nav-pills flex-column flex-md-row mb-4 ms-2">

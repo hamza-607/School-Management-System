@@ -248,6 +248,10 @@
                         @foreach ($theStudent->student_parents as $student_parent)
                         <div class="parent-card border rounded-3 p-3 bg-light-subtle" style="min-width: 300px; flex: 0 0 auto;">
                             <a href="{{ route('guardians.show', $student_parent->guardian->id) }}" class="d-flex align-items-center gap-3 mb-2" title="ولي الأمر">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                    style="width: 48px; height: 48px; min-width: 48px; background-color: #e6f0ef  !important; color: #006559 !important;">
+                                    <i class="bi bi-person fs-5"></i>
+                                </div>
                                 <div>
                                     <h6 class="mb-0 fw-bold">{{ $student_parent->guardian->name }}</h6>
                                     <small class="text-muted">{{ $student_parent->relationship_to_student }}</small>
@@ -275,39 +279,39 @@
                 </div>
             </div>
 
-<x-files-table :model="$theStudent" mainTitle="ملفات ومرفقات الطالب" secTitle="لا توجد ملفات مرفوعة."></x-files-table>
+            <x-files-table :model="$theStudent" mainTitle="ملفات ومرفقات الطالب" secTitle="لا توجد ملفات مرفوعة."></x-files-table>
 
-</div>
+        </div>
 
 
-<!-- السجل الأكاديمي -->
-<div class="col-md-4">
-    <div class="card shadow-sm border-0 header-card2">
-        <div class="card-body">
-            <!-- الهيدر: تم استخدام d-flex مع justify-content-between للموازنة -->
-            <div class="d-flex align-items-center justify-content-between mb-4">
+        <!-- السجل الأكاديمي -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 header-card2">
+                <div class="card-body">
+                    <!-- الهيدر: تم استخدام d-flex مع justify-content-between للموازنة -->
+                    <div class="d-flex align-items-center justify-content-between mb-4">
 
-                <!-- تجميع الأيقونة والعنوان معاً لضمان بقائهما بجانب بعض -->
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-journal-text fs-3 text-primary"></i>
-                    <h5 class="mb-0 fw-bold">السجل الأكاديمي</h5>
+                        <!-- تجميع الأيقونة والعنوان معاً لضمان بقائهما بجانب بعض -->
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-journal-text fs-3 text-primary"></i>
+                            <h5 class="mb-0 fw-bold">السجل الأكاديمي</h5>
+                        </div>
+
+                        <!-- زر التحميل بحجم أصغر قليلاً ليتناسب مع الهيدر -->
+                        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center px-3">
+                            <i class="ti ti-download me-1"></i>
+                            <span>تحميل</span>
+                        </button>
+                    </div>
+
+                    <!-- منطقة المحتوى -->
+                    <div class="row g-3">
+                        <!-- أضف محتواك هنا (مثل: رقم السجل، المعدل، إلخ) -->
+                    </div>
                 </div>
-
-                <!-- زر التحميل بحجم أصغر قليلاً ليتناسب مع الهيدر -->
-                <button class="btn btn-sm btn-outline-secondary d-flex align-items-center px-3">
-                    <i class="ti ti-download me-1"></i>
-                    <span>تحميل</span>
-                </button>
-            </div>
-
-            <!-- منطقة المحتوى -->
-            <div class="row g-3">
-                <!-- أضف محتواك هنا (مثل: رقم السجل، المعدل، إلخ) -->
             </div>
         </div>
     </div>
-</div>
-</div>
 
 </div>
 

@@ -147,13 +147,14 @@ class StaffController extends Controller
             // dd($staff);
             $newStaff = Staff::create($staff);
 
+            $contractPath = null;
             if ($validated['contract_file']) {
-                $path = $validated['contract_file']->store('contracts', 'public');
+                $contractPath = $validated['contract_file']->store('contracts', 'public');
 
                 Contract::create([
                     'staff_id' => $newStaff->id,
                     'salary' => $validated['salary'] ?? 0,
-                    'contract_file' => $path,
+                    'contract_file' => $contractPath,
                     'is_active' => 1,
                 ]);
             }

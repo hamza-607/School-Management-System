@@ -160,7 +160,7 @@
 </script>
 <script>
     $(function() {
-        @if(!$errors->any())
+        @if(!$errors - > any())
         localStorage.removeItem('student_parents_draft');
         @endif
 
@@ -219,7 +219,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">صلة القرابة<span class="text-danger">*</span></label>
-                            <input type="text" name="new_parent[${parentIndex}][relationship_to_student]" value="${data ? data.e_name : ''}" class="form-control">
+                            <input type="text" name="new_parent[${parentIndex}][relationship_to_student]" value="${data ? data.relationship_to_student : ''}" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
@@ -469,7 +469,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">صلة القرابة<span class="text-danger">*</span></label>
-                                    <input type="text" name="old_parent[relationship_to_student]" value="" class="form-control" required>
+                                    <input type="text" name="old_parent[relationship_to_student]" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>

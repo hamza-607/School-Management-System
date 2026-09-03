@@ -116,6 +116,10 @@
                 @forelse ($theSubject->teachers as $teacher)
                 <div class="parent-card border rounded-3 p-3 bg-light-subtle" style="min-width: 300px; flex: 0 0 auto;">
                     <a href="" class="d-flex align-items-center gap-3 mb-2">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width: 48px; height: 48px; min-width: 48px; background-color: #e6f0ef  !important; color: #006559 !important;">
+                            <i class="bi bi-person fs-5"></i>
+                        </div>
                         <div>
                             <h6 class="mb-0 fw-bold">{{ $teacher->name }}</h6>
                         </div>

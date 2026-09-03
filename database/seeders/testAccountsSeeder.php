@@ -16,6 +16,7 @@ class testAccountsSeeder extends Seeder
             UserSeeder::class,
             StaffSeeder::class,
             ContractSeeder::class,
+            SpatieModelHasRoleSeeder::class,
         ]);
     }
 }

@@ -15,6 +15,7 @@ class SectionSubjectTeacher extends Model
         'teacher_id',
         'subject_id',
         'section_id',
+        'grade_id',
         'appointment_id',
         'created_at',
         'updated_at',
@@ -43,5 +44,15 @@ class SectionSubjectTeacher extends Model
     public function appointment()
     {
         return $this->belongsTo(Appointment::class, 'appointment_id');
+    }
+
+    public function files()
+    {
+        return $this->morphMany(File::class, 'owner');
+    }
+
+    public function section_subject_teachers()
+    {
+        return $this->hasMany(SectionSubjectTeacher::class);
     }
 }
