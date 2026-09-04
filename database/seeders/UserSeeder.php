@@ -38,9 +38,9 @@ class UserSeeder extends Seeder
             User::firstOrCreate([
                 'id' => $user['id']
             ], [
-                'name' => $user['id'],
-                'email' => $user['id'],
-                'password' => $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'password' => $user['password'],
                 'remember_token' => null,
                 'is_active' => true
             ]);

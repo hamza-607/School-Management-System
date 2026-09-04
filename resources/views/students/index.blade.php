@@ -496,7 +496,7 @@ $filtersOpen = request()->filled('status') || request()->filled('grade_id') || r
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center">لا يوجد طلاب للعرض</td>
+                    <td colspan="7" class="text-center">لا يوجد طلاب للعرض</td>
                 </tr>
                 @endforelse
             </tbody>

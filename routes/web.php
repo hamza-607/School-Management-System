@@ -65,6 +65,7 @@ Route::post('sections/{section}/files', [SectionController::class, 'saveFile'])-
 Route::resource('section/{sectionID}/studySchedules', SectionSubjectTeacherController::class);
 Route::get('studySchedules', [SectionSubjectTeacherController::class, 'superIndex'])->name('studySchedules.superIndex');
 Route::get('session/{sessionID}', [SectionSubjectTeacherController::class, 'sessionStatusToggel'])->name('sessionStatus');
+// Route::get('studySchedules/{sessionID}/session/{sessionID}/addFile', [SectionSubjectTeacherController::class, 'addFile'])->name('staff_members.addFile');
 
 
 
