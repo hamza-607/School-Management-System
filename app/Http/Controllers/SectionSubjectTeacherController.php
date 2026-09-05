@@ -203,8 +203,11 @@ class SectionSubjectTeacherController extends Controller
      */
     public function show(string $id, $sectionID)
     {
+        $theSession = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->findOrFail($id);
+
+
         return view('study_schedules.show', [
-            'theSession' => SectionSubjectTeacher::findOrFail($id),
+            'theSession' => $theSession,
             'theSection' => Section::findOrFail($sectionID),
         ]);
     }
