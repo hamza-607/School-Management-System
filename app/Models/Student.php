@@ -42,6 +42,11 @@ class Student extends Model
     public function files(){
         return $this->morphMany(File::class, 'owner');
     }
+
+    public function penalties()
+    {
+        return $this->hasMany(Student_penalties::class);
+    }
 }
 
 

@@ -46,13 +46,8 @@
             let day = $('#dayFilter').val();
             let status = $('#statusFilter').val(); // الجديد
             let subject = $('#subjectFilter').val(); // الجديد
-            let search = $('#sessionSearchInput').val(); // إضافة البحث لضمان عدم ضياعه
 
             let url = new URL(window.location.href);
-
-            // تحديث البارامترات في الرابط
-            if (search) url.searchParams.set('search', search);
-            else url.searchParams.delete('search');
 
             if (perPage) url.searchParams.set('per_page', perPage);
             else url.searchParams.delete('per_page');
@@ -77,14 +72,7 @@
             updateFilters();
         });
 
-        // تشغيل البحث مع تأخير بسيط (اختياري لو أردت تفعيل البحث)
-        let timeout = null;
-        $('#sessionSearchInput').on('input', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                updateFilters();
-            }, 500);
-        });
+
 
         // تأكيد الحذف (SweetAlert2)
         $(document).on('click', '.delete-record', function(e) {
@@ -162,7 +150,7 @@
                     <label class="fw-bold mb-1">حالة الحصة</label>
                     <select id="statusFilter" name="status" class="selectpicker w-100"
                         data-style="btn-default" data-width="100%">
-                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>كل الأيام</option>
+                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>كل الحالات</option>
                         <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>مجدولة</option>
                         <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>ملغية</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشطة</option>

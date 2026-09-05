@@ -54,4 +54,13 @@ class User extends Authenticatable
     {
         return $this->morphOne(SpatieModelHasRole::class, 'model');
     }
+
+    public function up_files(){
+        return $this->morphMany(File::class, 'owner');
+    }
+
+    public function student_penalties()
+    {
+        return $this->hasMany(Student_penalties::class, 'user_id');
+    }
 }

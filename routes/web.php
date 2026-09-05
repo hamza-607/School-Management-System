@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SectionSubjectTeacherController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentPenaltiesController;
 use App\Http\Controllers\SubjectController;
 
 /*
@@ -36,7 +37,8 @@ Route::resource('students', StudentController::class);
 Route::get('toggleStatus/{studentID}', [StudentController::class, 'toggle'])->name('toggleStatus');
 Route::get('students/{student}/addFile', [StudentController::class, 'addFile'])->name('student.addFile');
 Route::post('students/{student}/files', [StudentController::class, 'saveFile'])->name('student.saveFile');
-
+Route::resource('students/{studentID}/penalties', StudentPenaltiesController::class);
+Route::get('penalties/{penaltyID}', [StudentPenaltiesController::class, 'penaltyStatusToggel'])->name('penaltyStatus');
 
 Route::resource('subjects', SubjectController::class);
 Route::get('subjectToggleStatus/{subjectID}', [SubjectController::class, 'toggle'])->name('subjectToggleStatus');

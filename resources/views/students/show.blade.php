@@ -68,7 +68,7 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب /</span> تفاصيل الطالب {{ $theStudent->name }}
+    <span class="text-muted fw-light">الطلاب / القائمة /</span> تفاصيل الطالب {{ $theStudent->name }}
 </h4>
 
 <x-nav :student="$theStudent" />
@@ -284,35 +284,52 @@
         </div>
 
 
-        <!-- السجل الأكاديمي -->
         <div class="col-md-4">
+            <!-- السجل الأكاديمي -->
             <div class="card shadow-sm border-0 header-card2">
                 <div class="card-body">
-                    <!-- الهيدر: تم استخدام d-flex مع justify-content-between للموازنة -->
                     <div class="d-flex align-items-center justify-content-between mb-4">
 
-                        <!-- تجميع الأيقونة والعنوان معاً لضمان بقائهما بجانب بعض -->
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-journal-text fs-3 text-primary"></i>
                             <h5 class="mb-0 fw-bold">السجل الأكاديمي</h5>
                         </div>
 
-                        <!-- زر التحميل بحجم أصغر قليلاً ليتناسب مع الهيدر -->
                         <button class="btn btn-sm btn-outline-secondary d-flex align-items-center px-3">
                             <i class="ti ti-download me-1"></i>
                             <span>تحميل</span>
                         </button>
                     </div>
 
-                    <!-- منطقة المحتوى -->
                     <div class="row g-3">
-                        <!-- أضف محتواك هنا (مثل: رقم السجل، المعدل، إلخ) -->
+                        <!-- منطقة المحتوى -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- السجل المالي -->
+            <div class="card shadow-sm border-0 header-card2 mt-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="ti ti-report-money fs-3 text-primary"></i>
+                            <h5 class="mb-0 fw-bold">السجل المالي</h5>
+                        </div>
+
+                        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center px-3">
+                            <i class="ti ti-download me-1"></i>
+                            <span>تحميل</span>
+                        </button>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- منطقة المحتوى -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 

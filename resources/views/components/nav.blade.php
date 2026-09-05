@@ -68,13 +68,13 @@ $filesActive = request()->routeIs('student.addFile')
                 class="ti-xs ti ti-file-description me-1"></i>النتائج</a></li>
 
     <li class="nav-item"><a
-            class="nav-link {{ false ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
-            href=""><i
+            class="nav-link {{ request()->routeIs('penalties.*') ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
+            href="{{ route('penalties.index', $student->id) }}"><i
                 class="ti-xs ti ti-file-alert me-1"></i>عقوبات</a></li>
-    <li class="nav-item"><a
-            class="nav-link {{ false ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
-            href=""><i
-                class="ti ti-report-money ti-xs me-1"></i>مالية</a></li>
+    {{-- <li class="nav-item"><a
+            class="nav-link {{ false ? 'active' : '' }}"
+    href=""><i
+        class="ti ti-report-money ti-xs me-1"></i>مالية</a></li> --}}
     @endif
 
     @if ($staff)
