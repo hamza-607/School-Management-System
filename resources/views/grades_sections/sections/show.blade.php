@@ -74,7 +74,7 @@
 <x-nav :section="$theSection" />
 
 <div class="container-fluid px-2 py-4" style="position:relative">
-    <div class="card shadow-sm border-0 header-card">
+    <div class="card shadow-sm border-0 header-card mb-4">
         <div class="card-body">
             <div class="d-flex align-items-start gap-3 mb-3">
                 <div>

@@ -2,8 +2,9 @@
  'model' => null,
  'mainTitle' => null,
  'secTitle' => null,
+ 'styl' => null,
  ])
- <div class="card shadow-sm border-0 header-card3 mt-4">
+ <div class="card shadow-sm border-0 header-card3" style="{{ $styl }}">
      <div class="card-body">
 
          <div class="d-flex align-items-center justify-content-between flex-wrap mx-2 my-3">

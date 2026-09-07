@@ -132,12 +132,12 @@
                     حذف الموظف
                 </button>
 
-                <form id="delete-form-{{ $theStaff->id }}" action="{{ route('staff_members.destroy', $theStaff->id) }}" method="POST" style="display: none;">
+                <form id="delete-form-{{ $theStaff->id }}" action="{{ route('staff_members.destroy',[ $theStaff->id, 'from' => $from]) }}" method="POST" style="display: none;">
                     @csrf
                     @method('DELETE')
                 </form>
 
-                <a href="{{ route('staff_members.edit', $theStaff->id) }}" class="btn btn-label-warning px-4">
+                <a href="{{ route('staff_members.edit', [$theStaff->id, 'from' => $from]) }}" class="btn btn-label-warning px-4">
                     تعديل
                 </a>
 
@@ -152,7 +152,7 @@
 
         <div class="col-md-8">
             <!-- معلومات اضافية -->
-            <div class="card shadow-sm border-0 header-card3">
+            <div class="card shadow-sm border-0 header-card3 mb-4">
                 <div class="card-body">
                     <!-- عنوان القسم مع الأيقونة -->
                     <div class="d-flex align-items-center gap-2 mb-4">

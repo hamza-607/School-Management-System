@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeSalaryAdjustmentsController;
 use App\Http\Controllers\GradeController;
@@ -23,52 +24,60 @@ use App\Http\Controllers\SubjectController;
 |
 */
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard')->middleware('auth');
-
 Route::get('LogInPage', [AuthController::class, 'LogInPage'])->name('login');
-Route::get('editPasswordPage', [AuthController::class, 'editPassword'])->name('editPasswordPage');
 Route::post('logIn', [AuthController::class, 'logIn'])->name('storeLogIn');
-Route::post('editPassword', [AuthController::class, 'editPasswordStore'])->name('editPasswordStore');
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::resource('students', StudentController::class);
-Route::get('toggleStatus/{studentID}', [StudentController::class, 'toggle'])->name('toggleStatus');
-Route::get('students/{student}/addFile', [StudentController::class, 'addFile'])->name('student.addFile');
-Route::post('students/{student}/files', [StudentController::class, 'saveFile'])->name('student.saveFile');
-Route::resource('students/{studentID}/penalties', StudentPenaltiesController::class);
-Route::get('penalties/{penaltyID}', [StudentPenaltiesController::class, 'penaltyStatusToggel'])->name('penaltyStatus');
+Route::middleware('auth')->group(function () {
+    Route::get('/', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-Route::resource('subjects', SubjectController::class);
-Route::get('subjectToggleStatus/{subjectID}', [SubjectController::class, 'toggle'])->name('subjectToggleStatus');
-Route::get('subjects/{subject}/addFile', [SubjectController::class, 'addFile'])->name('subject.addFile');
-Route::post('subjects/{subject}/files', [SubjectController::class, 'saveFile'])->name('subject.saveFile');
+    Route::get('editPasswordPage', [AuthController::class, 'editPassword'])->name('editPasswordPage');
+    Route::post('editPassword', [AuthController::class, 'editPasswordStore'])->name('editPasswordStore');
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::resource('guardians', GuardianController::class);
-Route::get('guardians/{guardian}/addFile', [GuardianController::class, 'addFile'])->name('guardian.addFile');
-Route::post('guardians/{guardian}/files', [GuardianController::class, 'saveFile'])->name('guardian.saveFile');
+    Route::resource('students', StudentController::class);
+    Route::get('toggleStatus/{studentID}', [StudentController::class, 'toggle'])->name('toggleStatus');
+    Route::get('students/{student}/addFile', [StudentController::class, 'addFile'])->name('student.addFile');
+    Route::post('students/{student}/files', [StudentController::class, 'saveFile'])->name('student.saveFile');
+    Route::resource('students/{studentID}/penalties', StudentPenaltiesController::class);
+    Route::get('penalties/{penaltyID}', [StudentPenaltiesController::class, 'penaltyStatusToggel'])->name('penaltyStatus');
 
-Route::resource('staff_members', StaffController::class);
-Route::get('staffToggleStatus/{staffID}', [StaffController::class, 'toggle'])->name('staffToggleStatus');
-Route::get('UserToggleStatus/{staffID}', [StaffController::class, 'userToggle'])->name('UserToggleStatus');
-Route::get('staff_member/{staff}/addFile', [StaffController::class, 'addFile'])->name('staff_members.addFile');
-Route::post('staff_members/{staff}/files', [StaffController::class, 'saveFile'])->name('staff_members.saveFile');
+    Route::resource('subjects', SubjectController::class);
+    Route::get('subjectToggleStatus/{subjectID}', [SubjectController::class, 'toggle'])->name('subjectToggleStatus');
+    Route::get('subjects/{subject}/addFile', [SubjectController::class, 'addFile'])->name('subject.addFile');
+    Route::post('subjects/{subject}/files', [SubjectController::class, 'saveFile'])->name('subject.saveFile');
 
-Route::resource('staff_member/{staffID}/employee_salary_adjustments', EmployeeSalaryAdjustmentsController::class);
-Route::get('employee_salary_adjustmentsToggleStatus/{contractID}', [EmployeeSalaryAdjustmentsController::class, 'toggle'])->name('employee_salary_adjustmentsToggleStatus');
+    Route::resource('guardians', GuardianController::class);
+    Route::get('guardians/{guardian}/addFile', [GuardianController::class, 'addFile'])->name('guardian.addFile');
+    Route::post('guardians/{guardian}/files', [GuardianController::class, 'saveFile'])->name('guardian.saveFile');
 
-Route::resource('grades', GradeController::class);
+    Route::resource('staff_members', StaffController::class);
+    Route::get('staffToggleStatus/{staffID}', [StaffController::class, 'toggle'])->name('staffToggleStatus');
+    Route::get('UserToggleStatus/{staffID}', [StaffController::class, 'userToggle'])->name('UserToggleStatus');
+    Route::get('staff_member/{staff}/addFile', [StaffController::class, 'addFile'])->name('staff_members.addFile');
+    Route::post('staff_members/{staff}/files', [StaffController::class, 'saveFile'])->name('staff_members.saveFile');
 
-Route::resource('sections', SectionController::class);
-Route::get('sections/{section}/addFile', [SectionController::class, 'addFile'])->name('sections.addFile');
-Route::post('sections/{section}/files', [SectionController::class, 'saveFile'])->name('sections.saveFile');
+    Route::resource('staff_member/{staffID}/employee_salary_adjustments', EmployeeSalaryAdjustmentsController::class);
+    Route::get('employee_salary_adjustmentsToggleStatus/{contractID}', [EmployeeSalaryAdjustmentsController::class, 'toggle'])->name('employee_salary_adjustmentsToggleStatus');
 
-Route::resource('section/{sectionID}/studySchedules', SectionSubjectTeacherController::class);
-Route::get('studySchedules', [SectionSubjectTeacherController::class, 'superIndex'])->name('studySchedules.superIndex');
-Route::get('session/{sessionID}', [SectionSubjectTeacherController::class, 'sessionStatusToggel'])->name('sessionStatus');
-// Route::get('studySchedules/{sessionID}/session/{sessionID}/addFile', [SectionSubjectTeacherController::class, 'addFile'])->name('staff_members.addFile');
+    Route::resource('grades', GradeController::class);
 
+    Route::resource('sections', SectionController::class);
+    Route::get('sections/{section}/addFile', [SectionController::class, 'addFile'])->name('sections.addFile');
+    Route::post('sections/{section}/files', [SectionController::class, 'saveFile'])->name('sections.saveFile');
+
+    Route::prefix('section/{sectionID}')
+        ->group(function () {
+            Route::resource('studySchedules', SectionSubjectTeacherController::class);
+            Route::get('session/{sessionID}/control', [SectionSubjectTeacherController::class, 'controlSession'])->name('controlSession');
+            Route::post('session/{sessionID}/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+        });
+    Route::get('studySchedules', [SectionSubjectTeacherController::class, 'superIndex'])->name('studySchedules.superIndex');
+    Route::get('session/{sessionID}', [SectionSubjectTeacherController::class, 'sessionStatusToggel'])->name('sessionStatus');
+    Route::get('activeSessions', [SectionSubjectTeacherController::class, 'activeSessions'])->name('activeSessions');
+    // Route::get('activeSections/{sectionId}/addFile', [SectionSubjectTeacherController::class, 'addFile'])->name('activeSession.addFile');
+});
 
 
 

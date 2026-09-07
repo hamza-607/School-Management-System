@@ -20,6 +20,8 @@
     <span class="text-muted fw-light">الطلاب / القائمة / تفاصيل الطالب {{ $theStudent->name }} / العقوبات / </span> تعديل عقوبة ال {{ $thepenalty->penalty_type }}
 </h4>
 
+<x-nav :student="$theStudent" />
+
 <div class="card mb-4">
     <div class="card-body">
         <form action="{{ route('penalties.update', [$thepenalty->id ,$theStudent->id]) }}" method="POST">

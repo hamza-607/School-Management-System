@@ -44,8 +44,17 @@ $configData = Helper::appClasses();
       }
     </style>
 
-    <li class="menu-item {{ false ? 'active' : '' }}">
-      <a href="" class="menu-link d-flex flex-row-reverse justify-content-between">
+    @php
+
+    $isActiveSession = App\Models\SectionSubjectTeacher::whereHas('appointment', function ($q){
+    $q->where('status', 'active');
+    })->get()->isEmpty();
+
+    // dd(!$isActiveSession);
+    @endphp
+    @if (!$isActiveSession)
+    <li class="menu-item {{ request()->routeIs('activeSessions') ||  request()->routeIs('controlSession')  ? 'active' : '' }}">
+      <a href="{{ route('activeSessions') }}" class="menu-link d-flex flex-row-reverse justify-content-between">
         <span id="dot" class="session-dot text-success">●</span>
         <div>
           <i class="fas fa-chalkboard-teacher me-2"></i>
@@ -53,11 +62,19 @@ $configData = Helper::appClasses();
         </div>
       </a>
     </li>
+    @endif
 
     <li class="menu-item {{ request()->routeIs('studySchedules.*') ? 'active' : '' }}">
       <a href="{{ route('studySchedules.superIndex') }}" class="menu-link session-link">
         <i class="fas fa-list-ul me-2"></i>
         <span>البرامج الدراسية</span>
+      </a>
+    </li>
+
+    <li class="menu-item {{ false ? 'active' : '' }}">
+      <a href="" class="menu-link session-link">
+        <i class="fas fa-list-ul me-2"></i>
+        <span>سجل الجلسات المنتهية</span>
       </a>
     </li>
 

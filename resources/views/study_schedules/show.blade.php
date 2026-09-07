@@ -71,8 +71,6 @@
     <span class="text-muted fw-light">البرامج الدراسية / القائمة / برنامج الصف {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }} / </span> عرض معلومات حصة {{ $theSession->subject->name }}
 </h4>
 
-{{-- <x-nav :student="$theSession" /> --}}
-
 <div class="container-fluid px-2 py-4" style="position:relative">
 
     <!-- Header -->
@@ -84,7 +82,12 @@
                     <i class="bi bi-journal-bookmark fs-2 text-primary"></i>
                 </div>
                 <div>
-                    <h5 class="mb-1" style="font-size:xx-large;">{{ $theSession->subject->name }}</h5>
+                    <h5 class="mb-1" style="font-size:xx-large;">{{ $theSession->subject->name }}
+                        <span class="text-center align-middle fs-6">
+                            <span class="badge bg-label-secondary text-dark">{{ $theSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                        </span>
+                    </h5>
+
 
                     <div class="patient-details">
                         <div class="mb-1 text-muted" style="font-size:large;">
@@ -171,13 +174,6 @@
 
     <div class="row g-4">
 
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0 header-card3">
-                <x-files-table :model="$theSession" mainTitle="ملفات ومرفقات الحصة الدرسة" secTitle="لا توجد ملفات مرفوعة."></x-files-table>
-            </div>
-        </div>
-
-
         <div class="col-md-4">
             <div class="card shadow-sm border-0 header-card2">
 
@@ -190,7 +186,7 @@
 
                     <div class="pb-3">
                         <div class="parent-card border rounded-3 p-3 bg-light-subtle" style="max-width: 860px; flex: 0 0 auto;">
-                            <a href="{{ route('staff_members.show',$theSession->staff->id) }}" class="d-flex align-items-center gap-3 mb-2">
+                            <a href="{{ route('staff_members.show',[$theSession->staff->id, 'from' => $theSession->staff->staff_type]) }}" class="d-flex align-items-center gap-3 mb-2">
                                 <div class="d-flex align-items-center justify-content-center rounded-circle"
                                     style="width: 48px; height: 48px; min-width: 48px; background-color: #e6f0ef  !important; color: #006559 !important;">
                                     <i class="bi bi-person fs-5"></i>

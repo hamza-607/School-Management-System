@@ -17,8 +17,10 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب / القائمة / تفاصيل الطالب {{ $theStudent->name }} / العقوبات / </span> إضافة عقوبة 
+    <span class="text-muted fw-light">الطلاب / القائمة / تفاصيل الطالب {{ $theStudent->name }} / العقوبات / </span> إضافة عقوبة
 </h4>
+
+<x-nav :student="$theStudent" />
 
 <div class="card mb-4">
     <div class="card-body">
@@ -34,7 +36,7 @@
             </div>
             <div class="row g-3">
 
-               <div class="col-md-6">
+                <div class="col-md-6">
                     <label class="form-label">سبب العقوبة<span class="text-danger">*</span></label>
                     <textarea class="form-control @error('reason') is-invalid @enderror" name="reason" rows="3">{{ old('reason') }}</textarea>
                     @error('reason')

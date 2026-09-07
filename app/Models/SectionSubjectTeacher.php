@@ -17,6 +17,7 @@ class SectionSubjectTeacher extends Model
         'section_id',
         'grade_id',
         'appointment_id',
+        'type',
         'created_at',
         'updated_at',
     ];
