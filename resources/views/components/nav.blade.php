@@ -4,7 +4,6 @@
 'guardian' => null,
 'staff' => null,
 'section' => null,
-'session' => null,
 ])
 
 @php
@@ -35,10 +34,9 @@ $showUrl = route('sections.show', $section->id);
 $filesUrl = route('sections.addFile', $section->id);
 }
 
-if($section){
-$showUrl = route('studySchedules.show', [$session->id,$section->id]);
-$filesUrl = route('studySchedules.addFile', [$session->id, $section->id]);
-}
+// if($session){
+// $showUrl = route('studySchedules.show', [$session->id,$session->section_id]);
+// }
 
 $showActive = request()->routeIs('students.show')
 || request()->routeIs('subjects.show')
@@ -52,7 +50,6 @@ $filesActive = request()->routeIs('student.addFile')
 || request()->routeIs('staff_members.addFile')
 || request()->routeIs('guardian.addFile')
 || request()->routeIs('sections.addFile')
-|| request()->routeIs('studySchedules.addFile');
 @endphp
 
 <ul class="nav nav-pills flex-column flex-md-row mb-4 ms-2">
@@ -91,4 +88,13 @@ $filesActive = request()->routeIs('student.addFile')
                 class="ti ti-file-upload ti-xs me-1"></i>إضافة
             ملف</a></li>
     @endif
+
+    {{-- @if ($session)
+    <li class="nav-item"><a
+            class="nav-link {{ false ? 'active' : '' }}"
+    href="">
+    <i class="ti ti-adjustments-horizontal ti-xs me-1"></i>
+    التحكم بالجلسة
+    </a></li>
+    @endif --}}
 </ul>

@@ -122,6 +122,8 @@
 
 </h4>
 
+<x-nav :student="$theStudent" />
+
 <div class="card">
     <div class="card-header border-bottom d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">قائمة العقوبات</h5>

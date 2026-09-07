@@ -18,7 +18,9 @@ class Student_penalties extends Model
         'updated_by',
         'status',
         'notes',
-        'student_id'
+        'student_id',
+        'created_at',
+        'updated_at'
     ];
 
     public function student()

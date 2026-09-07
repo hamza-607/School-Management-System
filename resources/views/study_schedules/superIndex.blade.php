@@ -88,7 +88,8 @@
                     <th class="align-middle">الصف</th>
                     <th class="align-middle">الشعبة</th>
                     <th class="text-center align-middle">التوقيت (من - إلى)</th>
-                    <th class="text-center align-middle">حالة الحصة الدرسية</th>
+                    <th class="align-middle">حالة الحصة الدرسية</th>
+                    <th class="text-center align-middle">نوع الحصة الدرسية</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -167,7 +168,7 @@
                         </span>
                     </td>
 
-                    <td class="text-center align-middle">
+                    <td class="align-middle">
                         <div class="dropdown">
                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="badge {{ $class }} px-3 py-2">
@@ -190,6 +191,10 @@
                                 </li>
                             </ul>
                         </div>
+                    </td>
+
+                    <td class="text-center align-middle">
+                        <span class="badge bg-label-secondary text-dark">{{ $sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
                     </td>
                 </tr>
                 @empty

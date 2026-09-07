@@ -235,7 +235,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 header-card3 mt-4">
+            <div class="card shadow-sm border-0 header-card3 mt-4 mb-4">
                 <div class="card-body">
 
                     <div class="tab-btn d-flex align-items-center gap-2 mb-3">

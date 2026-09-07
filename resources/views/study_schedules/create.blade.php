@@ -355,6 +355,19 @@
                 </div>
 
                 <div class="col-md-6">
+                    <label class="form-label">نوع الحصة الدرسية<span class="text-danger">*</span></label>
+                    <select class="selectpicker w-100 @error('type') is-invalid @enderror"
+                        data-style="btn-default"
+                        name="type">
+                        <option value="regular" {{ old('type') == 'regular' ? 'selected' : '' }}>اساسية</option>
+                        <option value="makeup" {{ old('type') == 'makeup' ? 'selected' : '' }}>تعويضية</option>
+                    </select>
+                    @error('type')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-6">
                     <label class="form-label">وقت البدء<span class="text-danger">*</span></label>
                     <input type="text" name="start_time" class="form-control time-mask" placeholder="23:59:59" required>
                     @error('staff')

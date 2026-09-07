@@ -286,7 +286,7 @@
                                     </svg></i>
                             </a>
 
-                            <form action="{{ route('staff_members.destroy', $staff->id) }}" method="POST" style="display:inline-block">
+                            <form action="{{ route('staff_members.destroy',[ $staff->id, 'from' => $from]) }}" method="POST" style="display:inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-icon delete-record action-btn-hover">

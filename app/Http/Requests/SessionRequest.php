@@ -29,6 +29,7 @@ class SessionRequest extends FormRequest
             "start_time" => 'required|date_format:H:i:s',
             "end_time" => 'required|date_format:H:i:s',
             "day" => 'required|in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+            'type' => 'nullable|in:regular,makeup',
 
             //مادة جديدة
             "new_subject_name" => 'exclude_unless:subject,NEW|required|string|max:255',

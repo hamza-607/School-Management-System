@@ -19,6 +19,49 @@ use Illuminate\Support\Facades\Auth;
 
 class SectionSubjectTeacherController extends Controller
 {
+    public function controlSession($sessionID, $sectionID)
+    {
+        $theSession = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->findOrFail($sessionID);
+        $students = $theSession->section->students;
+
+        return view('study_schedules.controlSession', [
+            'theSession' => $theSession,
+            'theSection' => Section::findOrFail($sectionID),
+            'students' => $students,
+        ]);
+    }
+
+    public function activeSessions(Request $request)
+    {
+        // dd($request->all());
+        $query = SectionSubjectTeacher::query();
+        $query->with(['subject', 'staff', 'appointment'])->whereHas('appointment', function ($q) {
+            $q->where('status', 'active');
+        });
+
+        if ($request->has('grade_id') && $request->grade_id !== null) {
+            $query->where('grade_id', $request->grade_id);
+        }
+
+        if ($request->has('section_id') && $request->section_id !== null) {
+            $query->where('section_id', $request->section_id);
+        }
+
+        if ($request->has('day') && $request->day !== null) {
+            $query->whereHas('appointment', function ($q) use ($request) {
+                $q->where('day', $request->day);
+            });
+        }
+
+        $activeSessions = $query->paginate($request->per_page)->withQueryString();
+
+        $grades = Grade::with('sections')->get();
+
+        return view('study_schedules.acitveSession', [
+            'activeSessions' => $activeSessions,
+            'grades' => $grades,
+        ]);
+    }
 
     public function superIndex()
     {
@@ -109,6 +152,7 @@ class SectionSubjectTeacherController extends Controller
                 'section_id' => $sectionID,
                 'grade_id' => Section::findOrFail($sectionID)->grade->id,
                 'appointment_id' => $newAppointment->id,
+                'type' => $validated['type'],
             ];
 
             // مادة جديدة
@@ -205,6 +249,7 @@ class SectionSubjectTeacherController extends Controller
     {
         $theSession = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->findOrFail($id);
 
+        // dd($request->from);
 
         return view('study_schedules.show', [
             'theSession' => $theSession,
@@ -359,7 +404,8 @@ class SectionSubjectTeacherController extends Controller
     public function sessionStatusToggel($sessionID, Request $request)
     {
         try {
-            $sessionAppontment = SectionSubjectTeacher::findOrFail($sessionID)->appointment;
+            $theSession = SectionSubjectTeacher::findOrFail($sessionID);
+            $sessionAppontment = $theSession->appointment;
             $newStatus = $request->sessionStatus === 'ملغية' ? 'canceled' : ($request->sessionStatus === 'نشطة' ? 'active' : 'scheduled');
             // dd($newStatus);
 
@@ -368,7 +414,7 @@ class SectionSubjectTeacherController extends Controller
             ]);
 
             if ($newStatus === 'active') {
-                return redirect(url()->previous())->with('success', 'تم تفعيل الجلسة بنجاح.');
+                return redirect()->route('controlSession', [$sessionID, $theSession->section_id])->with('success', 'تم تفعيل الجلسة بنجاح.');
             } elseif ($newStatus === 'canceled') {
                 return redirect(url()->previous())->with('success', 'تم إلغاء الجلسة بنجاح.');
             } else {
@@ -379,47 +425,12 @@ class SectionSubjectTeacherController extends Controller
         }
     }
 
+    // public function addFile($sectionID)
+    // {
+    //     $theSection = Section::findOrFail($sectionID);
 
-    public function addFile($staffID)
-    {
-        $theStaff = Staff::findOrFail($staffID);
-
-        return view('staff_members.files', [
-            'theStaff' => $theStaff,
-        ]);
-    }
-
-    public function saveFile(Request $request, $staffID)
-    {
-        // dd($request->all());
-
-        $val = $request->validate([
-            'files' => 'required|array',
-            'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:20480',
-        ]);
-
-        // dd($val['files']);
-
-        try {
-            if ($val['files']) {
-                foreach ($val['files'] as $file) {
-                    $path = $file->store('staff_files', 'public');
-
-                    File::create([
-                        'name' => $file->getClientOriginalName(),
-                        'file_path' => $path,
-                        'uploaded_by' => Auth::id(),
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                        'owner_type' => Staff::class,
-                        'owner_id' => $staffID,
-                    ]);
-                }
-            }
-
-            return redirect()->route('staff_members.show', $staffID)->with('success', 'تم رفع الملفات بنجاح');
-        } catch (Exception $e) {
-            return redirect()->route('staff_members.show', $staffID)->with('error', 'حدث خطأ أثناء رفع الملفات: ' . $e->getMessage());
-        }
-    }
+    //     return view('study_schedules.files', [
+    //         'theSection' => $theSection,
+    //     ]);
+    // }
 }

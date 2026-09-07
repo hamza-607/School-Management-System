@@ -71,7 +71,7 @@
     <span class="text-muted fw-light">الطلاب / القائمة / تفاصيل الطالب {{ $theStudent->name }} / العقوبات / </span> عرض معلومات عقوبة ال {{ $thepenalty->penalty_type }}
 </h4>
 
-{{-- <x-nav :student="$theSession" /> --}}
+<x-nav :student="$theStudent" />
 
 <div class="container-fluid px-2 py-4" style="position:relative">
 
@@ -127,6 +127,12 @@
                                 <span class="badge bg-label-danger text-danger p-1 me-2">ملغية</span>
                             </div>
                             @endif
+                        </div>
+
+                        <div class="mt-3 text-muted d-flex align-items-center flex-wrap" style="font-size: 1rem;">
+                            <i class="bi bi-journal-text me-2"></i>
+                            الملاحظات :
+                            {{ $thepenalty->notes ?? '-' }}
                         </div>
                     </div>
                 </div>

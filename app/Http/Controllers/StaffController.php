@@ -299,14 +299,14 @@ class StaffController extends Controller
             return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('success', 'تم تعديل معلومات الموظف بنجاح');
         } catch (\Exception $e) {
             // dd($e->getMessage());
-            return redirect()->route('staff_members.index', ['from' => $request->staff_type])->with('error', 'حدث خطأ أثناء تعديل معلومات الموظف: ' . $e->getMessage());
+            return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('error', 'حدث خطأ أثناء تعديل معلومات الموظف: ' . $e->getMessage());
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         try {
             $staff = Staff::findOrFail($id);
@@ -316,9 +316,9 @@ class StaffController extends Controller
             }
             $staff->delete();
 
-            return redirect(url()->previous())->with('success', 'تم حذف الموظف بنجاح');
+            return redirect()->route('staff_members.index', ['from' => $request->from])->with('success', 'تم حذف الموظف بنجاح');
         } catch (\Exception $e) {
-            return redirect(url()->previous())->with('error', 'حدث خطأ أثناء حذف الموظف: ' . $e->getMessage());
+            return redirect()->route('staff_members.index', ['from' => $request->from])->with('error', 'حدث خطأ أثناء حذف الموظف: ' . $e->getMessage());
         }
     }
 
