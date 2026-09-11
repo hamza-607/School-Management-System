@@ -160,7 +160,7 @@
 </script>
 <script>
     $(function() {
-        @if(!$errors - > any())
+        @if(!$errors->any())
         localStorage.removeItem('student_parents_draft');
         @endif
 
@@ -285,7 +285,9 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب/</span> إضافة طالب جديد
+    <span class="text-muted fw-light">الطلاب /
+        <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
+    </span> إضافة طالب جديد
 </h4>
 
 <div class="card mb-4">

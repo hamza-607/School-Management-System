@@ -20,7 +20,7 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">المواد/</span> تعديل المادة {{ $theSubject->name }}
+    <span class="text-muted fw-light">المواد / <a href="{{ route('subjects.index') }}" class="text-muted">القائمة</a> /</span> تعديل مادة {{ $theSubject->name }}
 </h4>
 
 <div class="card mb-4">

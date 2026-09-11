@@ -180,7 +180,9 @@
 @endif
 
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الموظفين/</span> إضافة موظف جديد
+    <span class="text-muted fw-light">الموظفين /
+        <a href="{{ route('staff_members.index',['from' => $from]) }}" class="text-muted">القائمة</a> /
+    </span> إضافة موظف جديد
 </h4>
 
 <div class="card mb-4">

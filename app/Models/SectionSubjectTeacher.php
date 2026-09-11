@@ -52,8 +52,8 @@ class SectionSubjectTeacher extends Model
         return $this->morphMany(File::class, 'owner');
     }
 
-    public function section_subject_teachers()
+    public function finishedSessions()
     {
-        return $this->hasMany(SectionSubjectTeacher::class);
+        return $this->hasMany(FinishedSession::class);
     }
 }

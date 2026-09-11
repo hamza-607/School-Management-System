@@ -293,7 +293,10 @@
 @endif
 
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">البرامج الدراسية / القائمة / برنامج الصف {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }} / </span> إضافة حصة درسية جديدة
+    <span class="text-muted fw-light">البرامج الدراسية /
+        <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('studySchedules.index', $theSection->id) }}" class="text-muted"> برنامج الصف {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }}</a> /
+    </span> إضافة حصة درسية جديدة
 </h4>
 
 <div class="card mb-4">

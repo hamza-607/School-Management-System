@@ -58,7 +58,8 @@
 
         const draft = JSON.parse(sessionStorage.getItem(attendanceDraftKey) || 'null');
         const attendance = oldAttendance.length ? oldAttendance : (draft?.attendance || []);
-        const submittedPenalties = oldPenalties.length ? oldPenalties : (draft?.penalties || []);
+        // const submittedPenalties = oldPenalties.length ? oldPenalties : (draft?.penalties || []);
+        const submittedPenalties = oldPenalties.length ? oldPenalties : [];
 
         attendance.forEach(item => {
             const status = document.querySelector(`input[name^="attendance["][name$="[student_id]"][value="${item.student_id}"]`);
@@ -172,20 +173,22 @@
             }
         }
 
+        // sessionStorage.setItem(attendanceDraftKey, JSON.stringify({
+        //     attendance: Object.values(attendanceItems).filter(item => item.status),
+        //     penalties
+        // }));
         sessionStorage.setItem(attendanceDraftKey, JSON.stringify({
-            attendance: Object.values(attendanceItems).filter(item => item.status),
-            penalties
+            attendance: Object.values(attendanceItems).filter(item => item.status)
         }));
     }
 
-    function confirmSaveAttendance(event) {
+    function confirmFinishSession(event) {
+
         event.preventDefault();
 
-        saveDraft();
-
         Swal.fire({
-            title: 'حفظ الحضور',
-            html: 'هل تريد حفظ حالة الحضور والعقوبات؟ البيانات غير قابلة للتعديل بشكل مباشر بعد الحفظ.',
+            title: 'إنهاء الجلسة',
+            html: 'هل تريد إنهاء الجلسة ؟<br>البيانات غير قابلة للتعديل بشكل مباشر بعد إنهاء الجلسة.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'نعم، احفظ',
@@ -198,12 +201,17 @@
                 popup: 'swal2-popup-custom'
             }
         }).then((result) => {
+
             if (result.isConfirmed) {
-                event.target.submit();
+
+                saveDraft();
+
+                document.getElementById('attendanceForm').submit();
+
             }
+
         });
 
-        return false;
     }
 
     document.addEventListener('click', function(event) {
@@ -225,9 +233,20 @@
 @endsection
 
 @section('content')
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الجلسات الفعالة / القائمة / </span> عرض
+    <span class="text-muted fw-light">الجلسات الفعالة /
+        <a href="{{ route('activeSessions') }}" class="text-muted">القائمة</a> /
+    </span> إدارة الجلسة
 </h4>
 
 <div class="container-fluid px-2 py-4">
@@ -275,10 +294,12 @@
 
                     <!-- الأزرار -->
                     <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
-                        <a href="" class="btn btn-label-danger px-4 d-flex align-items-center gap-2">
+                        <button type="button" form="attendanceForm"
+                            class="btn btn-label-danger px-4 d-flex align-items-center gap-2"
+                            onclick="confirmFinishSession(event)">
                             <i class="bi bi-power fs-5"></i>
                             <span>إنهاء الجلسة</span>
-                        </a>
+                        </button>
 
                         <a href="{{ url()->previous() }}" class="btn btn-label-secondary px-4 d-flex align-items-center gap-2">
                             <span>رجوع</span>
@@ -293,7 +314,7 @@
         </div>
     </div>
 
-    <form method="POST" id="attendanceForm" action="{{ route('attendance.store', [$theSession->section_id, $theSession->id]) }}" onsubmit="return confirmSaveAttendance(event)">
+    <form method="POST" id="attendanceForm" action="{{ route('finishedSession', [$theSession->section_id, $theSession->id]) }}" onsubmit="return confirmSaveAttendance(event)">
         @csrf
 
         <div class="card shadow-sm border-0">
@@ -314,7 +335,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($students as $index => $student)
+                            @forelse ($students as $index => $student)
                             <tr class="student-row">
                                 <td>{{ $index + 1 }}</td>
                                 <td>
@@ -350,7 +371,11 @@
                                     </button>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr class="student-row">
+                                <td colspan="6" class="text-center py-4">لا يوجد طلاب في هذه الشعبة</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -362,11 +387,11 @@
                     <div id="penaltiesInputs"></div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-3 border-top pt-3">
+                {{--<div class="d-flex justify-content-end gap-2 mt-3 border-top pt-3">
                     <button type="submit" class="btn btn-primary px-4">
                         حفظ الحضور والعقوبات
                     </button>
-                </div>
+                </div>--}}
             </div>
     </form>
 

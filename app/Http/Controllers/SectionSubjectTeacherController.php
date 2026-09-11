@@ -6,6 +6,7 @@ use App\Http\Requests\SessionRequest;
 use App\Models\Appointment;
 use App\Models\Contract;
 use App\Models\File;
+use App\Models\FinishedSession;
 use App\Models\Grade;
 use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
@@ -24,7 +25,7 @@ class SectionSubjectTeacherController extends Controller
         $theSession = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->findOrFail($sessionID);
         $students = $theSession->section->students;
 
-        return view('study_schedules.controlSession', [
+        return view('study_schedules.activeSessions.controlSession', [
             'theSession' => $theSession,
             'theSection' => Section::findOrFail($sectionID),
             'students' => $students,
@@ -57,14 +58,16 @@ class SectionSubjectTeacherController extends Controller
 
         $grades = Grade::with('sections')->get();
 
-        return view('study_schedules.acitveSession', [
+        return view('study_schedules.activeSessions.acitveSession', [
             'activeSessions' => $activeSessions,
             'grades' => $grades,
         ]);
     }
 
-    public function superIndex()
+    public function superIndex(Request $request)
     {
+        // dd($request->all());
+        // dd(strtolower(now()->dayName));
         if (Auth::check()) {
             $teacher_id = Auth::user()->staff->id;
         } else {
@@ -72,7 +75,12 @@ class SectionSubjectTeacherController extends Controller
         }
 
         // dd($teacher_id);
-        $sectionSubjectTeachers = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->where('teacher_id', $teacher_id)->get();
+        $sectionSubjectTeachers = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])
+            ->where('teacher_id', $teacher_id)
+            ->whereHas('appointment', function ($q) use ($request) {
+                $q->where('day', $request->day ?? strtolower(now()->dayName));
+            })
+            ->get();
         // dd($sectionSubjectTeachers);
 
         $sections = Section::with('grade')->get();
@@ -90,10 +98,10 @@ class SectionSubjectTeacherController extends Controller
     {
         // dd($request->all());
         $section = Section::findOrFail($sectionID);
+        // dd($sectionID);
         $gredeID = $section->grade->id;
         $query = SectionSubjectTeacher::query();
         $query->where('section_id', $sectionID)->where('grade_id', $gredeID);
-
         if ($request->has('day') && $request->day !== null) {
             $query->whereHas('appointment', function ($q) use ($request) {
                 $q->where('day', $request->day);
@@ -414,8 +422,20 @@ class SectionSubjectTeacherController extends Controller
             ]);
 
             if ($newStatus === 'active') {
+                FinishedSession::create([
+                    'actual_start_time' => now()->format('H:i:s'),
+                    'actual_end_time' => null,
+                    'section_subject_teacher_id' => $sessionID,
+                    'status' => 'active',
+                ]);
                 return redirect()->route('controlSession', [$sessionID, $theSession->section_id])->with('success', 'تم تفعيل الجلسة بنجاح.');
             } elseif ($newStatus === 'canceled') {
+                FinishedSession::create([
+                    'actual_start_time' => null,
+                    'actual_end_time' => null,
+                    'section_subject_teacher_id' => $sessionID,
+                    'status' => 'canceled',
+                ]);
                 return redirect(url()->previous())->with('success', 'تم إلغاء الجلسة بنجاح.');
             } else {
                 return redirect(url()->previous())->with('success', 'تم جدولة الجلسة بنجاح.');
@@ -424,13 +444,4 @@ class SectionSubjectTeacherController extends Controller
             return redirect(url()->previous())->with('error', 'حدث خطأ أثناء تحديث حالة الجلسة: ' . $e->getMessage());
         }
     }
-
-    // public function addFile($sectionID)
-    // {
-    //     $theSection = Section::findOrFail($sectionID);
-
-    //     return view('study_schedules.files', [
-    //         'theSection' => $theSection,
-    //     ]);
-    // }
 }

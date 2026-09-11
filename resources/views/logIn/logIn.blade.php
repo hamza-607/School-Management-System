@@ -73,7 +73,7 @@
             <div class="mb-3 form-password-toggle">
               <div class="d-flex justify-content-between">
                 <label class="form-label" for="password">كلمة السر</label>
-                <a href="">
+                <a href="{{ route('emailVarification') }}">
                   <small>نسيت كلمة السر؟</small>
                 </a>
               </div>

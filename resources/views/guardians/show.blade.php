@@ -9,7 +9,9 @@
 @endsection
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">أولياء الامور /</span> تفاصيل ولي الأمر {{ $theGuardian->name }}
+    <span class="text-muted fw-light">أولياء الأمور /
+        <a href="{{ route('guardians.index') }}" class="text-muted">القائمة</a> /
+    </span> تفاصيل ولي الأمر {{ $theGuardian->name }}
 </h4>
 
 <x-nav :guardian="$theGuardian" />

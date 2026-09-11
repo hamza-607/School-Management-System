@@ -22,7 +22,9 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">أولياء الامور/</span> تعديل ولي الأمر {{ $theGuardian->name }}
+    <span class="text-muted fw-light">أولياء الأمور /
+        <a href="{{ route('guardians.index') }}" class="text-muted">القائمة</a> /
+    </span>تعديل تفاصيل ولي الأمر {{ $theGuardian->name }}
 </h4>
 
 <div class="card mb-4">
@@ -30,7 +32,7 @@
         <form action="{{ route('guardians.update', $theGuardian->id) }}" method="POST" enctype="multipart/form-data" id="studentForm">
             @csrf
             @method('PUT')
-            
+
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">الاسم بالعربي <span class="text-danger">*</span></label>

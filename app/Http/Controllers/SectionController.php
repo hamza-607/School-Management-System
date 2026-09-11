@@ -29,7 +29,7 @@ class SectionController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $sections = $query->paginate($request->per_page)->withQueryString();
+        $sections = $query->latest()->paginate($request->per_page)->withQueryString();
         $grades = Grade::all();
 
         return view('grades_sections.sections.index', [

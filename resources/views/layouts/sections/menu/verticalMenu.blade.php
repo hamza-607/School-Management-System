@@ -71,10 +71,10 @@ $configData = Helper::appClasses();
       </a>
     </li>
 
-    <li class="menu-item {{ false ? 'active' : '' }}">
-      <a href="" class="menu-link session-link">
-        <i class="fas fa-list-ul me-2"></i>
-        <span>سجل الجلسات المنتهية</span>
+    <li class="menu-item {{ request()->routeIs('finishedSessions.index') ? 'active' : '' }}">
+      <a href="{{ route('finishedSessions.index') }}" class="menu-link session-link">
+        <i class="fas fa-check-circle me-2"></i>
+        <span>سجل الجلسات</span>
       </a>
     </li>
 
@@ -110,14 +110,14 @@ $configData = Helper::appClasses();
     </li>
 
     {{-- ادارة الطلاب --}}
-    <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') ? 'active open' : '' }} ">
+    <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') ? 'active open' : '' }} ">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="fas fa-user-graduate"></i>
         <div class="m-1">الطلاب</div>
       </a>
 
       <ul class="menu-sub">
-        <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') ? 'active' : '' }}">
           <a href="{{ route('students.index') }}" class="menu-link">قائمة الطلاب</a>
         </li>
       </ul>

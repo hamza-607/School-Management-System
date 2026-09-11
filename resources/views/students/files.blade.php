@@ -170,7 +170,10 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب/</span> إضافة ملف للطالب {{ $theStudent->name }}
+    <span class="text-muted fw-light">الطلاب /
+        <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('students.show', $theStudent->id) }}" class="text-muted">تفاصيل الطالب {{ $theStudent->name }}</a> /
+    </span> إضافة ملف
 </h4>
 
 <x-nav :student="$theStudent" />

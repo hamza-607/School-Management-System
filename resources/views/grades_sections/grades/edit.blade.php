@@ -17,7 +17,9 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الصفوف/</span> تعديل الصف {{ $theGreade->name }}
+    <span class="text-muted fw-light">الصفوف /
+        <a href="{{ route('grades.index') }}" class="text-muted">القائمة</a> /
+    </span> تعديل تفاصيل الصف {{ $theGreade->name }}
 </h4>
 
 <div class="card mb-4">

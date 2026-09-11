@@ -17,7 +17,8 @@ class GradeController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        $grades = $query->paginate($request->per_page)->withQueryString();
+        
+        $grades = $query->latest()->paginate($request->per_page)->withQueryString();
 
         return view('grades_sections.grades.index', [
             'grades' => $grades,

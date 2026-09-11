@@ -22,7 +22,11 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">التعديلات/</span> تعديل التعديل على راتب الموظف {{ $staff->name }}
+    <span class="text-muted fw-light">الموظفين /
+        <a href="{{ route('staff_members.index',['from' => $from]) }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('staff_members.show',[$staff->id,'from' => $from]) }}" class="text-muted">تفاصيل الموظف {{ $staff->name }}</a> /
+        <a href="{{ route('employee_salary_adjustments.index',[$staff->id,'from' => $from]) }}" class="text-muted">التعديلات على الراتب </a> /
+    </span> تعديل تفاصيل التعديل 
 </h4>
 
 <x-nav :staff="$staff" />

@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'الحصص الدرسية')
+@section('title', 'الحصص الدراسية النشطة')
 
 @section('vendor-style')
 <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
@@ -40,12 +40,45 @@
 <script>
     $(document).ready(function() {
 
+        const grades = @json($grades);
+        const initialGradeId = "{{ request('grade_id') }}";
+        const initialSectionId = "{{ request('section_id') }}";
+
+        function resetSections() {
+            let $select = $('#sectionFilter');
+            $select.selectpicker('destroy');
+            $select.html('<option value="">اختر صف أولاً</option>');
+            $select.prop('disabled', true);
+            $select.selectpicker();
+        }
+
+        function fillSections(gradeId, selectedSectionId = '') {
+            let grade = grades.find(g => String(g.id) === String(gradeId));
+            let sections = Array.isArray(grade?.sections) ? grade.sections : [];
+            let $select = $('#sectionFilter');
+
+            $select.selectpicker('destroy');
+            $select.empty();
+
+            if (sections.length === 0) {
+                $select.append('<option value="">لا توجد شعب لهذا الصف</option>');
+            } else {
+                $select.append('<option value="">كل الشعب</option>');
+                sections.forEach(section => {
+                    let selected = String(section.id) === String(selectedSectionId) ? 'selected' : '';
+                    $select.append(`<option value="${section.id}" ${selected}>${section.name}</option>`);
+                });
+            }
+
+            $select.prop('disabled', false);
+            $select.selectpicker();
+        }
+
         function updateFilters() {
-            // جلب القيم من العناصر
             let perPage = $('#sessionPerPage').val();
             let day = $('#dayFilter').val();
-            let status = $('#statusFilter').val(); // الجديد
-            let subject = $('#subjectFilter').val(); // الجديد
+            let grade = $('#gradeFilter').val();
+            let section = $('#sectionFilter').val();
 
             let url = new URL(window.location.href);
 
@@ -55,11 +88,11 @@
             if (day) url.searchParams.set('day', day);
             else url.searchParams.delete('day');
 
-            if (status) url.searchParams.set('status', status); // الحالة
-            else url.searchParams.delete('status');
+            if (grade) url.searchParams.set('grade_id', grade);
+            else url.searchParams.delete('grade_id');
 
-            if (subject) url.searchParams.set('subject', subject); // المادة
-            else url.searchParams.delete('subject');
+            if (section) url.searchParams.set('section_id', section);
+            else url.searchParams.delete('section_id');
 
             // العودة للصفحة رقم 1 عند أي تغيير
             url.searchParams.delete('page');
@@ -67,8 +100,25 @@
             window.location.href = url.toString();
         }
 
-        // تشغيل التحديث عند تغيير أي قائمة منسدلة
-        $('#sessionPerPage, #dayFilter, #statusFilter, #subjectFilter').on('change', function() {
+        if (initialGradeId) {
+            fillSections(initialGradeId, initialSectionId);
+        } else {
+            resetSections();
+        }
+
+        $('#gradeFilter').on('change', function() {
+            let gradeId = $(this).val();
+
+            if (!gradeId) {
+                resetSections();
+            } else {
+                fillSections(gradeId);
+            }
+
+            updateFilters();
+        });
+
+        $('#sessionPerPage, #dayFilter, #sectionFilter').on('change', function() {
             updateFilters();
         });
 
@@ -115,26 +165,19 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">البرامج الدراسية /
-        <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة</a> /
-    </span> برنامج الصف {{ $section->grade->name }} - الشعبة {{ $section->name }}
+    <span class="text-muted fw-light">الجلسات الفعالة / </span> القائمة
 </h4>
 
 <div class="card">
     <div class="card-header border-bottom d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">قائمة الحصص الدرسية </h5>
-        <div class="d-flex">
-            <a href="{{ route('studySchedules.create', $section->id) }}" class="btn btn-primary">
-                <i class="ti ti-plus me-1"></i> إضافة حصة درسية جديدة
-            </a>
-        </div>
     </div>
 
     <div class="card-header border-bottom">
         <div>
             <div class="row g-3">
                 <div class="col-12 col-md-4">
-                    <label class="fw-bold mb-1">اليوم</label>
+                    <label class="fw-bold mb-1">المدرس</label>
                     <select id="dayFilter" name="day" class="selectpicker w-100"
                         data-style="btn-default" data-width="100%">
                         <option value="" {{ request('day') == '' ? 'selected' : '' }}>كل الأيام</option>
@@ -149,24 +192,21 @@
                 </div>
 
                 <div class="col-12 col-md-4">
-                    <label class="fw-bold mb-1">حالة الحصة</label>
-                    <select id="statusFilter" name="status" class="selectpicker w-100"
+                    <label class="fw-bold mb-1">الصف</label>
+                    <select id="gradeFilter" name="grade" class="selectpicker w-100"
                         data-style="btn-default" data-width="100%">
-                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>كل الحالات</option>
-                        <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>مجدولة</option>
-                        <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>ملغية</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشطة</option>
+                        <option value="">كل الصفوف</option>
+                        @foreach ($grades as $grade)
+                        <option value="{{ $grade->id }}" {{ request('grade_id') == $grade->id ? 'selected' : '' }}>{{ $grade->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="col-12 col-md-4">
-                    <label class="fw-bold mb-1">المادة</label>
-                    <select id="subjectFilter" name="subject" class="selectpicker w-100"
+                    <label class="fw-bold mb-1">الشعبة</label>
+                    <select id="sectionFilter" name="section_id" class="selectpicker w-100"
                         data-style="btn-default" data-width="100%">
-                        <option value="" {{ request('subject') == '' ? 'selected' : '' }}>كل المواد</option>
-                        @foreach ($sectionSubjectTeachers as $sectionSubjectTeacher)
-                        <option value="{{ $sectionSubjectTeacher->subject->id }}" {{ request('subject') == $sectionSubjectTeacher->subject->id  ? 'selected' : '' }}>{{ $sectionSubjectTeacher->subject->name }}</option>
-                        @endforeach
+                        <option value="">اختر صف أولاً</option>
                     </select>
                 </div>
             </div>
@@ -192,18 +232,17 @@
         <table class="table table-hover border-top">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>المادة</th>
-                    <th>المدرس</th>
+                    <th class="align-middle">#</th>
+                    <th class="align-middle">الصف</th>
+                    <th class="align-middle">الشعبة</th>
                     <th class="text-center align-middle">التوقيت (من - إلى)</th>
-                    <th>حالة الحصة الدرسية</th>
-                    <th>نوع الحصة الدرسية</th>
-                    <th>الإجراءات</th>
+                    <th class="align-middle">حالة الحصة الدرسية</th>
+                    <th class="text-center align-middle">نوع الحصة الدرسية</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @forelse ($sectionSubjectTeachers as $index => $sectionSubjectTeacher)
-                <tr class="clickable-row" data-href="{{ route('studySchedules.show',[$sectionSubjectTeacher->id, $section->id]) }}" style="cursor:pointer;">
+                @forelse ($activeSessions as $index => $activeSession)
+                <tr class="clickable-row" data-href="{{ route('controlSession',[$activeSession->id, $activeSession->section_id]) }}" style="cursor:pointer;">
                     @php
                     $daysMap = [
                     'sunday' => 'الأحد',
@@ -215,8 +254,8 @@
                     'saturday' => 'السبت'
                     ];
 
-                    $status = $sectionSubjectTeacher->appointment->status === 'scheduled' ? 'مجدولة' : ($sectionSubjectTeacher->appointment->status === 'active' ? 'نشطة' : 'ملغية');
-                    $class = $sectionSubjectTeacher->appointment->status === 'scheduled' ? 'bg-label-warning text-warning border border-warning-subtle' : ($sectionSubjectTeacher->appointment->status === 'active' ? 'bg-label-success text-success border border-success-subtle' : 'bg-label-danger text-danger border border-danger-subtle');
+                    $status = $activeSession->appointment->status === 'scheduled' ? 'مجدولة' : ($activeSession->appointment->status === 'active' ? 'نشطة' : 'ملغية');
+                    $class = $activeSession->appointment->status === 'scheduled' ? 'bg-label-warning text-warning border border-warning-subtle' : ($activeSession->appointment->status === 'active' ? 'bg-label-success text-success border border-success-subtle' : 'bg-label-danger text-danger border border-danger-subtle');
 
                     $Dropdown =
                     $status === 'مجدولة' ?
@@ -255,94 +294,49 @@
                     // dd($Dropdown);
                     @endphp
 
-                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$sectionSubjectTeacher->appointment->day] ?? $sectionSubjectTeacher->appointment->day }}</td>
+                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$activeSession->appointment->day] ?? $activeSession->appointment->day }}</td>
 
-                    <td>
-                        <a href="{{ route('subjects.show', $sectionSubjectTeacher->subject->id) }}" class="fw-bold">
-                            {{ $sectionSubjectTeacher->subject->name }}
-                        </a>
+                    <td class="align-middle">
+                        <span class="fw-bold">
+                            {{ $activeSession->grade->name }}
+                        </span>
                     </td>
 
-                    <td>
-                        <a href="{{ route('staff_members.show', $sectionSubjectTeacher->staff->id) }}">{{ $sectionSubjectTeacher->staff->name }}</a>
+                    <td class="align-middle">
+                        <a href="{{ route('sections.show', $activeSession->section->id) }}">{{ $activeSession->section->name }}</a>
                     </td>
 
                     <td class="text-center align-middle">
                         <span class="badge bg-label-secondary text-dark">
-                            {{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->start_time)->format('h:i A') }}
+                            {{ \Carbon\Carbon::parse($activeSession->appointment->start_time)->format('h:i A') }}
                         </span>
                         <span class="mx-1">-</span>
                         <span class="badge bg-label-secondary text-dark">
-                            {{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->end_time)->format('h:i A') }}
+                            {{ \Carbon\Carbon::parse($activeSession->appointment->end_time)->format('h:i A') }}
                         </span>
                     </td>
 
-                    <td>
-                        <div class="dropdown">
-                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="badge {{ $class }} px-3 py-2">
-                                    {{ $status }}
-                                </span>
-                            </button>
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('sessionStatus',[$sectionSubjectTeacher->id, 'sessionStatus' => $Dropdown[0]['name']]) }}">
-                                        <span class="{{ $Dropdown[0]['class'] }}"><i class="ti ti-circle-filled ti-xs"></i></span>
-                                        {{ $Dropdown[0]['name'] }}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('sessionStatus',[$sectionSubjectTeacher->id, 'sessionStatus' => $Dropdown[1]['name']]) }}">
-                                        <span class="{{ $Dropdown[1]['class'] }}"><i class="ti ti-circle-filled ti-xs"></i></span>
-                                        {{ $Dropdown[1]['name'] }}
-                                    </a>
-                                </li>
-                            </ul>
+                    <td class="align-middle">
+                        <div class="btn p-0 dropdown-toggle hide-arrow">
+                            <span class="badge {{ $class }} px-3 py-2">
+                                {{ $status }}
+                            </span>
                         </div>
                     </td>
 
-                    <td>
-                        <span class="badge bg-label-secondary text-dark">{{ $sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
-                    </td>
-                    <td>
-                        <div class="d-inline-block text-nowrap">
-                            <a href="{{ route('studySchedules.edit',[$sectionSubjectTeacher->id,$section->id ]) }}"
-                                class="btn btn-sm btn-icon action-btn-hover">
-                                <i><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960"
-                                        width="20px" fill="#F2CDA2">
-                                        <path
-                                            d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z" />
-                                    </svg>
-                                </i>
-                            </a>
-
-                            <form action="{{ route('studySchedules.destroy', [$sectionSubjectTeacher->id, $section->id]) }}" method="POST"
-                                style="display:inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-icon delete-record action-btn-hover">
-                                    <i>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960"
-                                            width="20px" fill="#BB271A">
-                                            <path
-                                                d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
-                                        </svg>
-                                    </i>
-                                </button>
-                            </form>
-                        </div>
+                    <td class="text-center align-middle">
+                        <span class="badge bg-label-secondary text-dark">{{ $activeSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-4">لا يوجد حصص درسية لهذه الشعبة</td>
+                    <td colspan="6" class="text-center py-4">لا يوجد حصص درسية لهذا المدرس</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
         <div class="d-flex justify-content-end px-3 pb-3 mt-3">
-            {{ $sectionSubjectTeachers->links() }}
+            {{ $activeSessions->links() }}
         </div>
     </div>
 </div>
