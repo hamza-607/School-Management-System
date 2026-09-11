@@ -60,6 +60,13 @@
           </div>
           @endif
 
+          @if(session('error'))
+          <div class="alert alert-danger alert-dismissible" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          @endif
+
           <h4 class="mb-1 pt-2">مرحباَ بعودتك</h4>
           <p class="mb-4">الرجاء تسجيل الدخول باستخدام بريدك الإلكتروني وكلمة السر</p>
 

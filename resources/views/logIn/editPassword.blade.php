@@ -101,10 +101,17 @@
                     </div>
                     @endif
 
+                    @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
+
                     {{-- قمنا بتغيير الـ ID من formAuthentication إلى formEditPassword --}}
                     <form id="formEditPassword" class="mb-3" action="{{ route('editPasswordStore') }}" method="POST">
                         @csrf
-                        
+
                         <div class="mb-3 form-password-toggle">
                             <label class="form-label" for="old_password">كلمة السر القديمة</label>
                             <div class="input-group input-group-merge">
