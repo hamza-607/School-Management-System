@@ -25,12 +25,12 @@ class SubjectSeeder extends Seeder
                 'description' => null,
             ],
             [
-                'name' => 'فيزياء',
+                'name' => 'الفيزياء',
                 'e_name' => 'Physics',
                 'description' => null,
             ],
             [
-                'name' => 'كيمياء',
+                'name' => 'الكيمياء',
                 'e_name' => 'Chemistry',
                 'description' => null,
             ],

@@ -76,7 +76,7 @@
 
         function updateFilters() {
             let perPage = $('#sessionPerPage').val();
-            let day = $('#dayFilter').val();
+            let teacher = $('#teacherFilter').val();
             let grade = $('#gradeFilter').val();
             let section = $('#sectionFilter').val();
 
@@ -85,8 +85,8 @@
             if (perPage) url.searchParams.set('per_page', perPage);
             else url.searchParams.delete('per_page');
 
-            if (day) url.searchParams.set('day', day);
-            else url.searchParams.delete('day');
+            if (teacher) url.searchParams.set('teacher_id', teacher);
+            else url.searchParams.delete('teacher_id');
 
             if (grade) url.searchParams.set('grade_id', grade);
             else url.searchParams.delete('grade_id');
@@ -118,39 +118,39 @@
             updateFilters();
         });
 
-        $('#sessionPerPage, #dayFilter, #sectionFilter').on('change', function() {
+        $('#sessionPerPage, #teacherFilter, #sectionFilter').on('change', function() {
             updateFilters();
         });
 
 
 
-        // تأكيد الحذف (SweetAlert2)
-        $(document).on('click', '.delete-record', function(e) {
-            e.preventDefault();
-            let $btn = $(this);
-            Swal.fire({
-                title: 'تأكيد الحذف',
-                html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'نعم، احذف',
-                cancelButtonText: 'إلغاء',
-                reverseButtons: true,
-                focusCancel: true,
-                buttonsStyling: false,
-                customClass: {
-                    confirmButton: 'btn btn-danger ms-2',
-                    cancelButton: 'btn btn-secondary',
-                    popup: 'swal2-popup-custom'
-                },
-                allowOutsideClick: false,
-                backdrop: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $btn.closest('form').submit();
-                }
-            });
-        });
+        // // تأكيد الحذف (SweetAlert2)
+        // $(document).on('click', '.delete-record', function(e) {
+        //     e.preventDefault();
+        //     let $btn = $(this);
+        //     Swal.fire({
+        //         title: 'تأكيد الحذف',
+        //         html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'نعم، احذف',
+        //         cancelButtonText: 'إلغاء',
+        //         reverseButtons: true,
+        //         focusCancel: true,
+        //         buttonsStyling: false,
+        //         customClass: {
+        //             confirmButton: 'btn btn-danger ms-2',
+        //             cancelButton: 'btn btn-secondary',
+        //             popup: 'swal2-popup-custom'
+        //         },
+        //         allowOutsideClick: false,
+        //         backdrop: true
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             $btn.closest('form').submit();
+        //         }
+        //     });
+        // });
 
         $(document).on('click', '.clickable-row', function(e) {
             if ($(e.target).closest('a').length || $(e.target).closest('button').length || $(e.target).closest('form').length) {
@@ -165,12 +165,12 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light"> الحصص الدرسية النشطة / </span> القائمة
+    <span class="text-muted fw-light">سجل الحصص الدرسية / </span> القائمة
 </h4>
 
 <div class="card">
     <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">قائمة الحصص الدرسية النشطة </h5>
+        <h5 class="card-title mb-0">قائمة الحصص الدرسية</h5>
     </div>
 
     <div class="card-header border-bottom">
@@ -178,16 +178,12 @@
             <div class="row g-3">
                 <div class="col-12 col-md-4">
                     <label class="fw-bold mb-1">المدرس</label>
-                    <select id="dayFilter" name="day" class="selectpicker w-100"
+                    <select id="teacherFilter" name="teacher" class="selectpicker w-100"
                         data-style="btn-default" data-width="100%">
-                        <option value="" {{ request('day') == '' ? 'selected' : '' }}>كل الأيام</option>
-                        <option value="sunday" {{ request('day') == 'sunday' ? 'selected' : '' }}>الأحد</option>
-                        <option value="monday" {{ request('day') == 'monday' ? 'selected' : '' }}>الاثنين</option>
-                        <option value="tuesday" {{ request('day') == 'tuesday' ? 'selected' : '' }}>الثلاثاء</option>
-                        <option value="wednesday" {{ request('day') == 'wednesday' ? 'selected' : '' }}>الأربعاء</option>
-                        <option value="thursday" {{ request('day') == 'thursday' ? 'selected' : '' }}>الخميس</option>
-                        <option value="friday" {{ request('day') == 'friday' ? 'selected' : '' }}>الجمعة</option>
-                        <option value="saturday" {{ request('day') == 'saturday' ? 'selected' : '' }}> السبت</option>
+                        <option value="">كل المدرسين</option>
+                        @foreach ($teachers as $teacher)
+                        <option value="{{ $teacher->id }}" {{ request('teacher_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -233,16 +229,19 @@
             <thead>
                 <tr>
                     <th class="align-middle">#</th>
+                    <th class="align-middle">المدرس</th>
+                    <th class="align-middle">المادة</th>
                     <th class="align-middle">الصف</th>
                     <th class="align-middle">الشعبة</th>
-                    <th class="text-center align-middle">التوقيت (من - إلى)</th>
+                    <th class="text-center align-middle">وقت البدء الفعلي</th>
+                    <th class="text-center align-middle">وقت الانتهاء الفعلي</th>
                     <th class="align-middle">حالة الحصة الدرسية</th>
                     <th class="text-center align-middle">نوع الحصة الدرسية</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @forelse ($activeSessions as $index => $activeSession)
-                <tr class="clickable-row" data-href="{{ route('controlSession',[$activeSession->id, $activeSession->section_id]) }}" style="cursor:pointer;">
+                @forelse ($finishedSessions as $index => $finishedSession)
+                <tr>
                     @php
                     $daysMap = [
                     'sunday' => 'الأحد',
@@ -254,65 +253,39 @@
                     'saturday' => 'السبت'
                     ];
 
-                    $status = $activeSession->appointment->status === 'scheduled' ? 'مجدولة' : ($activeSession->appointment->status === 'active' ? 'نشطة' : 'ملغية');
-                    $class = $activeSession->appointment->status === 'scheduled' ? 'bg-label-warning text-warning border border-warning-subtle' : ($activeSession->appointment->status === 'active' ? 'bg-label-success text-success border border-success-subtle' : 'bg-label-danger text-danger border border-danger-subtle');
-
-                    $Dropdown =
-                    $status === 'مجدولة' ?
-                    [
-                    [
-                    'name' => 'نشطة',
-                    'class' => 'badge bg-label-success text-success p-1 me-2'
-                    ],
-                    [
-                    'name'=>'ملغية',
-                    'class' => 'badge bg-label-danger text-danger p-1 me-2'
-                    ]
-                    ]
-                    : ($status === 'نشطة' ?
-                    [
-                    [
-                    'name'=>'مجدولة',
-                    'class' => 'badge bg-label-warning text-warning p-1 me-2'
-                    ],
-                    [
-                    'name'=>'ملغية',
-                    'class' => 'badge bg-label-danger text-danger p-1 me-2'
-                    ]
-                    ]
-                    : [
-                    [
-                    'name'=>'نشطة',
-                    'class' => 'badge bg-label-success text-success p-1 me-2'
-                    ],
-                    [
-                    'name'=>'مجدولة',
-                    'class' => 'badge bg-label-warning text-warning p-1 me-2'
-                    ]
-                    ]);
+                    $status = $finishedSession->status === 'completed' ? 'مكتملة' : ($finishedSession->status === 'active' ? 'نشطة' : 'ملغية');
+                    $class = $finishedSession->status === 'completed' ? 'bg-label-success text-success border border-success-subtle' : ($finishedSession->status === 'active' ? 'badge bg-label-warning text-warning p-1 me-2' : 'bg-label-danger text-danger border border-danger-subtle') ;
 
                     // dd($Dropdown);
                     @endphp
 
-                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$activeSession->appointment->day] ?? $activeSession->appointment->day }}</td>
+                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$finishedSession->sectionSubjectTeacher->appointment->day] ?? $finishedSession->sectionSubjectTeacher->appointment->day }}</td>
 
                     <td class="align-middle">
-                        <span class="fw-bold">
-                            {{ $activeSession->grade->name }}
-                        </span>
+                        <a href="{{ route('staff_members.show', $finishedSession->sectionSubjectTeacher->staff->id) }}" class="fw-bold">{{ $finishedSession->sectionSubjectTeacher->staff->name }}</a>
                     </td>
 
                     <td class="align-middle">
-                        <a href="{{ route('sections.show', $activeSession->section->id) }}">{{ $activeSession->section->name }}</a>
+                        <a href="{{ route('subjects.show', $finishedSession->sectionSubjectTeacher->subject_id) }}">{{ $finishedSession->sectionSubjectTeacher->subject->name }}</a>
+                    </td>
+
+                    <td>
+                        {{ $finishedSession->sectionSubjectTeacher->grade->name }}
+                    </td>
+
+                    <td class="align-middle">
+                        <a href="{{ route('sections.show', $finishedSession->sectionSubjectTeacher->section->id) }}">{{ $finishedSession->sectionSubjectTeacher->section->name }}</a>
                     </td>
 
                     <td class="text-center align-middle">
                         <span class="badge bg-label-secondary text-dark">
-                            {{ \Carbon\Carbon::parse($activeSession->appointment->start_time)->format('h:i A') }}
+                            {{ $finishedSession->actual_start_time ? \Carbon\Carbon::parse($finishedSession->actual_start_time)->format('h:i A') : '-'}}
                         </span>
-                        <span class="mx-1">-</span>
+                    </td>
+
+                    <td class="text-center align-middle">
                         <span class="badge bg-label-secondary text-dark">
-                            {{ \Carbon\Carbon::parse($activeSession->appointment->end_time)->format('h:i A') }}
+                            {{ $finishedSession->actual_end_time ? \Carbon\Carbon::parse($finishedSession->actual_end_time)->format('h:i A') : '-'}}
                         </span>
                     </td>
 
@@ -325,18 +298,18 @@
                     </td>
 
                     <td class="text-center align-middle">
-                        <span class="badge bg-label-secondary text-dark">{{ $activeSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                        <span class="badge bg-label-secondary text-dark">{{ $finishedSession->sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center py-4">لا يوجد حصص درسية لهذا المدرس</td>
+                    <td colspan="9" class="text-center py-4">لا يوجد حصص درسية لهذا المدرس</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
         <div class="d-flex justify-content-end px-3 pb-3 mt-3">
-            {{ $activeSessions->links() }}
+            {{ $finishedSessions->links() }}
         </div>
     </div>
 </div>

@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 
-@section('page-script')
+@section('page-style')
 <script src="{{asset('assets/js/dashboards-analytics.js')}}"></script>
 
 <style>
@@ -69,15 +69,111 @@
 </style>
 @endsection
 
+@section('page-script')
+<script src="{{asset('assets/js/dashboards-analytics.js')}}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // تفعيل tooltips للحصص المقفولة
+        var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltipTriggerList.forEach(function(el) {
+            new bootstrap.Tooltip(el);
+        });
+
+        // تأكيد قبل الإلغاء
+        document.querySelectorAll('.js-cancel-session').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                let href = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'تأكيد إلغاء الحصة',
+                    html: `
+                <div>
+                    هل أنت متأكد أنك تريد إلغاء هذه الحصة الدرسية؟
+                    <br>
+                    <strong>بعد الإلغاء لن تتمكن من التراجع أو إعادة جدولتها بنفسك، ويجب التواصل مع قسم  الإدارة.</strong>
+                </div>
+            `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'نعم، إلغاء الحصة',
+                    cancelButtonText: 'تراجع',
+                    reverseButtons: true,
+                    focusCancel: true,
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: 'btn btn-danger ms-2',
+                        cancelButton: 'btn btn-secondary',
+                        popup: 'swal2-popup-custom'
+                    },
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    backdrop: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+@endsection
+
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
     <span class="text-muted fw-light">البرامج الدراسية /</span> القائمة
 </h4>
 
+@php
+$today = strtolower(\Carbon\Carbon::now()->format('l'));
+$selectedDay = request()->query('day', $today);
+
+$daysMap = [
+'sunday' => 'الأحد',
+'monday' => 'الاثنين',
+'tuesday' => 'الثلاثاء',
+'wednesday' => 'الأربعاء',
+'thursday' => 'الخميس',
+'friday' => 'الجمعة',
+'saturday' => 'السبت',
+];
+
+$statusMeta = [
+'scheduled' => ['label' => 'مجدولة', 'badgeClass' => 'bg-label-warning text-warning border border-warning-subtle', 'dotClass' => 'badge bg-label-warning text-warning p-1 me-2'],
+'active' => ['label' => 'نشطة', 'badgeClass' => 'bg-label-success text-success border border-success-subtle', 'dotClass' => 'badge bg-label-success text-success p-1 me-2'],
+'canceled' => ['label' => 'ملغية', 'badgeClass' => 'bg-label-danger text-danger border border-danger-subtle', 'dotClass' => 'badge bg-label-danger text-danger p-1 me-2'],
+];
+@endphp
+
 @if (Auth::user()->staff->staff_type === 'teacher')
 <div class="card">
     <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">قائمة حصص المدرس {{ Auth::user()->name }} </h5>
+        <h5 class="card-title mb-0">قائمة حصص المدرس {{ Auth::user()->name }}</h5>
+    </div>
+
+    {{-- كاردات أيام الأسبوع (فلتر) --}}
+    <div class="card-body pb-2">
+        <div class="row row-cols-auto g-2">
+            @foreach ($daysMap as $dayKey => $dayLabel)
+            <div class="col">
+                <a href="{{ request()->fullUrlWithQuery(['day' => $dayKey]) }}" class="text-decoration-none">
+                    <div class="card border {{ $selectedDay === $dayKey ? 'border-primary bg-label-primary' : '' }} px-3 py-2 text-center"
+                        style="min-width: 90px; border-radius: 0.5rem; transition: all .2s ease;">
+                        <span class="fw-bold {{ $selectedDay === $dayKey ? 'text-primary' : 'text-dark' }}">
+                            {{ $dayLabel }}
+                        </span>
+                        @if ($dayKey === $today)
+                        <small class="text-muted d-block" style="font-size: 10px;">اليوم</small>
+                        @endif
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
     </div>
 
     <div class="card-datatable table-responsive">
@@ -94,103 +190,71 @@
             </thead>
             <tbody class="table-border-bottom-0">
                 @forelse ($sectionSubjectTeachers as $index => $sectionSubjectTeacher)
+                @php
+                $appointmentDay = $sectionSubjectTeacher->appointment->day;
+                $currentStatus = $sectionSubjectTeacher->appointment->status; // scheduled | active | canceled
+                $isToday = $appointmentDay === $today;
+                $isLocked = $currentStatus === 'canceled'; // ← قفل نهائي بعد الإلغاء
+
+                $alternatives = array_diff(array_keys($statusMeta), [$currentStatus]);
+                if (!$isToday) {
+                $alternatives = array_diff($alternatives, ['active']);
+                }
+
+                if($currentStatus === 'active'){
+                $alternatives = array_diff($alternatives, ['active','scheduled','canceled']);
+                }
+
+                $statusInfo = $statusMeta[$currentStatus] ?? $statusMeta['canceled'];
+                @endphp
                 <tr>
-                    @php
-                    $daysMap = [
-                    'sunday' => 'الأحد',
-                    'monday' => 'الاثنين',
-                    'tuesday' => 'الثلاثاء',
-                    'wednesday' => 'الأربعاء',
-                    'thursday' => 'الخميس',
-                    'friday' => 'الجمعة',
-                    'saturday' => 'السبت'
-                    ];
-
-                    $status = $sectionSubjectTeacher->appointment->status === 'scheduled' ? 'مجدولة' : ($sectionSubjectTeacher->appointment->status === 'active' ? 'نشطة' : 'ملغية');
-                    $class = $sectionSubjectTeacher->appointment->status === 'scheduled' ? 'bg-label-warning text-warning border border-warning-subtle' : ($sectionSubjectTeacher->appointment->status === 'active' ? 'bg-label-success text-success border border-success-subtle' : 'bg-label-danger text-danger border border-danger-subtle');
-
-                    $Dropdown =
-                    $status === 'مجدولة' ?
-                    [
-                    [
-                    'name' => 'نشطة',
-                    'class' => 'badge bg-label-success text-success p-1 me-2'
-                    ],
-                    [
-                    'name'=>'ملغية',
-                    'class' => 'badge bg-label-danger text-danger p-1 me-2'
-                    ]
-                    ]
-                    : ($status === 'نشطة' ?
-                    [
-                    [
-                    'name'=>'مجدولة',
-                    'class' => 'badge bg-label-warning text-warning p-1 me-2'
-                    ],
-                    [
-                    'name'=>'ملغية',
-                    'class' => 'badge bg-label-danger text-danger p-1 me-2'
-                    ]
-                    ]
-                    : [
-                    [
-                    'name'=>'نشطة',
-                    'class' => 'badge bg-label-success text-success p-1 me-2'
-                    ],
-                    [
-                    'name'=>'مجدولة',
-                    'class' => 'badge bg-label-warning text-warning p-1 me-2'
-                    ]
-                    ]);
-
-                    // dd($Dropdown);
-                    @endphp
-
-                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$sectionSubjectTeacher->appointment->day] ?? $sectionSubjectTeacher->appointment->day }}</td>
-
-                    <td class="align-middle">
-                        <span class="fw-bold">
-                            {{ $sectionSubjectTeacher->grade->name }}
-                        </span>
-                    </td>
-
+                    <td class="align-middle fw-bold text-dark">{{ $index + 1 }}</td>
+                    <td class="align-middle"><span class="fw-bold">{{ $sectionSubjectTeacher->grade->name }}</span></td>
                     <td class="align-middle">
                         <a href="{{ route('sections.show', $sectionSubjectTeacher->section->id) }}">{{ $sectionSubjectTeacher->section->name }}</a>
                     </td>
-
                     <td class="text-center align-middle">
-                        <span class="badge bg-label-secondary text-dark">
-                            {{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->start_time)->format('h:i A') }}
-                        </span>
+                        <span class="badge bg-label-secondary text-dark">{{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->start_time)->format('h:i A') }}</span>
                         <span class="mx-1">-</span>
-                        <span class="badge bg-label-secondary text-dark">
-                            {{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->end_time)->format('h:i A') }}
-                        </span>
+                        <span class="badge bg-label-secondary text-dark">{{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->end_time)->format('h:i A') }}</span>
                     </td>
 
                     <td class="align-middle">
+                        @if ($isLocked)
+                        {{-- حصة ملغية: قفل نهائي، لا تعديل من الأستاذ --}}
+                        <span class="badge {{ $statusInfo['badgeClass'] }} px-3 py-2"
+                            data-bs-toggle="tooltip"
+                            title="تم إلغاء هذه الحصة نهائياً. لإعادة جدولتها يرجى التواصل مع قسم الجداول الدراسية.">
+                            <i class="ti ti-lock ti-xs me-1"></i>{{ $statusInfo['label'] }}
+                        </span>
+                        @else
                         <div class="dropdown">
                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="badge {{ $class }} px-3 py-2">
-                                    {{ $status }}
-                                </span>
+                                <span class="badge {{ $statusInfo['badgeClass'] }} px-3 py-2">{{ $statusInfo['label'] }}</span>
                             </button>
-
                             <ul class="dropdown-menu dropdown-menu-end">
+                                @forelse ($alternatives as $altKey)
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('sessionStatus',[$sectionSubjectTeacher->id, 'sessionStatus' => $Dropdown[0]['name']]) }}">
-                                        <span class="{{ $Dropdown[0]['class'] }}"><i class="ti ti-circle-filled ti-xs"></i></span>
-                                        {{ $Dropdown[0]['name'] }}
+                                    @if ($altKey === 'canceled')
+                                    <a class="dropdown-item d-flex align-items-center js-cancel-session"
+                                        href="{{ route('sessionStatus', [$sectionSubjectTeacher->id, 'sessionStatus' => $statusMeta[$altKey]['label']]) }}">
+                                        <span class="{{ $statusMeta[$altKey]['dotClass'] }}"><i class="ti ti-circle-filled ti-xs"></i></span>
+                                        {{ $statusMeta[$altKey]['label'] }}
                                     </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('sessionStatus',[$sectionSubjectTeacher->id, 'sessionStatus' => $Dropdown[1]['name']]) }}">
-                                        <span class="{{ $Dropdown[1]['class'] }}"><i class="ti ti-circle-filled ti-xs"></i></span>
-                                        {{ $Dropdown[1]['name'] }}
+                                    @else
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        href="{{ route('sessionStatus', [$sectionSubjectTeacher->id, 'sessionStatus' => $statusMeta[$altKey]['label']]) }}">
+                                        <span class="{{ $statusMeta[$altKey]['dotClass'] }}"><i class="ti ti-circle-filled ti-xs"></i></span>
+                                        {{ $statusMeta[$altKey]['label'] }}
                                     </a>
+                                    @endif
                                 </li>
+                                @empty
+                                <li><span class="dropdown-item text-muted">لا يوجد خيارات متاحة</span></li>
+                                @endforelse
                             </ul>
                         </div>
+                        @endif
                     </td>
 
                     <td class="text-center align-middle">
@@ -199,7 +263,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center py-4">لا يوجد حصص درسية لهذا المدرس</td>
+                    <td colspan="6" class="text-center py-4">لا يوجد حصص درسية لهذا المدرس</td>
                 </tr>
                 @endforelse
             </tbody>

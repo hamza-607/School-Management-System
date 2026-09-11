@@ -22,7 +22,9 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">أولياء الامور/</span> إضافة ولي أمر جديد
+    <span class="text-muted fw-light">أولياء الأمور /
+        <a href="{{ route('guardians.index') }}" class="text-muted">القائمة</a> /
+    </span> إضافة ولي أمر جديد
 </h4>
 
 <div class="card mb-4">

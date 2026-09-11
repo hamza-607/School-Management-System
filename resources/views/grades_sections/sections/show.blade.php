@@ -68,7 +68,9 @@
 @endsection
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الشٌعب /</span> تفاصيل الشعبة {{ $theSection->name }}
+    <span class="text-muted fw-light">الشُعب /
+        <a href="{{ route('sections.index') }}" class="text-muted">القائمة</a> /
+    </span> تفاصيل الشعبة {{ $theSection->name }}
 </h4>
 
 <x-nav :section="$theSection" />

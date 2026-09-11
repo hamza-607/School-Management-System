@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeSalaryAdjustmentsController;
+use App\Http\Controllers\FinishedSessionController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\StaffController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\SectionSubjectTeacherController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentPenaltiesController;
 use App\Http\Controllers\SubjectController;
+use App\Models\FinishedSession;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +28,9 @@ use App\Http\Controllers\SubjectController;
 
 Route::get('LogInPage', [AuthController::class, 'LogInPage'])->name('login');
 Route::post('logIn', [AuthController::class, 'logIn'])->name('storeLogIn');
+Route::get('emailVarification', [AuthController::class, 'emailVarification'])->name('emailVarification');
+Route::post('sendVarificationCode', [AuthController::class, 'sendVarificationCode'])->name('sendVarificationCode');
+Route::get('forgotPassword', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -71,12 +76,14 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::resource('studySchedules', SectionSubjectTeacherController::class);
             Route::get('session/{sessionID}/control', [SectionSubjectTeacherController::class, 'controlSession'])->name('controlSession');
-            Route::post('session/{sessionID}/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+            Route::post('session/{sessionID}/attendance', [FinishedSessionController::class, 'finish'])->name('finishedSession');
         });
     Route::get('studySchedules', [SectionSubjectTeacherController::class, 'superIndex'])->name('studySchedules.superIndex');
     Route::get('session/{sessionID}', [SectionSubjectTeacherController::class, 'sessionStatusToggel'])->name('sessionStatus');
     Route::get('activeSessions', [SectionSubjectTeacherController::class, 'activeSessions'])->name('activeSessions');
     // Route::get('activeSections/{sectionId}/addFile', [SectionSubjectTeacherController::class, 'addFile'])->name('activeSession.addFile');
+
+    Route::get('finishedSessions', [FinishedSessionController::class, 'index'])->name('finishedSessions.index');
 });
 
 

@@ -68,7 +68,10 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">البرامج الدراسية / القائمة / برنامج الصف {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }} / </span> عرض معلومات حصة {{ $theSession->subject->name }}
+    <span class="text-muted fw-light">البرامج الدراسية /
+        <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('studySchedules.index', $theSection->id) }}" class="text-muted"> برنامج الصف {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }}</a> /
+    </span> عرض معلومات حصة {{ $theSession->subject->name }}
 </h4>
 
 <div class="container-fluid px-2 py-4" style="position:relative">

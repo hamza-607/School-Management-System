@@ -9,7 +9,9 @@ use Illuminate\Validation\Rules\Password;
 use App\Enums\role;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -18,12 +20,31 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-        return view('logIn');
+        return view('logIn.logIn');
     }
 
     public function editPassword()
     {
-        return view('editPassword');
+        return view('logIn.editPassword');
+    }
+
+    public function emailVarification()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('logIn.emailForgotPassword');
+    }
+
+    public function forgotPassword()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        // Cache::forget('otp_hamza7ee5h@gmail.com');
+
+        return view('logIn.forgotPassword');
     }
 
     public function logIn(Request $request)
@@ -42,7 +63,7 @@ class AuthController extends Controller
                 return back()->withErrors(['error' => 'حسابك غير مفعل حاليا، يرجى التواصل مع الإدارة لتفعيل الحساب']);
             }
         } else {
-            return back()->withErrors(['error' => 'الإيميل المكتوب غير صحيح']);
+            return back()->withErrors(['error' => 'الإيميل غير موجود في قاعدة البيانات']);
         }
 
         if (Auth::attempt($validated)) {
@@ -79,6 +100,38 @@ class AuthController extends Controller
             return redirect()->route('login')->with('success', 'تم تعديل كلمة السر بنجاح');
         }
         return back()->withErrors(['error', 'كلمة المرور القديمة التي ادخلتها خاطئة!!']);
+    }
+
+    public function sendVarificationCode(Request $request)
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        $validated = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user) {
+            return back()->withErrors(['error' => 'الإيميل غير موجود في قاعدة البيانات']);
+        }
+
+        // if (Cache::get('lock_otp_' . $user->email)) {
+        //     return back()->withErrors(['error' => 'لقد تم إرسال رمز التحقق مسبقًا. يرجى الانتظار لمدة دقيقة قبل طلب رمز جديد.']);
+        // }
+
+        // $otp = rand(100000, 999999);
+
+        // Cache::put('otp_' . $user->email, $otp, now()->addMinutes(5));
+        // Cache::put('lock_opt_' . $user->email, true, now()->addMinutes(1));
+
+        // Mail::raw('رمز التحقق الخاص بك هو : ' . $otp . 'الرمز صالح لمدة 5 دقائق', function ($message) use ($user) {
+        //     $message->to($user->email)->subject('زمر التحقق الخاص بك / تعديل كلمة سر حسابك في مدرسة افق النموذجية');
+        // });
+
+        return redirect()->route('forgotPassword')->with('success', 'تم إرسال رمز التحقق إلى بريدك الإلكتروني. رمز التحقق: '); // هون هي لازم تتغير لصفحة التحقق من الرمز اول شي
     }
 
     public function logout(Request $request)

@@ -170,7 +170,10 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light"> الموظفين/</span> إضافة ملف للموظف {{ $theStaff->name }}
+    <span class="text-muted fw-light">الموظفين /
+        <a href="{{ route('staff_members.index',['from' => $from]) }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('staff_members.show',[$theStaff->id,'from' => $from]) }}" class="text-muted">تفاصيل الموظف {{ $theStaff->name }}</a> /
+    </span>إضافة ملف 
 </h4>
 
 <x-nav :staff="$theStaff" />
@@ -180,8 +183,7 @@
         <h5 class="mb-0">ملفات الموظفين</h5>
     </div>
     <div class="card-body">
-
-        <form action="{{ route('staff_members.saveFile', $theStaff->id) }}" method="POST"
+        <form action="{{ route('staff_members.saveFile',[ $theStaff->id, 'from' => $from ]) }}" method="POST"
             enctype="multipart/form-data">
             @csrf
 

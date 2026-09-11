@@ -118,8 +118,10 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب / القائمة / تفاصيل الطالب {{ $theStudent->name }} / </span> العقوبات
-
+    <span class="text-muted fw-light">الطلاب /
+        <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('students.show', $theStudent->id) }}" class="text-muted">تفاصيل الطالب {{ $theStudent->name }}</a> /
+    </span> العقوبات
 </h4>
 
 <x-nav :student="$theStudent" />
@@ -287,7 +289,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-4">لا يوجد عقوبات لهذا الطالب</td>
+                    <td colspan="8" class="text-center py-4">لا يوجد عقوبات لهذا الطالب</td>
                 </tr>
                 @endforelse
             </tbody>

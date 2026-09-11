@@ -5,25 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attendance extends Model
+class FinishedSession extends Model
 {
     use HasFactory;
 
-    protected $table = 'attendance_records';
+    protected $table;
 
     protected $fillable = [
-        'student_id',
-        'finished_session_id',
-        'section_id',
+        'actual_start_time',
+        'actual_end_time',
+        'section_subject_teacher_id',
         'status',
         'created_at',
         'updated_at',
     ];
-
-    public function student()
-    {
-        return $this->belongsTo(Student::class);
-    }
 
     public function sectionSubjectTeacher()
     {

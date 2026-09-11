@@ -148,10 +148,13 @@
 @endsection
 
 @section('content')
-
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الموظفين / تفاصيل الموظف {{ $staff->name }} /</span> التعديلات على راتب الموظف {{ $staff->name }}
+    <span class="text-muted fw-light">الموظفين /
+        <a href="{{ route('staff_members.index',['from' => $from]) }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('staff_members.show',[$staff->id,'from' => $from]) }}" class="text-muted">تفاصيل الموظف {{ $staff->name }}</a> /
+    </span> التعديلات على الراتب
 </h4>
+
 
 <x-nav :staff="$staff" />
 
@@ -185,7 +188,7 @@
             </thead>
             <tbody class="table-border-bottom-0" id="studentTableBody">
                 @forelse ($employeeSalaryAdjustments as $index => $employeeSalaryAdjustment)
-                <tr class="clickable-row" data-href="{{ route('employee_salary_adjustments.show', [$staff->id, $employeeSalaryAdjustment->id]) }}" style="cursor:pointer;">
+                <tr class="clickable-row" data-href="{{ route('employee_salary_adjustments.show', [$staff->id, $employeeSalaryAdjustment->id, 'from' => $from]) }}" style="cursor:pointer;">
                     <td>{{ $index + 1 }}</td>
                     <td class="truncate">
                         <div class="d-flex justify-content-start align-items-center">
@@ -207,7 +210,7 @@
                     </td>
                     <td>
                         <div class="d-inline-block text-nowrap">
-                            <a href="{{ route('employee_salary_adjustments.edit', [$staff->id, $employeeSalaryAdjustment->id]) }}"
+                            <a href="{{ route('employee_salary_adjustments.edit', [$staff->id, $employeeSalaryAdjustment->id, 'from' => $from]) }}"
                                 class="btn btn-sm btn-icon action-btn-hover">
                                 <i><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960"
                                         width="20px" fill="#F2CDA2">
@@ -217,7 +220,7 @@
                                 </i>
                             </a>
 
-                            <form action="{{ route('employee_salary_adjustments.destroy', [$staff->id, $employeeSalaryAdjustment->id]) }}" method="POST"
+                            <form action="{{ route('employee_salary_adjustments.destroy', [$staff->id, $employeeSalaryAdjustment->id, 'from' =>$from]) }}" method="POST"
                                 style="display:inline-block">
                                 @csrf
                                 @method('DELETE')

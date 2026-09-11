@@ -322,12 +322,13 @@ class StaffController extends Controller
         }
     }
 
-    public function addFile($staffID)
+    public function addFile(Request $request, $staffID)
     {
         $theStaff = Staff::findOrFail($staffID);
 
         return view('staff_members.files', [
             'theStaff' => $theStaff,
+            'from' => $request->from,
         ]);
     }
 
@@ -359,9 +360,9 @@ class StaffController extends Controller
                 }
             }
 
-            return redirect()->route('staff_members.show', $staffID)->with('success', 'تم رفع الملفات بنجاح');
+            return redirect()->route('staff_members.show', [$staffID, 'from' => $request->from ?? null])->with('success', 'تم رفع الملفات بنجاح');
         } catch (Exception $e) {
-            return redirect()->route('staff_members.show', $staffID)->with('error', 'حدث خطأ أثناء رفع الملفات: ' . $e->getMessage());
+            return redirect()->route('staff_members.show', [$staffID, 'from' => $request->from ?? null])->with('error', 'حدث خطأ أثناء رفع الملفات: ' . $e->getMessage());
         }
     }
 

@@ -17,7 +17,11 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب / القائمة / تفاصيل الطالب {{ $theStudent->name }} / العقوبات / </span> تعديل عقوبة ال {{ $thepenalty->penalty_type }}
+    <span class="text-muted fw-light">الطلاب /
+        <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
+        <a href="{{ route('students.show', $theStudent->id) }}" class="text-muted">تفاصيل الطالب {{ $theStudent->name }}</a> /
+        <a href="{{ route('penalties.index', $theStudent->id) }}" class="text-muted">العقوبات</a> /
+    </span> تعديل تفاصيل عقوبة ال {{ $thepenalty->penalty_type }}
 </h4>
 
 <x-nav :student="$theStudent" />

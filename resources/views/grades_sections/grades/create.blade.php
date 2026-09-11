@@ -17,7 +17,9 @@
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الصفوف/</span> إضافة صف جديد
+    <span class="text-muted fw-light">الصفوف /
+        <a href="{{ route('grades.index') }}" class="text-muted">القائمة</a> /
+    </span> إضافة صف جديد
 </h4>
 
 <div class="card mb-4">
