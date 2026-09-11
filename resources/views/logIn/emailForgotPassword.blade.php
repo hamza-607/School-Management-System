@@ -44,11 +44,19 @@
                         </ul>
                     </div>
                     @endif
+
                     @if (session('success'))
                     <div class="alert alert-success">
                         <ul class="mb-0">
                             <li>{{ session('success') }}</li>
                         </ul>
+                    </div>
+                    @endif
+
+                    @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     @endif
 

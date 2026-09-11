@@ -90,6 +90,7 @@
                         </ul>
                     </div>
                     @endif
+
                     @if (session('success'))
                     <div class="alert alert-success">
                         <ul class="mb-0">
@@ -98,8 +99,14 @@
                     </div>
                     @endif
 
-                    {{-- قمنا بتغيير الـ ID من formAuthentication إلى formEditPassword --}}
-                    <form id="formEditPassword" class="mb-3" action="{{ route('editPasswordStore') }}" method="POST">
+                    @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
+
+                    <form id="formEditPassword" class="mb-3" action="{{ route('forgotPasswordStor', $userID) }}" method="POST">
                         @csrf
 
                         <div class="mb-3 form-password-toggle">

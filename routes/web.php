@@ -28,9 +28,13 @@ use App\Models\FinishedSession;
 
 Route::get('LogInPage', [AuthController::class, 'LogInPage'])->name('login');
 Route::post('logIn', [AuthController::class, 'logIn'])->name('storeLogIn');
+
 Route::get('emailVarification', [AuthController::class, 'emailVarification'])->name('emailVarification');
 Route::post('sendVarificationCode', [AuthController::class, 'sendVarificationCode'])->name('sendVarificationCode');
-Route::get('forgotPassword', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
+Route::get('VarificationCode/{userID}', [AuthController::class, 'VarificationCode'])->name('VarificationCode');
+Route::post('checkVarificationCode/{userID}', [AuthController::class, 'checkVarificationCode'])->name('checkVarificationCode');
+Route::get('forgotPassword/{userID}', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
+Route::post('forgotPasswordStor/{userID}', [AuthController::class, 'forgotPasswordStor'])->name('forgotPasswordStor');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
