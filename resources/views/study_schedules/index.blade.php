@@ -134,21 +134,6 @@
         <div>
             <div class="row g-3">
                 <div class="col-12 col-md-4">
-                    <label class="fw-bold mb-1">اليوم</label>
-                    <select id="dayFilter" name="day" class="selectpicker w-100"
-                        data-style="btn-default" data-width="100%">
-                        <option value="" {{ request('day') == '' ? 'selected' : '' }}>كل الأيام</option>
-                        <option value="sunday" {{ request('day') == 'sunday' ? 'selected' : '' }}>الأحد</option>
-                        <option value="monday" {{ request('day') == 'monday' ? 'selected' : '' }}>الاثنين</option>
-                        <option value="tuesday" {{ request('day') == 'tuesday' ? 'selected' : '' }}>الثلاثاء</option>
-                        <option value="wednesday" {{ request('day') == 'wednesday' ? 'selected' : '' }}>الأربعاء</option>
-                        <option value="thursday" {{ request('day') == 'thursday' ? 'selected' : '' }}>الخميس</option>
-                        <option value="friday" {{ request('day') == 'friday' ? 'selected' : '' }}>الجمعة</option>
-                        <option value="saturday" {{ request('day') == 'saturday' ? 'selected' : '' }}> السبت</option>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-4">
                     <label class="fw-bold mb-1">حالة الحصة</label>
                     <select id="statusFilter" name="status" class="selectpicker w-100"
                         data-style="btn-default" data-width="100%">
@@ -188,7 +173,42 @@
         </div>
     </div>
 
+    @php
+    $today = strtolower(\Carbon\Carbon::now()->format('l'));
+    $selectedDay = request()->query('day', $today);
+
+    $daysMap = [
+    'sunday' => 'الأحد',
+    'monday' => 'الاثنين',
+    'tuesday' => 'الثلاثاء',
+    'wednesday' => 'الأربعاء',
+    'thursday' => 'الخميس',
+    'friday' => 'الجمعة',
+    'saturday' => 'السبت',
+    ];
+    @endphp
+
     <div class="card-datatable table-responsive">
+        <div class="card-body pb-2">
+            <div class="row row-cols-auto g-2">
+                @foreach ($daysMap as $dayKey => $dayLabel)
+                <div class="col">
+                    <a href="{{ request()->fullUrlWithQuery(['day' => $dayKey]) }}" class="text-decoration-none">
+                        <div class="card border {{ $selectedDay === $dayKey ? 'border-primary bg-label-primary' : '' }} px-3 py-2 text-center"
+                            style="min-width: 90px; border-radius: 0.5rem; transition: all .2s ease;">
+                            <span class="fw-bold {{ $selectedDay === $dayKey ? 'text-primary' : 'text-dark' }}">
+                                {{ $dayLabel }}
+                            </span>
+                            @if ($dayKey === $today)
+                            <small class="text-muted d-block" style="font-size: 10px;">اليوم</small>
+                            @endif
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
         <table class="table table-hover border-top">
             <thead>
                 <tr>
@@ -341,9 +361,6 @@
                 @endforelse
             </tbody>
         </table>
-        <div class="d-flex justify-content-end px-3 pb-3 mt-3">
-            {{ $sectionSubjectTeachers->links() }}
-        </div>
     </div>
 </div>
 

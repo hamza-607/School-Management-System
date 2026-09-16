@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\Student_parent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -52,7 +53,7 @@ class StudentController extends Controller
         //     $query->where('financial_status', $request->financial_status);
         // }
 
-        $students = $query->latest()->paginate($request->per_page)->withQueryString();
+        $students = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
         $gradesWithSections = Grade::with('sections')->get();
 
         return view('students.index', [
@@ -234,7 +235,7 @@ class StudentController extends Controller
             ];
             // $grade_id = $validate['grade'] !== 'NEW' ? $validate['grade'] : null;
 
-            if ($validate['grade'] === 'NEW') {
+            if ($request->grade === 'NEW') {
                 $grade = Grade::create([
                     'name' => $validate['new_grade_name'],
                 ]);
@@ -243,7 +244,7 @@ class StudentController extends Controller
             }
 
             // dd($student);
-            if ($validate['section'] === 'NEW') {
+            if ($request->section === 'NEW') {
                 $section = Section::create([
                     'name' => $validate['new_section_name'],
                     'capacity' => $validate['new_section_capacity'] ?? 30,
@@ -261,10 +262,10 @@ class StudentController extends Controller
             }
             $student['picture'] = $path;
 
+            
             // dd($student);
             $theStudent = Student::findOrFail($id);
             $theStudent->update($student);
-            // Student::create($student);
 
             //حذف ولي امر قديم
             if ($request->has('old_parent_ids') && is_array($request->old_parent_ids)) {
@@ -329,7 +330,6 @@ class StudentController extends Controller
                 }
             }
 
-
             return redirect()->route('students.index')->with('success', 'تم تعديل بيانات الطالب بنجاح');
         } catch (\Exception $e) {
             return redirect()->route('students.index')->with('error', 'حدث خطأ أثناء تعديل بيانات الطالب' . $e->getMessage());
@@ -343,6 +343,17 @@ class StudentController extends Controller
     {
         try {
             $student = Student::findOrFail($id);
+            $studentFiles = $student->files;
+
+            if ($studentFiles) {
+                foreach ($studentFiles as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+            }
+            if ($student->picture) {
+                Storage::disk('public')->delete($student->picture);
+            }
             $student->delete();
 
             return redirect()->route('students.index')->with('success', 'تم حذف الطالب بنجاح');

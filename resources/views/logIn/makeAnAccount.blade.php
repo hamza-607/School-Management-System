@@ -79,7 +79,7 @@
                         <span class="app-brand-text demo text-body fw-bold ms-1">مدرسة أفق النموذجية</span>
                     </div>
 
-                    <h4 class="mb-2 text-center">تغيير كلمة السر 🔐</h4>
+                    <h4 class="mb-2 text-center">تعيين كلمة السر 🔐</h4>
 
                     @if ($errors->any())
                     <div class="alert alert-danger">
@@ -106,11 +106,11 @@
                     </div>
                     @endif
 
-                    <form id="formEditPassword" class="mb-3" action="{{ route('forgotPasswordStore', $userID) }}" method="POST">
+                    <form id="formEditPassword" class="mb-3" action="{{ route('account.store', $staffID) }}" method="POST">
                         @csrf
 
                         <div class="mb-3 form-password-toggle">
-                            <label class="form-label" for="new_password">كلمة السر الجديدة</label>
+                            <label class="form-label" for="new_password">كلمة السر</label>
                             <div class="input-group input-group-merge">
                                 <input type="password" id="new_password" class="form-control" name="new_password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" required />
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
@@ -118,7 +118,7 @@
                         </div>
 
                         <div class="mb-3 form-password-toggle">
-                            <label class="form-label" for="new_password_confirmation">إعادة كلمة السر الجديدة</label>
+                            <label class="form-label" for="new_password_confirmation">إعادة كلمة السر</label>
                             <div class="input-group input-group-merge">
                                 <input type="password" id="new_password_confirmation" class="form-control" name="new_password_confirmation" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" required />
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <button class="btn btn-primary d-grid w-100" type="submit">حفظ كلمة السر</button>
+                            <button class="btn btn-primary d-grid w-100" type="submit">إنشاء الحساب</button>
                         </div>
                     </form>
                 </div>

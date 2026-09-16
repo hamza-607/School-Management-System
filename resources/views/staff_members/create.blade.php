@@ -45,18 +45,6 @@
             }
         }
 
-        // دالة التحكم بظهور حقول كلمة المرور
-        function toggleAccountFields() {
-            if ($('#createAccountCheckbox').is(':checked')) {
-                $('#passwordFieldsContainer').slideDown();
-                $('#passwordInput').attr('required', true);
-                $('#confirmPasswordInput').attr('required', true);
-            } else {
-                $('#passwordFieldsContainer').slideUp();
-                $('#passwordInput').attr('required', false);
-                $('#confirmPasswordInput').attr('required', false);
-            }
-        }
 
         // تشغيل الدوال عند التغيير
         $('#staffTypeSelect').on('change', function() {
@@ -104,64 +92,14 @@
 <script>
     $(document).ready(function() {
 
-        // ... الدوال السابقة (toggleStaffFields, toggleAccountFields) ...
-
-        // التحقق من تطابق كلمة السر أثناء الكتابة
-        $('#passwordInput, #confirmPasswordInput').on('keyup', function() {
-            if ($('#createAccountCheckbox').is(':checked')) {
-                let password = $('#passwordInput').val();
-                let confirmPassword = $('#confirmPasswordInput').val();
-
-                if (password !== confirmPassword && confirmPassword !== '') {
-                    $('#confirmPasswordInput').addClass('is-invalid');
-                    $('#passwordError').show();
-                } else {
-                    $('#confirmPasswordInput').removeClass('is-invalid');
-                    $('#passwordError').hide();
-                }
-            }
-        });
-
-        // التحقق عند إرسال النموذج (Submit)
-        $('form').on('submit', function(e) {
-            if ($('#createAccountCheckbox').is(':checked')) {
-                let password = $('#passwordInput').val();
-                let confirmPassword = $('#confirmPasswordInput').val();
-
-                if (password !== confirmPassword) {
-                    e.preventDefault(); // منع إرسال النموذج
-                    $('#confirmPasswordInput').addClass('is-invalid').focus();
-                    $('#passwordError').show();
-
-                    // اختيارياً: تنبيه للمستخدم
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'خطأ',
-                        text: 'كلمات السر غير متطابقة، يرجى التأكد مرة أخرى.',
-                        confirmButtonText: 'موافق'
-                    });
-                }
-            }
-        });
-
         // تشغيل الدوال الأصلية
         $('#staffTypeSelect').on('change', function() {
             toggleStaffFields();
         });
 
-        $('#createAccountCheckbox').on('change', function() {
-            toggleAccountFields();
-            // مسح الأخطاء إذا تم إغلاق خيار إنشاء الحساب
-            if (!$(this).is(':checked')) {
-                $('#confirmPasswordInput').removeClass('is-invalid');
-                $('#passwordError').hide();
-            }
-        });
-
         toggleStaffFields();
         toggleAccountFields();
 
-        // ... سكربت المودال (subject_select) ...
     });
 </script>
 @endsection
@@ -287,22 +225,6 @@
                         <label class="form-check-label fw-bold" for="createAccountCheckbox">
                             هل تريد إنشاء حساب لهذا الموظف؟
                         </label>
-                    </div>
-                </div>
-
-                <div class="col-12" id="passwordFieldsContainer" style="display: none;">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">كلمة السر <span class="text-danger">*</span></label>
-                            <input type="password" id="passwordInput" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="············">
-                            @error('password') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">إعادة كلمة السر <span class="text-danger">*</span></label>
-                            <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="············">
-                            @error('password_confirmation') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            <div id="passwordError" class="invalid-feedback">كلمتا السر غير متطابقتين!</div>
-                        </div>
                     </div>
                 </div>
                 @endif

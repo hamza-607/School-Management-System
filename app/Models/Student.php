@@ -39,8 +39,9 @@ class Student extends Model
         return $this->hasMany(Student_parent::class, 'student_id', 'id');
     }
 
-    public function files(){
-        return $this->morphMany(File::class, 'owner');
+    public function files()
+    {
+        return $this->morphMany(File::class, 'owner')->latest();
     }
 
     public function penalties()
@@ -48,5 +49,3 @@ class Student extends Model
         return $this->hasMany(Student_penalties::class);
     }
 }
-
-

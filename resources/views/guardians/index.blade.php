@@ -88,38 +88,6 @@
             updateFilters();
         });
 
-        // ================================
-        // تأكيد حذف الطالب باستخدام SweetAlert2
-        // ================================
-
-        // $(document).on('click', '.delete-record', function(e) {
-        //     e.preventDefault();
-        //     let $btn = $(this);
-
-        //     Swal.fire({
-        //         title: 'تأكيد الحذف',
-        //         text: 'هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟ <span class="text-danger"> ( إذا كان هذا هو ولي الأمر الوحيد للطالب سوف يتم حذف جميع الطلاب المرتطبين به )</span> هذه العملية لا يمكن التراجع عنها.',
-        //         icon: 'warning',
-        //         showCancelButton: true,
-        //         confirmButtonText: 'نعم، احذف',
-        //         cancelButtonText: 'إلغاء',
-        //         buttonsStyling: false,
-        //         customClass: {
-        //             confirmButton: 'btn btn-primary ms-2 mx-1',
-        //             cancelButton: 'btn btn-label-secondary',
-        //             popup: 'swal2-popup-custom'
-        //         },
-        //         allowOutsideClick: false,
-        //         allowEscapeKey: false,
-        //         allowEnterKey: false,
-        //         backdrop: true
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             $btn.closest('form').submit();
-        //         }
-        //     });
-        // });
-
         $(document).on('click', '.delete-record', function(e) {
             e.preventDefault();
 
@@ -132,8 +100,8 @@
                 هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟
                 <br>
                 <span class="text-danger">
-                    (إذا كان هذا هو ولي الأمر الوحيد للطالب، سيتم حذف جميع الطلاب المرتبطين به)
-                </span>
+ هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة ب ولي الأمر هذا / لا يمكن حذف ولي الأمر إذا كان مرتبطًا بأي طالب.
+                                </span>
                 <br>
                 <strong>هذه العملية لا يمكن التراجع عنها.</strong>
             </div>

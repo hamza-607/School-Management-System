@@ -310,7 +310,7 @@
         </div>
 
         <div class="col-md-5">
-            <x-files-table :model="$theSession->subject" mainTitle="ملفات ومرفقات المادة" secTitle="لا توجد ملفات مرفوعة." styl="height: 274px;"></x-files-table>
+            <x-files-table :model="$theSession->subject" mainTitle="ملفات ومرفقات المادة" secTitle="لا توجد ملفات مرفوعة." styl="height: 100%;"></x-files-table>
         </div>
     </div>
 

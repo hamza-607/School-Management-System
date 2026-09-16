@@ -7,6 +7,7 @@ use App\Models\File;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SubjectController extends Controller
 {
@@ -26,7 +27,7 @@ class SubjectController extends Controller
             });
         }
 
-        $subjects = $query->latest()->paginate($request->per_page)->withQueryString();
+        $subjects = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
         return view('subjects.index', [
             'subjects' => $subjects,
@@ -120,7 +121,14 @@ class SubjectController extends Controller
     {
         try {
             $subject = Subject::findOrFail($id);
+            $subjectFiles = $subject->files;
 
+            if($subjectFiles){
+                foreach ($subjectFiles as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+            }
             $subject->delete();
 
             return redirect()->route('subjects.index')->with('success', 'تم حذف المادة بنجاح');
@@ -186,27 +194,5 @@ class SubjectController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('subjects.show', $subjectID)->with('error', 'حدث خطأ أثناء إضافة الملف' . $e->getMessage());
         }
-
-
-        // // dd($request->all());
-        // $theSubject = Subject::findOrFail($subjectID);
-
-        // $request->validate([
-        //     'file' => 'required|file|max:2048', // Adjust max file size as needed
-        // ]);
-
-        // try {
-        //     $file = $request->file('file');
-        //     $filePath = $file->store('subject_files', 'public');
-
-        //     $theSubject->files()->create([
-        //         'filename' => $file->getClientOriginalName(),
-        //         'filepath' => $filePath,
-        //     ]);
-
-        //     return redirect(url()->previous())->with('success', 'تم إضافة الملف بنجاح');
-        // } catch (\Exception $e) {
-        //      return redirect(url()->previous())->with('error', 'حدث خطأ أثناء إضافة الملف' . $e->getMessage());
-        // }
     }
 }

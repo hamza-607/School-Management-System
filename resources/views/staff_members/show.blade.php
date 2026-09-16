@@ -26,13 +26,15 @@
     function confirmDelete(id) {
         Swal.fire({
             title: 'تأكيد الحذف',
-            html: `
-                <div>
-                    هل أنت متأكد أنك تريد حذف هذا الموظف؟
-                    <br>
-                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                </div>
-            `,
+            html: `<div>
+                هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
+                <br>
+                <span class="text-danger">
+                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
+                </span>
+                <br>
+                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                </div>`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'نعم، احذف',

@@ -12,6 +12,10 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\Rules\Password;
 
 class StaffController extends Controller
 {
@@ -62,7 +66,7 @@ class StaffController extends Controller
             });
         }
 
-        $staffMembers = $query->latest()->paginate($request->per_page)->withQueryString();
+        $staffMembers = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
         // dd($staffMembers);
 
@@ -101,15 +105,19 @@ class StaffController extends Controller
                 'email' => $validated['email'],
                 'date_of_birth' => $validated['date_of_birth'],
                 'gender' => $validated['gender'],
+                'user_id' => null,
                 'is_active' => 1,
                 'staff_type' => $validated['staff_type'] === 'other' ? $validated['new_staff_type'] : $validated['staff_type'],
             ];
             // dd($staff);
 
+            //اضافة صورة
             if ($request->hasFile('img')) {
                 $path = $request->file('img')->store('staff_pictures', 'public');
             }
             $staff['picture'] = $path ?? null;
+
+            //مادة جديدة
             $valSubject = $validated['subject'] ?? null;
             if ($valSubject !== null && $valSubject === 'NEW') {
                 $subject = [
@@ -125,28 +133,40 @@ class StaffController extends Controller
                 $staff['subject_id'] = $validated['subject'] ?? null;
             }
 
-            $acc = $validated['create_account'] ?? null;
-            if ($acc !== null && $acc === 'on') {
-                $user = [
-                    'name' => $validated['name'],
-                    'email' => $validated['email'],
-                    'password' => $validated['password'],
-                ];
-
-                $newUser = User::create($user);
-                $staff['user_id'] = $newUser->id;
-
-                SpatieModelHasRole::create([
-                    'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
-                    'model_type' => User::class,
-                    'model_id' => $newUser->id,
-                ]);
-            } else {
-                $staff['user_id'] = null;
-            }
             // dd($staff);
             $newStaff = Staff::create($staff);
 
+            //انشاء حساب
+            $acc = $validated['create_account'] ?? null;
+            if ($acc !== null && $acc === 'on') {
+                // dd('ga');
+                // $user = [
+                //     'name' => $validated['name'],
+                //     'email' => $validated['email'],
+                //     'password' => $validated['password'],
+                // ];
+
+                // $newUser = User::create($user);
+                // $staff['user_id'] = $newUser->id;
+
+                // SpatieModelHasRole::create([
+                //     'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
+                //     'model_type' => User::class,
+                //     'model_id' => $newUser->id,
+                // ]);
+
+                $AccountUrl = URL::temporarySignedRoute(
+                    'account.create',
+                    now()->addHour(),
+                    ['staffID' => $newStaff->id]
+                );
+
+                Mail::raw("رابط إنشاء الحساب: \n{$AccountUrl}\n هذا الرابط صالح لساعة واحدة فقط", function ($message) use ($newStaff) {
+                    $message->to($newStaff->email)->subject('إنشاء حساب في مدرسةأفق النموذجية');
+                });
+            }
+
+            //اضافة عقد
             $contractPath = null;
             if ($validated['contract_file']) {
                 $contractPath = $validated['contract_file']->store('contracts', 'public');
@@ -253,20 +273,29 @@ class StaffController extends Controller
             // تعديلات الحساب
             $acc = $validated['create_account'] ?? null;
             if ($acc !== null && $acc === 'on') {
-                $user = [
-                    'name' => $validated['name'],
-                    'email' => $validated['email'],
-                    'password' => $validated['password'],
-                ];
+                // $user = [
+                //     'name' => $validated['name'],
+                //     'email' => $validated['email'],
+                //     'password' => $validated['password'],
+                // ];
 
-                $newUser = User::create($user);
-                $staff['user_id'] = $newUser->id;
+                // $newUser = User::create($user);
+                // $staff['user_id'] = $newUser->id;
 
-                SpatieModelHasRole::create([
-                    'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
-                    'model_type' => User::class,
-                    'model_id' => $newUser->id,
-                ]);
+                // SpatieModelHasRole::create([
+                //     'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
+                //     'model_type' => User::class,
+                //     'model_id' => $newUser->id,
+                // ]);
+                $AccountUrl = URL::temporarySignedRoute(
+                    'account.create',
+                    now()->addHour(),
+                    ['staffID' => $theStaff->id]
+                );
+
+                Mail::raw("رابط إنشاء الحساب: \n{$AccountUrl}\n هذا الرابط صالح لساعة واحدة فقط", function ($message) use ($theStaff) {
+                    $message->to($theStaff->email)->subject('إنشاء حساب في مدرسةأفق النموذجية');
+                });
             } else {
                 $theAccount = $theStaff->user ?? null;
                 // dd($theAccount);
@@ -310,15 +339,88 @@ class StaffController extends Controller
     {
         try {
             $staff = Staff::findOrFail($id);
+            $staffFiles = $staff->files;
             $user = $staff->user;
             if ($user) {
                 $user->delete();
             }
+
+            if ($staffFiles) {
+                foreach ($staffFiles as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+            }
+
+            if ($staff->picture) {
+                Storage::disk('public')->delete($staff->picture);
+            }
+
+            if ($staff->contract) {
+                Storage::disk('public')->delete($staff->contract->contract_file);
+            }
+
             $staff->delete();
 
             return redirect()->route('staff_members.index', ['from' => $request->from])->with('success', 'تم حذف الموظف بنجاح');
         } catch (\Exception $e) {
             return redirect()->route('staff_members.index', ['from' => $request->from])->with('error', 'حدث خطأ أثناء حذف الموظف: ' . $e->getMessage());
+        }
+    }
+
+    public function makeAnAccount($staffID)
+    {
+        $staff = Staff::findOrFail($staffID);
+        $user = $staff->user;
+        if ($user) {
+            return redirect()->route('login')->with('error', 'هذا الحساب مفعّل مسبقاً أو أن الرابط المستخدم غير صالح.');
+        }
+
+        return view('logIn.makeAnAccount', [
+            'staffID' => $staffID,
+        ]);
+    }
+
+    public function accountStore(Request $request, $staffID)
+    {
+        // dd($staffID);
+        // dd($request->all());
+        try {
+            $validated = $request->validate([
+                "new_password" => [
+                    'required',
+                    'confirmed',
+                    Password::min(6),
+                ],
+            ]);
+
+            $staff = Staff::findOrFail($staffID);
+            $user = $staff->user;
+            if ($user) {
+                return redirect()->route('login')->with('error', 'هذا الحساب مفعّل مسبقاً أو أن الرابط المستخدم غير صالح.');
+            }
+
+            $theUser = [
+                'name' => $staff->name,
+                'email' => $staff->email,
+                'password' => $validated['new_password'],
+            ];
+
+            $newUser = User::create($theUser);
+
+            SpatieModelHasRole::create([
+                'role_id' => $staff->staff_type === 'teacher' ? 3 : 2,
+                'model_type' => User::class,
+                'model_id' => $newUser->id,
+            ]);
+
+            $staff->update([
+                'user_id' => $newUser->id
+            ]);
+
+            return redirect()->route('login')->with('success', 'تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور الخاصة بك.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'حدث خطأ أثناء إنشاء الحساب: ' . $e->getMessage());
         }
     }
 
@@ -365,7 +467,6 @@ class StaffController extends Controller
             return redirect()->route('staff_members.show', [$staffID, 'from' => $request->from ?? null])->with('error', 'حدث خطأ أثناء رفع الملفات: ' . $e->getMessage());
         }
     }
-
 
     public function toggle($staffID)
     {

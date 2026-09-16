@@ -29,7 +29,7 @@ class Section extends Model
 
     public function files()
     {
-        return $this->morphMany(File::class, 'owner');
+        return $this->morphMany(File::class, 'owner')->latest();
     }
 
     public function section_subject_teachers()

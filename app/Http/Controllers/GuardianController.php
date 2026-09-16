@@ -9,6 +9,7 @@ use App\Models\Student_parent;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class GuardianController extends Controller
 {
@@ -39,7 +40,7 @@ class GuardianController extends Controller
             });
         }
 
-        $guardians = $query->latest()->paginate($request->per_page)->withQueryString();
+        $guardians = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
         $relationships = Student_parent::all()->pluck('relationship_to_student')->unique();
 
@@ -140,12 +141,24 @@ class GuardianController extends Controller
     {
         try {
             $guardian = Guardian::findOrFail($id);
+            $student_parents = $guardian->student_parents;
+            $guardianFiles = $guardian->files;
 
+            if ($student_parents->count() > 0) {
+                return redirect()->route('guardians.index')->with('error', 'لا يمكن حذف ولي الامر لأنه مرتبط بطلاب. يرجى حذف الطلاب المرتبطين به أولاً.');
+            }
+
+            if ($guardianFiles) {
+                foreach ($guardianFiles as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+            }
             $guardian->delete();
 
-            return redirect(url()->previous())->with('success', 'تم حذف ولي الامر بنجاح');
+            return redirect()->route('guardians.index')->with('success', 'تم حذف ولي الامر بنجاح');
         } catch (\Exception $e) {
-            return redirect(url()->previous())->with('error', 'حدث خطأ أثناء حذف ولي الأمر' . $e->getMessage());
+            return redirect()->route('guardians.index')->with('error', 'حدث خطأ أثناء حذف ولي الأمر' . $e->getMessage());
         }
     }
 

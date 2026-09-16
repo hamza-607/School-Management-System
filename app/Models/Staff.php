@@ -39,7 +39,7 @@ class Staff extends Model
 
     public function files()
     {
-        return $this->morphMany(File::class, 'owner');
+        return $this->morphMany(File::class, 'owner')->latest();
     }
 
     public function contract()
@@ -47,7 +47,7 @@ class Staff extends Model
         return $this->hasOne(Contract::class);
     }
 
-     public function section_subject_teachers()
+    public function section_subject_teachers()
     {
         return $this->hasMany(SectionSubjectTeacher::class);
     }

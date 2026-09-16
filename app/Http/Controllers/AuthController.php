@@ -21,26 +21,14 @@ class AuthController extends Controller
         return view('logIn.logIn');
     }
 
-    public function logout(Request $request)
-    {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login');
-    }
-
     public function logIn(Request $request)
     {
-        // dd($request->all());
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => ['required', Password::min(6)],
         ]);
 
         $user = User::where('email', $validated['email'])->first();
-        // dd($user);
 
         if ($user) {
             if ($user->is_active === 0) {
@@ -56,6 +44,16 @@ class AuthController extends Controller
         }
 
         return back()->withErrors(['error' => 'الإيميل أو كلمة السر خاطئة !!']);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 
     public function editPassword()
@@ -212,7 +210,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function forgotPasswordStor(Request $request, $userID)
+    public function forgotPasswordStore(Request $request, $userID)
     {
         // dd($request->all());
         try {

@@ -18,19 +18,19 @@ class ContractSeeder extends Seeder
                 'id' => 1,
                 'staff_id' => 1,
                 'salary' => 70000,
-                'contract_file' => 'contracts/FNOUfz4c0JBxNZ7nYKSpCvixPekWn9ODUx4a72xb',
+                'contract_file' => '#contracts',
             ],
             [
                 'id' => 2,
                 'staff_id' => 2,
                 'salary' => 70000,
-                'contract_file' => 'contracts/FNOUfz4c0JBxNZ7nYKSpCvixPekWn9ODUx4a72xb',
+                'contract_file' => '#contracts',
             ],
             [
                 'id' => 3,
                 'staff_id' => 3,
                 'salary' => 70000,
-                'contract_file' => 'contracts/FNOUfz4c0JBxNZ7nYKSpCvixPekWn9ODUx4a72xb',
+                'contract_file' => '#contracts',
             ],
         ];
 

@@ -25,8 +25,9 @@ class Subject extends Model
         return $this->hasMany(Staff::class);
     }
 
-    public function files(){
-        return $this->morphMany(File::class, 'owner');
+    public function files()
+    {
+        return $this->morphMany(File::class, 'owner')->latest();
     }
 
     public function section_subject_teachers()

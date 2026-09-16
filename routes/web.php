@@ -34,7 +34,10 @@ Route::post('sendVarificationCode', [AuthController::class, 'sendVarificationCod
 Route::get('VarificationCode/{userID}', [AuthController::class, 'VarificationCode'])->name('VarificationCode');
 Route::post('checkVarificationCode/{userID}', [AuthController::class, 'checkVarificationCode'])->name('checkVarificationCode');
 Route::get('forgotPassword/{userID}', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
-Route::post('forgotPasswordStor/{userID}', [AuthController::class, 'forgotPasswordStor'])->name('forgotPasswordStor');
+Route::post('forgotPasswordStore/{userID}', [AuthController::class, 'forgotPasswordStore'])->name('forgotPasswordStore');
+
+Route::get('account/staff/{staffID}', [StaffController::class, 'makeAnAccount'])->name('account.create')->middleware('signed');
+Route::post('account/staff/{staffID}', [StaffController::class, 'accountStore'])->name('account.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -88,6 +91,8 @@ Route::middleware('auth')->group(function () {
     // Route::get('activeSections/{sectionId}/addFile', [SectionSubjectTeacherController::class, 'addFile'])->name('activeSession.addFile');
 
     Route::get('finishedSessions', [FinishedSessionController::class, 'index'])->name('finishedSessions.index');
+    Route::get('finishedSessions/{sessionID}', [FinishedSessionController::class, 'show'])->name('finishedSessions.show');
+    Route::delete('finishedSessions/{sessionID}', [FinishedSessionController::class, 'destroy'])->name('finishedSessions.destroy');
 });
 
 

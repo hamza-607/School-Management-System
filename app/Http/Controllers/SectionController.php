@@ -8,6 +8,7 @@ use App\Models\Grade;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SectionController extends Controller
 {
@@ -29,7 +30,7 @@ class SectionController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $sections = $query->latest()->paginate($request->per_page)->withQueryString();
+        $sections = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
         $grades = Grade::all();
 
         return view('grades_sections.sections.index', [
@@ -148,7 +149,15 @@ class SectionController extends Controller
     {
         try {
             $section = Section::findOrFail($id);
+            // dd($section->files);
+            $sectionFiles = $section->files;
 
+            if ($sectionFiles) {
+                foreach ($sectionFiles as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+            }
             $section->delete();
 
             return redirect()->route('sections.index')->with('success', 'تم حذف الشعبة بنجاح');

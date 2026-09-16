@@ -4,7 +4,8 @@
  'secTitle' => null,
  'styl' => null,
  ])
- <div class="card shadow-sm border-0 header-card3" style="{{ $styl }}">
+
+ <div id="fileTable-{{ $model->id }}" class="card shadow-sm border-0 header-card3" style="{{ $styl }}">
      <div class="card-body">
 
          <div class="d-flex align-items-center justify-content-between flex-wrap mx-2 my-3">
@@ -14,13 +15,13 @@
              </div>
              <div class="search-box">
                  <label class="d-flex align-items-center">بحث:
-                     <input id="sectionsSearchInput" type="search" class="form-control form-control-sm ms-2"
-                         placeholder="بحث عن ملف..." value="{{ request('search') }}" title="اكتب اسم الملف او تاريخ رفعه">
+                     <input id="fileTableSearchInput" type="search" class="form-control form-control-sm ms-2"
+                         placeholder="بحث عن ملف أو رافعه..." title="ابحث باسم الملف أو الشخص الذي رفعه أو تاريخ الرفع">
                  </label>
              </div>
          </div>
 
-         <div class="table-responsive">
+         <div class="table-responsive overflow-auto" style="max-height: 150px;">
              <table class="table align-middle">
                  <thead>
                      <tr>
@@ -33,11 +34,10 @@
                  <tbody>
                      @forelse ($model->files as $file)
                      <tr>
-                         <td class="fw-medium">
+                         <td class="fw-medium text-truncate" style="max-width: 180px;" title="{{ $file->name }}">
                              <i class="bx bx-file me-2 text-primary"></i>
                              {{ $file->name }}
                          </td>
-
                          <td><a href="{{ route('staff_members.show', [$file->uploudedBy->staff->id, 'from' => $file->uploudedBy->staff->staff_type]) }}">{{ $file->uploudedBy->name  }}</a></td>
                          <td>{{ $file->created_at->format('Y-m-d') }}</td>
                          <td>
@@ -57,3 +57,25 @@
          </div>
      </div>
  </div>
+
+
+
+ <script>
+     const fileTable = document.getElementById('fileTable-{{ $model->id }}');
+     const fileSearch = fileTable.querySelector('#fileTableSearchInput');
+
+     fileSearch.addEventListener('input', function() {
+         const search = this.value.toLowerCase().trim();
+
+         fileTable.querySelectorAll('tbody tr').forEach(row => {
+             const fileName = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
+             const uploadedBy = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+
+             row.style.display =
+                 fileName.includes(search) ||
+                 uploadedBy.includes(search) ?
+                 '' :
+                 'none';
+         });
+     });
+ </script>

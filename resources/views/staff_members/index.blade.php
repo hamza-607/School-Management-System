@@ -110,7 +110,15 @@
             let $btn = $(this);
             Swal.fire({
                 title: 'تأكيد الحذف',
-                html: `<div>هل أنت متأكد أنك تريد حذف هذا الموظف؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                html: `<div>
+                هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
+                <br>
+                <span class="text-danger">
+                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
+                </span>
+                <br>
+                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                </div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -227,7 +235,12 @@
                     <th>رقم الهاتف</th>
                     <th>الإيميل</th>
                     <th>تاريخ التوظيف</th>
+                    @if ($from == 'other')
                     <th>نوع العمل</th>
+                    @endif
+                    @if ($from == 'teacher')
+                    <th>المادة</th>
+                    @endif
                     <th>حالة الموظف</th>
                     @if ($from !== 'other') <th>حالة الحساب</th> @endif
                     <th>الإجراءات</th>
@@ -257,7 +270,12 @@
                         </a>
                     </td>
                     <td class="truncate">{{ $staff->created_at->format('Y-m-d') }}</td>
+                    @if ($from == 'other')
                     <td class="truncate">{{ $staff->staff_type }}</td>
+                    @endif
+                    @if ($from == 'teacher')
+                    <td class="truncate"><a href="{{ route('subjects.show', $staff->subject->id) }}">{{ $staff->subject->name }}</a></td>
+                    @endif
                     @php
                     $staffStatus = $staff->is_active ? 'نشط' : 'غير نشط';
                     $staffClass = $staff->is_active ? 'bg-label-success text-success border border-success-subtle' : 'bg-label-danger text-danger border border-danger-subtle';
