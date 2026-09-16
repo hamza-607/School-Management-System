@@ -272,6 +272,10 @@
             <div>
                 هل أنت متأكد أنك تريد حذف هذا الطالب؟
                 <br>
+                <span class="text-danger">
+                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                </span>
+                <br>
                 <strong>هذه العملية لا يمكن التراجع عنها.</strong>
             </div>
         `,
@@ -454,7 +458,10 @@ $filtersOpen = request()->filled('status') || request()->filled('grade_id') || r
                         </div>
                     </td>
                     <td class="truncate">{{ $student->grade->name ?? '-' }}</td>
-                    <td class="truncate">{{ $student->section->name ?? '-' }}</td>
+                    <td class="truncate">
+
+                        <a href="{{ $student->section ?  route('sections.show', $student->section->id) : '#' }}">{{ $student->section->name ?? '-' }}</a>
+                    </td>
                     @php
                     $status = $student->is_active ? 'نشط' : 'غير نشط';
                     $class = $student->is_active ? 'bg-label-success text-success border border-success-subtle' : 'bg-label-danger text-danger border border-danger-subtle';

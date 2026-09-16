@@ -7,7 +7,62 @@
 <!-- استدعاء مكتبة أيقونات بوتستراب -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 @endsection
+
+@section('page-script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'تأكيد الحذف',
+            html: `
+            <div>
+                هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟
+                <br>
+                <span class="text-danger">
+ هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة ب ولي الأمر هذا / لا يمكن حذف ولي الأمر إذا كان مرتبطًا بأي طالب.
+                                </span>
+                <br>
+                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+            </div>
+        `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، احذف',
+            cancelButtonText: 'إلغاء',
+            reverseButtons: true,
+            focusCancel: true,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-danger ms-2',
+                cancelButton: 'btn btn-secondary',
+                popup: 'swal2-popup-custom'
+            },
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            backdrop: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // تنفيذ إرسال النموذج (Form) عند التأكيد
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+</script>
+
+@endsection
+
 @section('content')
+<style>
+    .swal2-container {
+        z-index: 20000 !important;
+    }
+
+    .swal2-popup-custom {
+        border-radius: 0.5rem;
+    }
+</style>
 <h4 class="fw-bold py-3 mb-4">
     <span class="text-muted fw-light">أولياء الأمور /
         <a href="{{ route('guardians.index') }}" class="text-muted">القائمة</a> /
@@ -48,7 +103,16 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
+        <div class="d-flex justify-content-end gap-2 mt-4 border-top border-bottom pt-3 pb-3">
+            <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theGuardian->id }})">
+                حذف المادة
+            </button>
+
+            <form id="delete-form-{{ $theGuardian->id }}" action="{{ route('guardians.destroy', $theGuardian->id) }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+            </form>
+
             <a href="{{ route('guardians.edit', $theGuardian->id) }}"
                 class="btn btn-label-warning px-4">
                 تعديل
@@ -107,7 +171,7 @@
                         <div class="d-flex align-items-center gap-3">
                             <div class="d-flex align-items-center justify-content-center rounded-circle"
                                 style="width: 56px; height: 56px; min-width: 56px; background-color: #f1f3f5; color: #6c757d;">
-                                <i class="bi bi-gender-ambiguous fs-5"></i>
+                                <i class="bi bi-people fs-5"></i>
                             </div>
                             <div class="d-flex flex-column">
                                 <span class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">عدد الطلاب المسؤول عنهم:</span>
@@ -215,21 +279,6 @@
     </div>
 </div>
 
-
-
-
-
-<script>
-    function switchTab(el) {
-
-        let tabs = document.querySelectorAll('.tab-btn')
-
-        tabs.forEach(t => t.classList.remove('active'))
-
-        el.classList.add('active')
-
-    }
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

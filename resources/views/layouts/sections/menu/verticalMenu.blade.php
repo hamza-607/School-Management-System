@@ -71,7 +71,7 @@ $configData = Helper::appClasses();
       </a>
     </li>
 
-    <li class="menu-item {{ request()->routeIs('finishedSessions.index') ? 'active' : '' }}">
+    <li class="menu-item {{ request()->routeIs('finishedSessions.index') ||  request()->routeIs('finishedSessions.show') ? 'active' : '' }}">
       <a href="{{ route('finishedSessions.index') }}" class="menu-link session-link">
         <i class="fas fa-check-circle me-2"></i>
         <span>سجل الجلسات</span>

@@ -83,7 +83,8 @@
             let $btn = $(this);
             Swal.fire({
                 title: 'تأكيد الحذف',
-                html: `<div>هل أنت متأكد أنك تريد حذف هذه العقوبة؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                html: `<div>هل أنت متأكد أنك تريد حذف هذه العقوبة؟<br>
+                <strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',

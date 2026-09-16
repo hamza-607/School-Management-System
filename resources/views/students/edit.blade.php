@@ -102,6 +102,8 @@
         });
 
         let allSections = $('#section_select option').clone();
+        let currentSection = String($('#section_select').attr('data-current-section') || '');
+        let isInitializing = true;
 
         // فلترة الشعب حسب الصف
         $('#grade_select').on('change', function() {
@@ -119,9 +121,13 @@
             // إذا ما في صف مختار
             if (!gradeId || gradeId === 'add_new_grade') {
 
-                $('#section_select')
-                    .val('')
-                    .trigger('change.select2');
+                // تحديث select2
+                let selectedVal = $('#section_select').val();
+                if (!selectedVal) {
+                    $('#section_select').val('').trigger('change.select2');
+                } else {
+                    $('#section_select').trigger('change.select2');
+                }
 
                 return;
             }
@@ -132,46 +138,74 @@
             );
 
             // عرض الشعب التابعة للصف
+            let addedSectionIds = {};
+
             allSections.each(function() {
 
                 let optionValue = $(this).val();
-                let sectionGrade = $(this).data('grade');
+                let sectionGrade = $(this).attr('data-grade');
 
                 if (
                     optionValue !== '' &&
                     optionValue !== 'add_new_section' &&
-                    sectionGrade == gradeId
+                    sectionGrade == gradeId &&
+                    !addedSectionIds[optionValue]
                 ) {
                     $('#section_select').append($(this).clone());
+                    addedSectionIds[optionValue] = true;
                 }
             });
 
-            // تحديث select2
+            // اختر الشعبة الحالية فقط أثناء تحميل صفحة التعديل.
+            let sectionToSelect = isInitializing ? currentSection : '';
+            let sectionExists = $('#section_select option').filter(function() {
+                return String($(this).val()) === sectionToSelect;
+            }).length > 0;
+
+            // لا تستبعد شعبة الطالب في حال كانت بيانات grade_id القديمة غير متطابقة.
+            if (isInitializing && sectionToSelect && !sectionExists) {
+                allSections.each(function() {
+                    if (
+                        String($(this).val()) === sectionToSelect &&
+                        !addedSectionIds[sectionToSelect]
+                    ) {
+                        $('#section_select').append($(this).clone());
+                        addedSectionIds[sectionToSelect] = true;
+                        sectionExists = true;
+                        return false;
+                    }
+                });
+            }
+
+            // إزالة أي خيارات مكررة قبل تحديث Select2.
+            let visibleSectionIds = {};
+            $('#section_select option').each(function() {
+                let optionValue = String($(this).val());
+
+                if (
+                    optionValue &&
+                    visibleSectionIds[optionValue]
+                ) {
+                    $(this).remove();
+                    return;
+                }
+
+                visibleSectionIds[optionValue] = true;
+            });
+
             $('#section_select')
-                .val('')
+                .val(sectionExists ? sectionToSelect : '')
+                .find('option[value="' + sectionToSelect + '"]')
+                .prop('selected', sectionExists)
                 .trigger('change.select2');
+
+            isInitializing = false;
         });
-
         // عند تحميل الصفحة
-        let currentGrade = $('#grade_select').val();
-        let currentSection = "{{ $theStudent->section_id }}";
-
         // إذا في صف مختار مسبقاً (صف الطالب)
-        if (currentGrade) {
-
+        if ($('#grade_select').val()) {
             $('#grade_select').trigger('change');
-
-            // إعادة تحديد شعبة الطالب الحالية
-            setTimeout(() => {
-
-                $('#section_select')
-                    .val(currentSection)
-                    .trigger('change.select2');
-
-            }, 100);
-
         } else {
-
             // إذا ما في صف مختار
             $('#section_select').html(
                 '<option value="">اختر الشعبة</option>'
@@ -324,6 +358,7 @@
 
                     <select id="section_select"
                         name="section"
+                        data-current-section="{{ $theStudent->section_id }}"
                         class="select2 form-select @error('section') is-invalid @enderror">
 
                         <option value="">اختر الشعبة</option>

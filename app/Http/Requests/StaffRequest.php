@@ -33,19 +33,13 @@ class StaffRequest extends FormRequest
             "phone"  => 'required|string|max:20',
             "email"  =>  ['required', 'email', 'max:255', Rule::unique('staff', 'email')->ignore($this->staff_member)],
             "date_of_birth" => 'required|date',
-            "gender" => 'required|in:male, female',
+            "gender" => 'required|in:male,female',
             "staff_type" => 'required|in:teacher,admin,other',
             'user_id' => 'nullable|exists:users,id',
             "new_staff_type" => 'exclude_unless:staff_type,other|required|string|max:255',
             "subject" => ['exclude_unless:staff_type,teacher', 'required', Rule::when($this->subject !== 'NEW', ['exists:subjects,id'])],
 
             "create_account" => 'nullable|in:on, off',
-            "password" => [
-                'exclude_unless:create_account,on',
-                'required',
-                'confirmed',
-                Password::min(6)
-            ],
 
             //مادة جديدة
             "new_subject_name" => "exclude_unless:subject,NEW|required|string|max:255",

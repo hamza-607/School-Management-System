@@ -6,6 +6,7 @@ use App\Http\Requests\FinishedSessionRequest;
 use App\Models\Attendance;
 use App\Models\FinishedSession;
 use App\Models\Grade;
+use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
 use App\Models\Staff;
 use App\Models\Student_penalties;
@@ -48,6 +49,16 @@ class FinishedSessionController extends Controller
             'finishedSessions' => $finishedSessions,
             'grades' => $grades,
             'teachers' => $teachers,
+        ]);
+    }
+    public function show(string $id)
+    {
+        $theSession = FinishedSession::with(['sectionSubjectTeacher.subject', 'sectionSubjectTeacher.staff', 'sectionSubjectTeacher.appointment', 'sectionSubjectTeacher.section'])->findOrFail($id);
+
+        // dd($request->from);
+
+        return view('study_schedules.finishedSessions.show', [
+            'theSession' => $theSession,
         ]);
     }
     public function finish(FinishedSessionRequest $request, $sectionID, $sessionID)
@@ -100,9 +111,20 @@ class FinishedSessionController extends Controller
                 }
             }
 
-            return redirect()->route('sections.show', $sectionID)->with('success', 'تم انهاء الجلسة بنجاح');
+            return redirect()->route('studySchedules.superIndex')->with('success', 'تم انهاء الجلسة بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'حدث خطأ اثناء انهاء الجلسة' . $e->getMessage());
+        }
+    }
+    public function destroy($sessionID)
+    {
+        try {
+            $theSession = FinishedSession::findOrFail($sessionID);
+            $theSession->delete();
+
+            return redirect()->route('finishedSessions.index')->with('success', 'تم حذف الجلسة بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'حدث خطأ اثناء حذف الجلسة' . $e->getMessage());
         }
     }
 }

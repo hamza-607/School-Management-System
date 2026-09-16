@@ -27,12 +27,16 @@
         Swal.fire({
             title: 'تأكيد الحذف',
             html: `
-                <div>
-                    هل أنت متأكد أنك تريد حذف هذه المادة؟
-                    <br>
-                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                </div>
-            `,
+            <div>
+                هل أنت متأكد أنك تريد حذف هذه المادة؟
+                <br>
+                <span class="text-danger">
+                 هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذه المادة
+                 </span>
+                <br>
+                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+            </div>
+        `,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'نعم، احذف',

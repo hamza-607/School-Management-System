@@ -48,7 +48,16 @@
 
             if (selectedSubject && selectedSubject.teachers.length > 0) {
                 selectedSubject.teachers.forEach(teacher => {
-                    $('#staff_select').append(`<option value="${teacher.id}">${teacher.name}</option>`);
+                    let isInactive = teacher.is_active == 0;
+                    let optionLabel = isInactive ? `⚠ ${teacher.name} (غير نشط)` : teacher.name;
+                    let option = new Option(optionLabel, teacher.id);
+
+                    if (isInactive) {
+                        option.disabled = true;
+                        option.title = 'هذا المدرس غير نشط ولا يمكن اختياره';
+                    }
+
+                    $('#staff_select').append(option);
                 });
             }
 
@@ -121,8 +130,6 @@
         let gender = $('#teacher_gender_select').val();
         let salary = $('#teacher_salary_input').val().trim();
         let createAccount = $('#createAccountCheckbox').is(':checked') ? 'on' : 'off';
-        let password = $('#passwordInput').val().trim();
-        let passwordConfirm = $('#confirmPasswordInput').val();
 
         let contractFile = $('#contract_file_input')[0].files[0];
 
@@ -141,8 +148,6 @@
         $('#hidden_staff_gender').val(gender);
         $('#hidden_staff_salary').val(salary);
         $('#hidden_staff_create_account').val(createAccount);
-        $('#hidden_staff_password').val(password);
-        $('#hidden_staff_password_confirmation').val(passwordConfirm);
 
         // إضافة المدرس للسيلكت
         let option = new Option(name, 'NEW', true, true);
@@ -155,38 +160,11 @@
         $('#flatpickr-date').val('');
         $('#teacher_gender_select').val('male').selectpicker('refresh');
         $('#teacher_salary_input').val('');
-        $('#passwordInput').prop('required', false).val('');
-        $('#confirmPasswordInput').prop('required', false).val('');
-        $('#passwordError').hide();
-
-        $('#passwordInput').prop('required', false);
-        $('#confirmPasswordInput').prop('required', false);
-        $('#passwordInput').val('');
-        $('#confirmPasswordInput').val('');
-        $('#passwordError').hide();
 
         bootstrap.Modal.getInstance(document.getElementById('teacherModal')).hide();
     });
 
     $(document).ready(function() {
-
-        // دالة التحكم بظهور حقول كلمة المرور
-        function toggleAccountFields() {
-            if ($('#createAccountCheckbox').is(':checked')) {
-                $('#passwordFieldsContainer').slideDown();
-                $('#passwordInput').prop('required', true);
-                $('#confirmPasswordInput').prop('required', true);
-            } else {
-                $('#passwordFieldsContainer').slideUp();
-                $('#passwordInput').prop('required', false);
-                $('#confirmPasswordInput').prop('required', false);
-                $('#passwordInput').val('');
-                $('#confirmPasswordInput').val('');
-
-                $('#confirmPasswordInput').removeClass('is-invalid');
-                $('#passwordError').hide();
-            }
-        }
 
         // تشغيل الدالة عند التغيير
         $('#createAccountCheckbox').on('change', function() {
@@ -195,46 +173,6 @@
 
         // تشغيل الدالة عند تحميل الصفحة
         toggleAccountFields();
-
-
-        // التحقق من تطابق كلمة السر أثناء الكتابة
-        $('#passwordInput, #confirmPasswordInput').on('keyup', function() {
-
-            if (!$('#createAccountCheckbox').is(':checked')) return;
-
-            let password = $('#passwordInput').val();
-            let confirmPassword = $('#confirmPasswordInput').val();
-
-            if (password !== confirmPassword && confirmPassword !== '') {
-                $('#confirmPasswordInput').addClass('is-invalid');
-                $('#passwordError').show();
-            } else {
-                $('#confirmPasswordInput').removeClass('is-invalid');
-                $('#passwordError').hide();
-            }
-        });
-
-        // التحقق عند إرسال النموذج
-        $('form').on('submit', function(e) {
-
-            if (!$('#createAccountCheckbox').is(':checked')) return;
-
-            let password = $('#passwordInput').val();
-            let confirmPassword = $('#confirmPasswordInput').val();
-
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                $('#confirmPasswordInput').addClass('is-invalid').focus();
-                $('#passwordError').show();
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطأ',
-                    text: 'كلمات السر غير متطابقة، يرجى التأكد مرة أخرى.',
-                    confirmButtonText: 'موافق'
-                });
-            }
-        });
 
     });
 
@@ -340,7 +278,7 @@
                     @enderror
                 </div>
 
-                <div class="col-6">
+                <div class="col-md-6">
                     <label class="form-label">اليوم<span class="text-danger">*</span></label>
                     <select name="day" class="select2 form-select @error('day') is-invalid @enderror" required>
                         <option value="">اختر اليوم</option>
@@ -483,20 +421,6 @@
                                     <label class="form-check-label fw-bold" for="createAccountCheckbox">
                                         هل تريد إنشاء حساب لهذا الموظف؟
                                     </label>
-                                </div>
-                            </div>
-
-                            <div class="col-12" id="passwordFieldsContainer" style="display: none;">
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <label class="form-label">كلمة السر <span class="text-danger">*</span></label>
-                                        <input type="password" id="passwordInput" class="form-control" placeholder="············">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label">إعادة كلمة السر <span class="text-danger">*</span></label>
-                                        <input type="password" id="confirmPasswordInput" class="form-control" placeholder="············">
-                                        <div id="passwordError" class="invalid-feedback">كلمتا السر غير متطابقتين!</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

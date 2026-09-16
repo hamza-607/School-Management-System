@@ -123,34 +123,34 @@
         });
 
 
+        // تأكيد الحذف (SweetAlert2)
+        $(document).on('click', '.delete-record', function(e) {
+            e.preventDefault();
+            let $btn = $(this);
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                focusCancel: true,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger ms-2',
+                    cancelButton: 'btn btn-secondary',
+                    popup: 'swal2-popup-custom'
+                },
+                allowOutsideClick: false,
+                backdrop: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $btn.closest('form').submit();
+                }
+            });
+        });
 
-        // // تأكيد الحذف (SweetAlert2)
-        // $(document).on('click', '.delete-record', function(e) {
-        //     e.preventDefault();
-        //     let $btn = $(this);
-        //     Swal.fire({
-        //         title: 'تأكيد الحذف',
-        //         html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
-        //         icon: 'warning',
-        //         showCancelButton: true,
-        //         confirmButtonText: 'نعم، احذف',
-        //         cancelButtonText: 'إلغاء',
-        //         reverseButtons: true,
-        //         focusCancel: true,
-        //         buttonsStyling: false,
-        //         customClass: {
-        //             confirmButton: 'btn btn-danger ms-2',
-        //             cancelButton: 'btn btn-secondary',
-        //             popup: 'swal2-popup-custom'
-        //         },
-        //         allowOutsideClick: false,
-        //         backdrop: true
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             $btn.closest('form').submit();
-        //         }
-        //     });
-        // });
 
         $(document).on('click', '.clickable-row', function(e) {
             if ($(e.target).closest('a').length || $(e.target).closest('button').length || $(e.target).closest('form').length) {
@@ -237,11 +237,12 @@
                     <th class="text-center align-middle">وقت الانتهاء الفعلي</th>
                     <th class="align-middle">حالة الحصة الدرسية</th>
                     <th class="text-center align-middle">نوع الحصة الدرسية</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
                 @forelse ($finishedSessions as $index => $finishedSession)
-                <tr>
+                <tr class="clickable-row" data-href="{{ route('finishedSessions.show', $finishedSession->id) }}" style="cursor:pointer;">
                     @php
                     $daysMap = [
                     'sunday' => 'الأحد',
@@ -299,6 +300,27 @@
 
                     <td class="text-center align-middle">
                         <span class="badge bg-label-secondary text-dark">{{ $finishedSession->sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                    </td>
+
+                    <td>
+                        @if ($finishedSession->status !== 'active')
+                        <div class="d-inline-block text-nowrap">
+                            <form action="{{ route('finishedSessions.destroy', $finishedSession->id) }}" method="POST"
+                                style="display:inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-icon delete-record action-btn-hover">
+                                    <i>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960"
+                                            width="20px" fill="#BB271A">
+                                            <path
+                                                d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
+                                        </svg>
+                                    </i>
+                                </button>
+                            </form>
+                        </div>
+                        @endif
                     </td>
                 </tr>
                 @empty

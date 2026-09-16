@@ -54,7 +54,7 @@ class SectionSubjectTeacherController extends Controller
             });
         }
 
-        $activeSessions = $query->paginate($request->per_page)->withQueryString();
+        $activeSessions = $query->paginate($request->per_page ?? 10)->withQueryString();
 
         $grades = Grade::with('sections')->get();
 
@@ -101,6 +101,7 @@ class SectionSubjectTeacherController extends Controller
         // dd($sectionID);
         $gredeID = $section->grade->id;
         $query = SectionSubjectTeacher::query();
+        $query->with(['subject', 'staff', 'appointment']);
         $query->where('section_id', $sectionID)->where('grade_id', $gredeID);
         if ($request->has('day') && $request->day !== null) {
             $query->whereHas('appointment', function ($q) use ($request) {
@@ -118,7 +119,10 @@ class SectionSubjectTeacherController extends Controller
             $query->where('subject_id', $request->subject);
         }
 
-        $sectionSubjectTeachers = $query->paginate($request->per_page)->withQueryString();
+        $sectionSubjectTeachers = $query->whereHas('appointment', function ($q) use ($request) {
+            $q->where('day', $request->day ?? strtolower(now()->dayName));
+        })->get();
+
         return view('study_schedules.index', [
             'sectionSubjectTeachers' => $sectionSubjectTeachers,
             'section' => $section,
@@ -149,6 +153,13 @@ class SectionSubjectTeacherController extends Controller
         try {
             $validated = $request->validated();
 
+            if($request->staff){
+                $staff = Staff::findOrFail($request->staff);
+                if (!$staff->is_active) {
+                    return redirect()->back()->withInput()->with('error', 'لا يمكن اختيار هذا المدرس لأنه غير نشط.');
+                }
+            }
+
             $newAppointment =  Appointment::create([
                 'Day' => $validated['day'],
                 'start_time' => $validated['start_time'],
@@ -164,7 +175,7 @@ class SectionSubjectTeacherController extends Controller
             ];
 
             // مادة جديدة
-            $subjectID = $validated['subject'];
+            $subjectID = $request->subject;
             if ($subjectID === 'NEW') {
                 $subject = [
                     "new_subject_name" => $validated['new_subject_name'],
@@ -178,7 +189,7 @@ class SectionSubjectTeacherController extends Controller
             $session['subject_id'] = $subjectID;
 
             //مدرس جديد
-            $staffID = $validated['staff'];
+            $staffID = $request->staff;
             if ($staffID === 'NEW') {
                 $staff = [
                     'name' => $validated['new_staff_name'],
@@ -427,6 +438,7 @@ class SectionSubjectTeacherController extends Controller
                     'actual_end_time' => null,
                     'section_subject_teacher_id' => $sessionID,
                     'status' => 'active',
+                    'created_at' => now(),
                 ]);
                 return redirect()->route('controlSession', [$sessionID, $theSession->section_id])->with('success', 'تم تفعيل الجلسة بنجاح.');
             } elseif ($newStatus === 'canceled') {
@@ -435,6 +447,7 @@ class SectionSubjectTeacherController extends Controller
                     'actual_end_time' => null,
                     'section_subject_teacher_id' => $sessionID,
                     'status' => 'canceled',
+                    'created_at' => now(),
                 ]);
                 return redirect(url()->previous())->with('success', 'تم إلغاء الجلسة بنجاح.');
             } else {

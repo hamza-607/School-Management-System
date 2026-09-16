@@ -28,13 +28,17 @@
         // المواد + المدرسين من الكونترولر
         const subjectsData = @json($subjects);
         // معرف المدرس الحالي المخزن في قاعدة البيانات لهذه الجلسة
-        const currentTeacherId = "{{ $theSession->teacher_id }}";
+        let currentTeacherId = @json($theSession->teacher_id);
+        currentTeacherId = String(currentTeacherId || '');
+        const currentTeacherName = @json($theSession->staff?->name);
+        let isInitialSubjectLoad = true;
 
         // عند اختيار مادة
         $('#subject_select').on('change', function() {
             let subjectId = $(this).val();
 
             if (subjectId === 'add_new_subject') {
+                isInitialSubjectLoad = false;
                 $(this).val(null).trigger('change');
                 var myModal = new bootstrap.Modal(document.getElementById('subjectModal'));
                 myModal.show();
@@ -49,22 +53,30 @@
 
             if (selectedSubject && selectedSubject.teachers.length > 0) {
                 selectedSubject.teachers.forEach(teacher => {
-                    // التحقق برمجياً: إذا كان الـ ID يطابق المدرس المسجل، نضع الخاصية selected
-                    let isSelected = (teacher.id == currentTeacherId) ? 'selected' : '';
-                    $('#staff_select').append(`<option value="${teacher.id}" ${isSelected}>${teacher.name}</option>`);
+                    $('#staff_select').append(new Option(teacher.name, teacher.id));
                 });
+            }
+
+            // أثناء فتح صفحة التعديل فقط، احتفظ بالمدرس الحالي حتى لو لم يكن ضمن المادة.
+            if (isInitialSubjectLoad && currentTeacherId) {
+                let currentTeacherExists = $('#staff_select option').filter(function() {
+                    return String($(this).val()) === currentTeacherId;
+                }).length > 0;
+
+                if (!currentTeacherExists && currentTeacherName) {
+                    $('#staff_select').append(new Option(currentTeacherName, currentTeacherId));
+                }
             }
 
             // 3. دائماً أضف خيار "إضافة مدرس" في نهاية القائمة
             $('#staff_select').append('<option value="add_new_teacher" class="text-primary fw-bold">✚ إضافة مدرس جديد</option>');
 
             // 4. إذا كنت قد أضفت مدرساً "جديداً" للتو (NEW)
-            let hiddenName = $('#hidden_staff_name').val();
-            if (hiddenName) {
-                $('#staff_select').append(new Option(hiddenName, 'NEW', true, true));
-            }
+            $('#staff_select')
+                .val(isInitialSubjectLoad ? currentTeacherId : '')
+                .trigger('change.select2');
 
-            $('#staff_select').trigger('change.select2');
+            isInitialSubjectLoad = false;
         });
 
         // --- تشغيل التغيير تلقائياً عند تحميل الصفحة لتعبئة قائمة المدرسين واختيار المدرس الصحيح ---

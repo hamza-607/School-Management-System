@@ -30,6 +30,6 @@ class Guardian extends Model
 
     public function files()
     {
-        return $this->morphMany(File::class, 'owner');
+        return $this->morphMany(File::class, 'owner')->latest();
     }
 }
