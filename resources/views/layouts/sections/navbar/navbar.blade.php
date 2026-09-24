@@ -8,8 +8,8 @@ $navbarDetached = ($navbarDetached ?? '');
   /* شكل "طايفة" بالصفحة: مسافة متساوية من كل الجهات + راديوس + ظل خفيف */
   .floating-navbar {
     margin: 16px !important;
-    width: calc(100% - 32px) !important;
-    border-radius: 16px !important;
+    /* width: calc(100% - 32px) !important; */
+    border-radius: 6px !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
   }
 

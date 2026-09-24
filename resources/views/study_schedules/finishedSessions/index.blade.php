@@ -260,22 +260,22 @@
                     // dd($Dropdown);
                     @endphp
 
-                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$finishedSession->sectionSubjectTeacher->appointment->day] ?? $finishedSession->sectionSubjectTeacher->appointment->day }}</td>
+                    <td class="align-middle fw-bold text-dark">{{ $daysMap[$finishedSession->appointment->day] ?? $finishedSession->appointment->day }}</td>
 
                     <td class="align-middle">
-                        <a href="{{ route('staff_members.show', $finishedSession->sectionSubjectTeacher->staff->id) }}" class="fw-bold">{{ $finishedSession->sectionSubjectTeacher->staff->name }}</a>
+                        <a href="{{ route('staff_members.show', $finishedSession->staff->id) }}" class="fw-bold">{{ $finishedSession->staff->name }}</a>
                     </td>
 
                     <td class="align-middle">
-                        <a href="{{ route('subjects.show', $finishedSession->sectionSubjectTeacher->subject_id) }}">{{ $finishedSession->sectionSubjectTeacher->subject->name }}</a>
+                        <a href="{{ route('subjects.show', $finishedSession->subject_id) }}">{{ $finishedSession->subject->name }}</a>
                     </td>
 
                     <td>
-                        {{ $finishedSession->sectionSubjectTeacher->grade->name }}
+                        {{ $finishedSession->grade->name }}
                     </td>
 
                     <td class="align-middle">
-                        <a href="{{ route('sections.show', $finishedSession->sectionSubjectTeacher->section->id) }}">{{ $finishedSession->sectionSubjectTeacher->section->name }}</a>
+                        <a href="{{ route('sections.show', $finishedSession->section->id) }}">{{ $finishedSession->section->name }}</a>
                     </td>
 
                     <td class="text-center align-middle">
@@ -299,7 +299,7 @@
                     </td>
 
                     <td class="text-center align-middle">
-                        <span class="badge bg-label-secondary text-dark">{{ $finishedSession->sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                        <span class="badge bg-label-secondary text-dark">{{ $finishedSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
                     </td>
 
                     <td>

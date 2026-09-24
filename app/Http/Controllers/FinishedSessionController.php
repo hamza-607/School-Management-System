@@ -18,26 +18,21 @@ class FinishedSessionController extends Controller
 
     public function index(Request $request)
     {
+        // dd($request->all());
         $query = FinishedSession::query();
 
-        $query->with('sectionSubjectTeacher.staff', 'sectionSubjectTeacher.grade', 'sectionSubjectTeacher.subject', 'sectionSubjectTeacher.section', 'sectionSubjectTeacher.appointment');
+        $query->with('staff', 'grade', 'subject', 'section');
 
         if ($request->has('grade_id') && $request->grade_id !== null) {
-            $query->whereHas('sectionSubjectTeacher', function ($q) use ($request) {
-                $q->where('grade_id', $request->grade_id);
-            });
+            $query->where('grade_id', $request->grade_id);
         }
 
         if ($request->has('section_id') && $request->section_id !== null) {
-            $query->whereHas('sectionSubjectTeacher', function ($q) use ($request) {
-                $q->where('section_id', $request->section_id);
-            });
+            $query->where('section_id', $request->section_id);
         }
 
         if ($request->has('teacher_id') && $request->teacher_id !== null) {
-            $query->whereHas('sectionSubjectTeacher.staff', function ($q) use ($request) {
-                $q->where('id', $request->teacher_id);
-            });
+            $query->where('teacher_id', $request->teacher_id);
         }
 
         $finishedSessions = $query->latest()->paginate($request->per_page ?? 10);
@@ -51,26 +46,37 @@ class FinishedSessionController extends Controller
             'teachers' => $teachers,
         ]);
     }
-    public function show(string $id)
-    {
-        $theSession = FinishedSession::with(['sectionSubjectTeacher.subject', 'sectionSubjectTeacher.staff', 'sectionSubjectTeacher.appointment', 'sectionSubjectTeacher.section'])->findOrFail($id);
+    // public function show(string $id)
+    // {
+    //     $theSession = FinishedSession::with(['sectionSubjectTeacher.subject', 'sectionSubjectTeacher.staff', 'sectionSubjectTeacher.appointment', 'sectionSubjectTeacher.section'])->findOrFail($id);
 
-        // dd($request->from);
+    //     // dd($request->from);
 
-        return view('study_schedules.finishedSessions.show', [
-            'theSession' => $theSession,
-        ]);
-    }
+    //     return view('study_schedules.finishedSessions.show', [
+    //         'theSession' => $theSession,
+    //     ]);
+    // }
     public function finish(FinishedSessionRequest $request, $sectionID, $sessionID)
     {
         // dd($request->all());
         // dd('ggag');
         try {
-            // dd(now()->format('H:i:s'));
             $validated = $request->validated();
-            // dd($validated);
             $session = SectionSubjectTeacher::findOrFail($sessionID);
-            // dd($session->finishedSessions->where('status', 'active')->first());
+            // dd($session);
+            $finishedSession = FinishedSession::where('appointment_id', $session->appointment_id)
+                ->where('teacher_id', $session->teacher_id)
+                ->where('subject_id', $session->subject_id)
+                ->where('section_id', $session->section_id)
+                ->where('grade_id', $session->grade_id)
+                ->where('status', 'active')
+                ->first();
+
+            // dd($finishedSession);
+            $finishedSession->update([
+                'actual_end_time' => now()->format('H:i:s'),
+                'status' => 'completed',
+            ]);
 
             if ($session->type === 'makeup') {
                 $session->delete();
@@ -78,14 +84,7 @@ class FinishedSessionController extends Controller
                 $session->appointment->update(['status' => 'scheduled']);
             }
 
-
-
-            $finishedSession = $session->finishedSessions->where('status', 'active')->first();
-            $finishedSession->update([
-                'actual_end_time' => now()->format('H:i:s'),
-                'status' => 'completed',
-            ]);
-
+            //تسجيل الحضور
             if ($request->has('attendance') && $validated['attendance'] !== null) {
                 foreach ($validated['attendance'] as $attendance) {
                     Attendance::create([
@@ -97,6 +96,7 @@ class FinishedSessionController extends Controller
                 }
             }
 
+            //تسجيل العقوبات
             if ($request->has('penalties') && $validated['penalties'] !== null) {
                 foreach ($validated['penalties'] as $penalty) {
                     Student_penalties::create([

@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeSalaryAdjustmentsController;
 use App\Http\Controllers\FinishedSessionController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\ScoreCrontroller;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SectionController;
@@ -30,14 +31,14 @@ Route::get('LogInPage', [AuthController::class, 'LogInPage'])->name('login');
 Route::post('logIn', [AuthController::class, 'logIn'])->name('storeLogIn');
 
 Route::get('emailVarification', [AuthController::class, 'emailVarification'])->name('emailVarification');
-Route::post('sendVarificationCode', [AuthController::class, 'sendVarificationCode'])->name('sendVarificationCode');
-Route::get('VarificationCode/{userID}', [AuthController::class, 'VarificationCode'])->name('VarificationCode');
-Route::post('checkVarificationCode/{userID}', [AuthController::class, 'checkVarificationCode'])->name('checkVarificationCode');
+Route::post('VerificationCode', [AuthController::class, 'sendVerificationCode'])->name('sendVerificationCode');
+Route::get('VerificationCode/{userID}', [AuthController::class, 'VerificationCode'])->name('VerificationCode');
+Route::post('checkVerificationCode/{userID}', [AuthController::class, 'checkVerificationCode'])->name('checkVerificationCode');
 Route::get('forgotPassword/{userID}', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
 Route::post('forgotPasswordStore/{userID}', [AuthController::class, 'forgotPasswordStore'])->name('forgotPasswordStore');
 
 Route::get('account/staff/{staffID}', [StaffController::class, 'makeAnAccount'])->name('account.create')->middleware('signed');
-Route::post('account/staff/{staffID}', [StaffController::class, 'accountStore'])->name('account.store');
+Route::post('account/staff/{staffID}', [StaffController::class, 'accountStore'])->name('account.store')->middleware('signed');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -50,9 +51,13 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('students', StudentController::class);
     Route::get('toggleStatus/{studentID}', [StudentController::class, 'toggle'])->name('toggleStatus');
-    Route::get('students/{student}/addFile', [StudentController::class, 'addFile'])->name('student.addFile');
-    Route::post('students/{student}/files', [StudentController::class, 'saveFile'])->name('student.saveFile');
-    Route::resource('students/{studentID}/penalties', StudentPenaltiesController::class);
+    Route::prefix('student/{studentID}')
+        ->group(function () {
+            Route::get('addFile', [StudentController::class, 'addFile'])->name('student.addFile');
+            Route::post('files', [StudentController::class, 'saveFile'])->name('student.saveFile');
+            Route::resource('penalties', StudentPenaltiesController::class);
+            Route::resource('scores', ScoreCrontroller::class);
+        });
     Route::get('penalties/{penaltyID}', [StudentPenaltiesController::class, 'penaltyStatusToggel'])->name('penaltyStatus');
 
     Route::resource('subjects', SubjectController::class);

@@ -60,7 +60,7 @@
                     </div>
                     @endif
 
-                    <form id="formEditPassword" action="{{ route('sendVarificationCode') }}" method="POST">
+                    <form id="formEditPassword" action="{{ route('sendVerificationCode') }}" method="POST">
                         @csrf
 
                         <div class="mb-3 form-password-toggle">

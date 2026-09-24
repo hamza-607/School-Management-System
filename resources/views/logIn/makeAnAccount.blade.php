@@ -106,7 +106,7 @@
                     </div>
                     @endif
 
-                    <form id="formEditPassword" class="mb-3" action="{{ route('account.store', $staffID) }}" method="POST">
+                    <form id="formEditPassword" class="mb-3" action="{{ url()->full() }}" method="POST">
                         @csrf
 
                         <div class="mb-3 form-password-toggle">

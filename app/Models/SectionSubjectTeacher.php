@@ -51,9 +51,4 @@ class SectionSubjectTeacher extends Model
     {
         return $this->morphMany(File::class, 'owner')->latest();
     }
-
-    public function finishedSessions()
-    {
-        return $this->hasMany(FinishedSession::class);
-    }
 }
