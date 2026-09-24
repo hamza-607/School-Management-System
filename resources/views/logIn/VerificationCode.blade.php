@@ -133,7 +133,7 @@
                     @endif
 
                     {{-- قمنا بتغيير الـ ID من formAuthentication إلى formEditPassword --}}
-                    <form id="formEditPassword" class="mb-3" action="{{ route('checkVarificationCode', $userID) }}" method="POST">
+                    <form id="formEditPassword" class="mb-3" action="{{ route('checkVerificationCode', $userID) }}" method="POST">
                         @csrf
 
                         <p class="text-center mb-4">أدخل رمز التفعيل المكون من 6 أرقام</p>

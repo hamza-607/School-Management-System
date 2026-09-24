@@ -22,8 +22,8 @@ return [
     'customizerControls' => [
       // 'rtl',
       'style',
-      'layoutType',
-      'showDropdownOnHover',
+      // 'layoutType',
+      // 'showDropdownOnHover',
       'layoutNavbarFixed',
       'themes',
     ], // To show/hide customizer options

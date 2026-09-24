@@ -97,7 +97,7 @@ class AuthController extends Controller
         return view('logIn.emailForgotPassword');
     }
 
-    public function sendVarificationCode(Request $request)
+    public function sendVerificationCode(Request $request)
     {
         try {
             if (Auth::check()) {
@@ -120,9 +120,12 @@ class AuthController extends Controller
                 return back()->withErrors(['error' => 'لقد تم إرسال رمز التحقق مسبقًا او انك تجاوزت الحد المسموح لمحاولات التحقق. يرجى الانتظار لمدة دقيقة قبل طلب رمز جديد.']);
             }
 
-            $otp = rand(100000, 999999);
 
-            Cache::put('otp_' . $user->email, $otp, now()->addMinutes(5));
+            $otp = random_int(100000, 999999);
+            // dd($otp);
+            // dd(hash('sha256',$otp));
+
+            Cache::put('otp_' . $user->email, hash('sha256', $otp), now()->addMinutes(5));
             Cache::put('lock_otp_' . $user->email, true, now()->addMinutes(1));
             Cache::put('otp_counter_' . $user->email, 0, now()->addMinutes(5));
 
@@ -130,25 +133,25 @@ class AuthController extends Controller
                 $message->to($user->email)->subject('زمر التحقق الخاص بك / تعديل كلمة سر حسابك في مدرسة افق النموذجية');
             });
 
-            return redirect()->route('VarificationCode', $user->id)->with('success', 'تم إرسال رمز التحقق إلى بريدك الإلكتروني. رمز التحقق: '); // هون هي لازم تتغير لصفحة التحقق من الرمز اول شي
+            return redirect()->route('VerificationCode', $user->id)->with('success', 'تم إرسال رمز التحقق إلى بريدك الإلكتروني. رمز التحقق: '); // هون هي لازم تتغير لصفحة التحقق من الرمز اول شي
 
         } catch (Exception $e) {
             return back()->withErrors(['error' => 'حدث خطأ أثناء إرسال رمز التحقق. يرجى المحاولة مرة أخرى.']);
         }
     }
 
-    public function VarificationCode($userID)
+    public function VerificationCode($userID)
     {
         // dd($userID);
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-        return view('logIn.VarificationCode', [
+        return view('logIn.VerificationCode', [
             'userID' => $userID,
         ]);
     }
 
-    public function checkVarificationCode(Request $request, $userID)
+    public function checkVerificationCode(Request $request, $userID)
     {
         try {
             if (Auth::check()) {
@@ -185,7 +188,7 @@ class AuthController extends Controller
             }
 
             // dd($checkOtpCounter);
-            if ((int) $checkOtpTime !== (int) $validated['otp']) {
+            if ( $checkOtpTime !== hash('sha256', $validated['otp'])) {
                 Cache::increment('otp_counter_' . $email);
                 return back()->withErrors(['errors' => 'هذا الرمز غير صحيح. يرجى المحاولة مرة أخرى.']);
             }

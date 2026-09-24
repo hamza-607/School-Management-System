@@ -2,12 +2,33 @@
 $configData = Helper::appClasses();
 @endphp
 
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<style>
+  #layout-menu {
+    --menu-ink: #00352e;
+    --menu-cream: #f5f8f7;
+  }
 
+  #layout-menu .menu-inner .menu-link {
+    color: var(--menu-ink) !important;
+  }
+   
+  #layout-menu .menu-inner .menu-sub .menu-item.active>.menu-link {
+    background-color: var(--menu-cream) !important;
+    color: white !important;
+  }
+
+  /* كلاس منفصل: يلوّن الرابط النشط باللون الأبيض */
+  .menu-active-text-white,
+  .menu-active-text-white * {
+    color: #ffffff !important;
+  }
+</style>
+
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme rounded-4 shadow-lg">
   <!-- ! Hide app brand if navbar-full -->
   @if(!isset($navbarFull))
-  <div class="app-brand demo" style="margin-right: 0px;">
-    <a href="{{url('/')}}" class="app-brand-link">
+  <div class="app-brand demo" style="margin: 5px;">
+    <a href="{{ route('dashboard') }}" class="app-brand-link">
       <img src="{{ Storage::url('schoolLogo/logo.png') }}" alt="logo" width="65">
       <span class="app-brand-text demo menu-text fw-bold">مدرسة أُفق</span>
     </a>
@@ -21,10 +42,10 @@ $configData = Helper::appClasses();
 
   <div class="menu-inner-shadow"></div>
 
-  <ul class="menu-inner py-1">
+  <ul class="menu-inner py-1 h">
     {{-- الرئيسية --}}
     <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-      <a href="{{ route('dashboard') }}" class="menu-link">
+      <a href="{{ route('dashboard') }}" class="menu-link {{ request()->routeIs('dashboard') ? 'menu-active-text-white' : '' }}">
         <i class="ti ti-home"></i>
         <div class="m-1">الرئيسية</div>
       </a>
@@ -39,7 +60,7 @@ $configData = Helper::appClasses();
         font-size: 20px;
         margin-right: 8px;
         line-height: 1;
-        color: green;
+        color: #006559;
         transition: opacity 0.2s;
       }
     </style>
@@ -54,7 +75,7 @@ $configData = Helper::appClasses();
     @endphp
     @if (!$isActiveSession)
     <li class="menu-item {{ request()->routeIs('activeSessions') ||  request()->routeIs('controlSession')  ? 'active' : '' }}">
-      <a href="{{ route('activeSessions') }}" class="menu-link d-flex flex-row-reverse justify-content-between">
+      <a href="{{ route('activeSessions') }}" class="menu-link d-flex flex-row-reverse justify-content-between {{ request()->routeIs('activeSessions') || request()->routeIs('controlSession') ? 'menu-active-text-white' : '' }}">
         <span id="dot" class="session-dot text-success">●</span>
         <div>
           <i class="fas fa-chalkboard-teacher me-2"></i>
@@ -65,14 +86,14 @@ $configData = Helper::appClasses();
     @endif
 
     <li class="menu-item {{ request()->routeIs('studySchedules.*') ? 'active' : '' }}">
-      <a href="{{ route('studySchedules.superIndex') }}" class="menu-link session-link">
+      <a href="{{ route('studySchedules.superIndex') }}" class="menu-link session-link {{ request()->routeIs('studySchedules.*') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-list-ul me-2"></i>
         <span>البرامج الدراسية</span>
       </a>
     </li>
 
     <li class="menu-item {{ request()->routeIs('finishedSessions.index') ||  request()->routeIs('finishedSessions.show') ? 'active' : '' }}">
-      <a href="{{ route('finishedSessions.index') }}" class="menu-link session-link">
+      <a href="{{ route('finishedSessions.index') }}" class="menu-link session-link {{ request()->routeIs('finishedSessions.index') || request()->routeIs('finishedSessions.show') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-check-circle me-2"></i>
         <span>سجل الجلسات</span>
       </a>

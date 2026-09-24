@@ -60,8 +60,8 @@ $filesActive = request()->routeIs('student.addFile')
     @if ($student)
 
     <li class="nav-item"><a
-            class="nav-link {{ false ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
-            href=""><i
+            class="nav-link {{ request()->routeIs('scores.*') ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
+            href="{{ route('scores.index' , $student->id) }}"><i
                 class="ti-xs ti ti-file-description me-1"></i>النتائج</a></li>
 
     <li class="nav-item"><a

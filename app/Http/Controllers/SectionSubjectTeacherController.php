@@ -153,7 +153,7 @@ class SectionSubjectTeacherController extends Controller
         try {
             $validated = $request->validated();
 
-            if($request->staff){
+            if ($request->staff) {
                 $staff = Staff::findOrFail($request->staff);
                 if (!$staff->is_active) {
                     return redirect()->back()->withInput()->with('error', 'لا يمكن اختيار هذا المدرس لأنه غير نشط.');
@@ -436,7 +436,12 @@ class SectionSubjectTeacherController extends Controller
                 FinishedSession::create([
                     'actual_start_time' => now()->format('H:i:s'),
                     'actual_end_time' => null,
-                    'section_subject_teacher_id' => $sessionID,
+                    'teacher_id' => $theSession->teacher_id,
+                    'subject_id' => $theSession->subject_id,
+                    'section_id' => $theSession->section_id,
+                    'grade_id' => $theSession->grade_id,
+                    'session_type' => $theSession->type,
+                    'appointment_id' => $theSession->appointment_id,
                     'status' => 'active',
                     'created_at' => now(),
                 ]);
@@ -445,10 +450,18 @@ class SectionSubjectTeacherController extends Controller
                 FinishedSession::create([
                     'actual_start_time' => null,
                     'actual_end_time' => null,
-                    'section_subject_teacher_id' => $sessionID,
+                    'teacher_id' => $theSession->teacher_id,
+                    'subject_id' => $theSession->subject_id,
+                    'section_id' => $theSession->section_id,
+                    'grade_id' => $theSession->grade_id,
+                    'session_type' => $theSession->type,
+                    'appointment_id' => $theSession->appointment_id,
                     'status' => 'canceled',
                     'created_at' => now(),
                 ]);
+                if ($theSession->type === 'makeup') {
+                    $theSession->delete();
+                }
                 return redirect(url()->previous())->with('success', 'تم إلغاء الجلسة بنجاح.');
             } else {
                 return redirect(url()->previous())->with('success', 'تم جدولة الجلسة بنجاح.');
