@@ -26,7 +26,7 @@
     function confirmDelete(id) {
         Swal.fire({
             title: 'تأكيد الحذف',
-           html: `
+            html: `
             <div>
                 هل أنت متأكد أنك تريد حذف هذا الطالب؟
                 <br>
@@ -216,7 +216,7 @@
                                 <div class="d-flex flex-column">
                                     <span class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">الشعبة:</span>
                                     <span class="text-secondary fw-medium" style="font-size: 0.9rem;">
-                                        {{ $theStudent->section->name ?? '-' }}
+                                        <a href="{{ $theStudent->section ? route('sections.show', $theStudent->section->id) : '#' }}">{{ $theStudent->section->name ?? '-' }}</a>
                                     </span>
                                 </div>
                             </div>
@@ -292,6 +292,7 @@
 
         <div class="col-md-4">
             <!-- السجل الأكاديمي -->
+            <!-- السجل الأكاديمي -->
             <div class="card shadow-sm border-0 header-card2">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -307,11 +308,57 @@
                         </button>
                     </div>
 
-                    <div class="row g-3">
-                        <!-- منطقة المحتوى -->
+                    <div class="row g-2" id="enrollmentsList">
+                        @foreach ($theStudent->student_enrollments as $index => $enrollment)
+                        @php
+                        $result = match($enrollment->result) {
+                        'passed' => ['label' => 'ناجح', 'class' => 'bg-success'],
+                        'failed' => ['label' => 'راسب', 'class' => 'bg-danger'],
+                        default => ['label' => 'قيد الدراسة', 'class' => 'bg-secondary'],
+                        };
+                        @endphp
+                        <div class="col-12 {{ $index >= 4 ? 'enrollment-extra d-none' : '' }}">
+                            <div class="d-flex align-items-center justify-content-between py-1 px-2 border rounded-3 bg-light-subtle">
+                                <div>
+                                    <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">الصف: {{ $enrollment->grade->name }}</h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">السنة الدراسية: {{ $enrollment->academic_year->name }}</small>
+                                </div>
+                                <span class="badge rounded-pill {{ $result['class'] }}">
+                                    {{ $result['label'] }}
+                                </span>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
+
+                    @php
+                    $enrollmentCount = $theStudent->student_enrollments->count();
+                    @endphp
+
+                    @if($enrollmentCount > 4)
+                    <div class="text-center mt-2">
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none" id="toggleEnrollmentsBtn">
+                            عرض المزيد {{ '(' . ($enrollmentCount - 4) . ')' }}
+                        </button>
+                    </div>
+                    @endif
+
                 </div>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const btn = document.getElementById('toggleEnrollmentsBtn');
+                    const extras = document.querySelectorAll('.enrollment-extra');
+                    const extraCount = extras.length;
+
+                    btn.addEventListener('click', function() {
+                        const isHidden = extras[0]?.classList.contains('d-none');
+                        extras.forEach(el => el.classList.toggle('d-none'));
+                        this.textContent = isHidden ? 'عرض أقل' : `عرض المزيد (${extraCount})`;
+                    });
+                });
+            </script>
 
             <!-- السجل المالي -->
             <div class="card shadow-sm border-0 header-card2 mt-4">

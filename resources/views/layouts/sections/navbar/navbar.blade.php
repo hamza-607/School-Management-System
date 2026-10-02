@@ -31,6 +31,21 @@ $navbarDetached = ($navbarDetached ?? '');
     transition: background-color .2s ease, padding-inline-end .3s ease;
   }
 
+  .icon-action2 {
+    background-color: rgba(0, 0, 0, .06);
+    padding-inline-end: 12px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    height: 34px;
+    border-radius: 30px;
+    overflow: hidden;
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
   .icon-action:hover {
     background-color: rgba(0, 0, 0, .06);
     padding-inline-end: 12px;
@@ -48,6 +63,14 @@ $navbarDetached = ($navbarDetached ?? '');
     max-width: 0;
     opacity: 0;
     margin-inline-start: 0;
+    overflow: hidden;
+    font-size: .8125rem;
+    transition: max-width .5s ease, opacity .25s ease, margin-inline-start .3s ease;
+  }
+
+  .icon-action-label2 {
+    max-width: 160px;
+    opacity: 1;
     overflow: hidden;
     font-size: .8125rem;
     transition: max-width .5s ease, opacity .25s ease, margin-inline-start .3s ease;
@@ -84,7 +107,7 @@ $navbarDetached = ($navbarDetached ?? '');
       </a>
     </div>
     @endif
-    
+
     <!-- الحاوي الرئيسي: توزيع متساوي بين 3 مجموعات -->
     <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
 
@@ -145,6 +168,14 @@ $navbarDetached = ($navbarDetached ?? '');
             </a>
             @endif
 
+            @php
+            $academicYear = \App\Models\AcademicYear::where('is_current', true)->first();
+            @endphp
+
+            <div class="icon-action2">
+              <i class="ti ti-calendar-event ti-sm me-1 text-primary"></i>
+              <span class="icon-action-label2 text-primary">{{ $academicYear->name ?? 'غير محدد' }}</span>
+            </div>
           </div>
         </li>
       </ul>

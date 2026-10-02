@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeSalaryAdjustmentsController;
 use App\Http\Controllers\FinishedSessionController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\ScoreContoller;
+use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\ScoreCrontroller;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +18,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentPenaltiesController;
 use App\Http\Controllers\SubjectController;
 use App\Models\FinishedSession;
+use App\Models\Student;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +49,10 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('academicYears', [AcademicYearController::class, 'index'])->name('academicYears.index');
+    Route::post('academicYears', [AcademicYearController::class, 'store'])->name('academicYears.store');
+    Route::post('academicYears/semesters', [AcademicYearController::class, 'storeSemester'])->name('semesters.store');
+
     Route::get('editPasswordPage', [AuthController::class, 'editPassword'])->name('editPasswordPage');
     Route::post('editPassword', [AuthController::class, 'editPasswordStore'])->name('editPasswordStore');
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
@@ -56,7 +64,8 @@ Route::middleware('auth')->group(function () {
             Route::get('addFile', [StudentController::class, 'addFile'])->name('student.addFile');
             Route::post('files', [StudentController::class, 'saveFile'])->name('student.saveFile');
             Route::resource('penalties', StudentPenaltiesController::class);
-            Route::resource('scores', ScoreCrontroller::class);
+            Route::get('scores', [ScoreController::class, 'index'])->name('scores.index');
+            Route::put('scores/update', [ScoreController::class, 'updateScores'])->name('scores.update');
         });
     Route::get('penalties/{penaltyID}', [StudentPenaltiesController::class, 'penaltyStatusToggel'])->name('penaltyStatus');
 
@@ -81,14 +90,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('grades', GradeController::class);
 
     Route::resource('sections', SectionController::class);
-    Route::get('sections/{section}/addFile', [SectionController::class, 'addFile'])->name('sections.addFile');
-    Route::post('sections/{section}/files', [SectionController::class, 'saveFile'])->name('sections.saveFile');
-
     Route::prefix('section/{sectionID}')
         ->group(function () {
             Route::resource('studySchedules', SectionSubjectTeacherController::class);
             Route::get('session/{sessionID}/control', [SectionSubjectTeacherController::class, 'controlSession'])->name('controlSession');
             Route::post('session/{sessionID}/attendance', [FinishedSessionController::class, 'finish'])->name('finishedSession');
+            Route::get('addFile', [SectionController::class, 'addFile'])->name('sections.addFile');
+            Route::post('files', [SectionController::class, 'saveFile'])->name('sections.saveFile');
+            Route::post('quizzes/{sectionSubjectTeacherID}', [ScoreController::class, 'storeQuiz'])->name('quizzes.store');
         });
     Route::get('studySchedules', [SectionSubjectTeacherController::class, 'superIndex'])->name('studySchedules.superIndex');
     Route::get('session/{sessionID}', [SectionSubjectTeacherController::class, 'sessionStatusToggel'])->name('sessionStatus');

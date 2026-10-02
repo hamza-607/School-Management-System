@@ -49,8 +49,13 @@ class Student extends Model
         return $this->hasMany(Student_penalties::class);
     }
 
-    public function scores()
+    public function student_enrollments()
     {
-        return $this->hasMany(Score::class);
+        return $this->hasMany(StudentEnrollment::class);
+    }
+
+    public function student_scores()
+    {
+        return $this->hasMany(StudentScore::class);
     }
 }

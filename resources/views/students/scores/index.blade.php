@@ -11,7 +11,82 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 
+@section('page-script')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const body = document.getElementById('resultsBody');
+        const semesterCount = {{
+                count($semesters)
+            }};
+
+        function getValue(el) {
+            if (!el) return 0;
+            const raw = 'value' in el ? el.value : el.textContent;
+            return parseFloat(raw) || 0;
+        }
+
+        function calculateRow(row) {
+            const cells = row.querySelectorAll(':scope > td');
+            const totals = [];
+
+            for (let s = 0; s < semesterCount; s++) {
+                const startIndex = 1 + (s * 3);
+                const quizzesCell = cells[startIndex];
+                const finalCell = cells[startIndex + 1];
+                const totalCell = cells[startIndex + 2];
+
+                let sum = 0;
+
+                quizzesCell.querySelectorAll('.grade-input').forEach(function(el) {
+                    sum += getValue(el);
+                });
+
+                const finalEl = finalCell.querySelector('.final-input');
+                sum += getValue(finalEl);
+
+                totalCell.textContent = sum;
+                totals.push(sum);
+            }
+
+            return totals;
+        }
+
+        function calculateAll() {
+            const grandTotals = new Array(semesterCount).fill(0);
+
+            body.querySelectorAll(':scope > tr').forEach(function(row) {
+                const rowTotals = calculateRow(row);
+                rowTotals.forEach(function(total, i) {
+                    grandTotals[i] += total;
+                });
+            });
+
+            document.querySelectorAll('.grand-total-cell').forEach(function(cell) {
+                const i = parseInt(cell.dataset.semesterIndex, 10);
+                cell.textContent = grandTotals[i];
+            });
+        }
+
+        body.querySelectorAll('input.grade-input, input.final-input').forEach(function(input) {
+            input.addEventListener('input', calculateAll);
+        });
+
+        calculateAll();
+    });
+</script>
+@endsection
 @section('content')
+
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 <h4 class="fw-bold py-3 mb-4">
     <span class="text-muted fw-light">الطلاب /
         <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
@@ -22,108 +97,172 @@
 <x-nav :student="$theStudent" />
 
 <div class="card mt-3">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
         <h5 class="mb-0">جدول النتائج</h5>
+
+        <div class="d-flex align-items-center gap-2">
+            @if (!$updateScores)
+            <a href="{{ route('scores.index', [$theStudent->id ,'updateScores' => true]) }}" class="btn btn-sm btn-outline-primary text-primary">
+                <i class="ti ti-edit-circle me-1 "></i> تعديل
+            </a>
+            @endif
+
+            @if ($updateScores)
+            <button type="submit" id="saveScoresBtn" class="btn btn-sm btn-success" form="updateScoresForm">
+                <i class="ti ti-device-floppy me-1"></i> حفظ التعديلات
+            </button>
+            @endif
+
+            @if ($updateScores)
+            <a href="{{ route('scores.index', $theStudent->id) }}" class="btn btn-secondary">
+                رجوع
+            </a>
+            @endif
+
+            @if (!$updateScores)
+            <div class="vr mx-1"></div>
+            <button type="button" class="btn btn-sm btn-label-secondary">
+                <i class="ti ti-download me-1"></i> طباعة
+            </button>
+            @endif
+        </div>
     </div>
+
     <div class="card-body">
-        <table class="table table-bordered text-center align-middle" id="resultsTable">
-            <thead class="table-light">
-                <tr>
-                    <th>اسم المادة</th>
-                    <th class="quizzes-col">الإختبارات</th>
-                    <th class="final-col">الامتحان النهائي</th>
-                    <th class="total-col">المجموع</th>
-                </tr>
-            </thead>
-            <tbody id="resultsBody">
-                @foreach ($theStudent->section->section_subject_teachers as $oneItem) 
-                <tr>
-                    <td>{{ $oneItem->subject->name }}</td>
-                    <td class="quizzes-col">
-                        <div class="quiz-inputs d-flex flex-wrap gap-1 justify-content-center mb-1"></div>
-                        <button type="button" class="btn btn-sm btn-outline-primary add-quiz-btn">
-                            <i class="bx bx-plus">+</i> 
-                        </button>
-                    </td>
-                    <td class="final-col"><input type="number" class="form-control form-control-sm final-input" value="" min="0" placeholder="0.00"></td>
-                    <td class="total-col fw-bold">0</td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr class="table-secondary fw-bold" id="totalsRow">
-                    <td>المجموع النهائي</td>
-                    <td class="quizzes-col" colspan="2"></td>
-                    <td class="total-col" id="grandTotal">0</td>
-                </tr>
-            </tfoot>
-        </table>
+        <div class="table-responsive">
+            <form action="{{ route('scores.update', [$theStudent->id, null]) }}" id="updateScoresForm" method="POST">
+                @csrf
+                @method('PUT')
+            </form>
+            <table class="table table-bordered text-center align-middle" id="resultsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th rowspan="2">اسم المادة</th>
+                        @foreach ($semesters as $oneSemester)
+                        <th colspan="3" class="final-col">{{ $oneSemester['name'] }}</th>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        @foreach ($semesters as $s)
+                        <th class="quizzes-col">الإختبارات</th>
+                        <th class="final-col">الامتحان النهائي</th>
+                        <th class="total-col">المجموع</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+
+                    @foreach ($scoresAsArray as $subjectIndex => $oneSubectScore)
+
+                    <tr>
+                        <td>
+                            {{ $oneSubectScore['name'] }}
+                            @if ($updateScores)
+                            <input type="hidden" form="updateScoresForm"
+                                name="scores[{{ $subjectIndex }}][subjectID]"
+                                value="{{ $oneSubectScore['id'] }}">
+                            @endif
+                        </td>
+
+                        @foreach ($oneSubectScore['semesters'] as $semesterIndex => $oneSemester)
+
+                        @if ($updateScores)
+                        <input type="hidden" form="updateScoresForm"
+                            name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][id]"
+                            value="{{ $oneSemester['id'] }}">
+                        @endif
+
+                        <td class="quizzes-col">
+                            @forelse($oneSemester['quizzes'] as $index => $oneQuiz)
+
+                            @if ($updateScores)
+                            <div class="small mb-1 d-flex flex-column align-items-center justify-content-center gap-1">
+                                <span class="text-muted">{{ $oneQuiz['scoreName'] }}:</span>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="number"
+                                        form="updateScoresForm"
+                                        class="form-control form-control-sm grade-input"
+                                        name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][quizzes][{{ $index }}][value]"
+                                        value="{{ $oneQuiz['scoreValue'] }}"
+                                        min="0" max="{{ $oneQuiz['scoreMaxValue'] }}"
+                                        placeholder="0"
+                                        title="العلامة هي : {{ $oneQuiz['scoreValue'] }}">
+                                    <span class="text-muted">/{{ $oneQuiz['scoreMaxValue'] }}</span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" form="updateScoresForm"
+                                name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][quizzes][{{ $index }}][id]"
+                                value="{{ $oneQuiz['scoreID'] }}">
+                            @else
+                            <div class="small mb-1 d-flex flex-column align-items-center justify-content-center gap-1">
+                                <span class="text-muted">{{ $oneQuiz['scoreName'] }}:</span>
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="form-control form-control-sm grade-input" title="العلامة هي : {{ $oneQuiz['scoreValue'] }}">{{ $oneQuiz['scoreValue'] }}</div>
+                                    <span class="text-muted">/{{ $oneQuiz['scoreMaxValue'] }}</span>
+                                </div>
+                            </div>
+                            @endif
+
+                            @empty
+                            <div class="small mb-1 d-flex align-items-center justify-content-center gap-1">غير محدد</div>
+                            @endforelse
+                        </td>
+
+                        @if ($oneSemester['final'])
+                        @if ($updateScores)
+                        <td class="final-col">
+                            <div class="small mb-1 d-flex align-items-center justify-content-center gap-1">
+                                <input type="number"
+                                    form="updateScoresForm"
+                                    class="form-control form-control-sm final-input"
+                                    name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][final][value]"
+                                    value="{{ $oneSemester['final']['scoreValue'] }}"
+                                    min="0"
+                                    placeholder="0.00"
+                                    title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}">
+
+                                <span class="text-muted">/{{ $oneSemester['final']['scoreMaxValue']  }}</span>
+                            </div>
+
+                            <input type="hidden" form="updateScoresForm"
+                                name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][final][id]"
+                                value="{{ $oneSemester['final']['scoreID'] }}">
+                        </td>
+                        @else
+                        <td class="final-col">
+                            <div class="small mb-1 d-flex align-items-center justify-content-center gap-1">
+                                <div class="form-control form-control-sm final-input" title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}">{{ $oneSemester['final']['scoreValue'] }}</div>
+                                <span class="text-muted">/{{ $oneSemester['final']['scoreMaxValue']  }}</span>
+                            </div>
+                        </td>
+                        @endif
+                        @else
+                        <td class="final-col">
+                            <div class="small mb-1 d-flex align-items-center justify-content-center gap-1">
+                                غير محدد
+                            </div>
+                        </td>
+                        @endif
+                        <td class="total-col fw-bold">0</td>
+                        @endforeach
+                    </tr>
+                    @endforeach
+                </tbody>
+
+                <tfoot>
+                    <tr class="table-secondary fw-bold" id="totalsRow">
+                        <td>المجموع النهائي</td>
+                        @foreach ($semesters as $semesterIndex => $s)
+                        <td class="quizzes-col" colspan="2"></td>
+                        <td class="total-col grand-total-cell" data-semester-index="{{ $semesterIndex }}">0</td>
+                        @endforeach
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const body = document.getElementById('resultsBody');
 
-    function addQuizToRow(row) {
-        const container = row.querySelector('.quiz-inputs');
-
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('quiz-input-wrapper', 'position-relative');
-        wrapper.style.width = '70px';
-
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.classList.add('form-control', 'form-control-sm', 'quiz-input');
-        input.value = '';
-        input.min = '0';
-        input.placeholder = '0.00';
-        input.addEventListener('input', calculateAll);
-
-        wrapper.appendChild(input);
-        container.appendChild(wrapper);
-
-        calculateAll();
-    }
-
-    function attachRowButton(row) {
-        const btn = row.querySelector('.add-quiz-btn');
-        btn.addEventListener('click', function () {
-            addQuizToRow(row);
-        });
-    }
-
-    function attachFinalListener(row) {
-        const finalInput = row.querySelector('.final-input');
-        finalInput.addEventListener('input', calculateAll);
-    }
-
-    function calculateAll() {
-        let grandTotal = 0;
-
-        body.querySelectorAll('tr').forEach(function (row) {
-            let rowTotal = 0;
-
-            row.querySelectorAll('.quiz-input').forEach(function (input) {
-                rowTotal += parseFloat(input.value) || 0;
-            });
-
-            const finalInput = row.querySelector('.final-input');
-            rowTotal += parseFloat(finalInput.value) || 0;
-
-            row.querySelector('.total-col').textContent = rowTotal;
-            grandTotal += rowTotal;
-        });
-
-        document.getElementById('grandTotal').textContent = grandTotal;
-    }
-
-    body.querySelectorAll('tr').forEach(function (row) {
-        attachRowButton(row);
-        attachFinalListener(row);
-    });
-
-    calculateAll();
-});
-</script>
 @endsection

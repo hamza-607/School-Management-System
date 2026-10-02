@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Score extends Model
+class StudentScore extends Model
 {
     use HasFactory;
 
-    protected $table = 'scores';
+    protected $table = 'student_scores';
 
     protected $fillable = [
         'student_id',
-        'subject_id',
-        'section_id',
-        'final_exam',
+        'score_component_id',
+        'score',
         'notes',
         'created_at',
         'updated_at'
@@ -26,13 +25,8 @@ class Score extends Model
         return $this->belongsTo(Student::class);
     }
 
-    public function subject()
+    public function score_component()
     {
-        return $this->belongsTo(Subject::class);
-    }
-
-    public function quizze()
-    {
-        return $this->hasMany(Quizze::class);
+        return $this->belongsTo(ScoreComponent::class);
     }
 }

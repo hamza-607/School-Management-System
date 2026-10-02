@@ -30,29 +30,35 @@
         --line: #dbe6e3;
         --sage: #006559;
         --sage-bg: #e6f1ef;
-        --burgundy: #7a3540;
+        ` --burgundy: #7a3540;
         --burgundy-bg: #f6ecec;
         --amber: #8a6530;
         --amber-bg: #f3ead6;
     }
 
     .theme-page {
-     /* font-family: 'Cairo', sans-serif; */
-     color: var(--ink-soft); }
+        /* font-family: 'Cairo', sans-serif; */
+        color: var(--ink-soft);
+    }
 
     /* .theme-breadcrumb { font-family: 'Cairo', sans-serif; } */
-    .theme-breadcrumb a { color: #8b8577; text-decoration: none; }
+    .theme-breadcrumb a {
+        color: #8b8577;
+        text-decoration: none;
+    }
 
     .theme-card {
         background: #fff;
         border: 1px solid var(--line);
         border-radius: .35rem;
-        box-shadow: 0 1px 3px rgba(0,53,46,.05);
+        box-shadow: 0 1px 3px rgba(0, 53, 46, .05);
     }
+
     .theme-card-header {
         border-bottom: 1px solid var(--line);
         padding: 1.35rem 1.5rem;
     }
+
     .theme-card-title {
         /* font-family: 'Amiri', serif; */
         font-size: 1.2rem;
@@ -75,11 +81,30 @@
         background: #fff;
         transition: border-color .15s ease, background .15s ease, color .15s ease;
     }
-    .theme-day-pill:hover { border-color: var(--primary); color: var(--ink); }
-    .theme-day-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
-    .theme-day-pill small { display: block; font-size: .68rem; font-weight: 600; opacity: .85; margin-top: .15rem; }
 
-    .table-theme { margin: 0; }
+    .theme-day-pill:hover {
+        border-color: var(--primary);
+        color: var(--ink);
+    }
+
+    .theme-day-pill.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
+
+    .theme-day-pill small {
+        display: block;
+        font-size: .68rem;
+        font-weight: 600;
+        opacity: .85;
+        margin-top: .15rem;
+    }
+
+    .table-theme {
+        margin: 0;
+    }
+
     .table-theme thead th {
         /* font-family: 'Cairo', sans-serif; */
         font-weight: 700;
@@ -91,14 +116,24 @@
         padding: .9rem 1rem;
         white-space: nowrap;
     }
+
     .table-theme tbody td {
         padding: .85rem 1rem;
         vertical-align: middle;
         border-bottom: 1px solid var(--line);
         font-size: .92rem;
     }
-    .table-theme .theme-link { color: var(--ink-soft); text-decoration: none; border-bottom: 1px dashed var(--line); }
-    .table-theme .theme-link:hover { color: var(--ink); border-color: var(--primary); }
+
+    .table-theme .theme-link {
+        color: var(--ink-soft);
+        text-decoration: none;
+        border-bottom: 1px dashed var(--line);
+    }
+
+    .table-theme .theme-link:hover {
+        color: var(--ink);
+        border-color: var(--primary);
+    }
 
     .theme-badge-neutral {
         display: inline-flex;
@@ -124,40 +159,104 @@
         border: 1px solid transparent;
         cursor: pointer;
     }
-    .theme-status-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
-    .theme-status-active { background: var(--sage-bg); color: var(--sage); border-color: #cfe3df; }
-    .theme-status-active .dot { background: var(--sage); }
-    .theme-status-inactive { background: var(--burgundy-bg); color: var(--burgundy); border-color: #e6d4d4; }
-    .theme-status-inactive .dot { background: var(--burgundy); }
-    .theme-status-pending { background: var(--amber-bg); color: var(--amber); border-color: #e6dab8; }
-    .theme-status-pending .dot { background: var(--amber); }
-    .theme-status-locked { cursor: default; }
+
+    .theme-status-pill .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    .theme-status-active {
+        background: var(--sage-bg);
+        color: var(--sage);
+        border-color: #cfe3df;
+    }
+
+    .theme-status-active .dot {
+        background: var(--sage);
+    }
+
+    .theme-status-inactive {
+        background: var(--burgundy-bg);
+        color: var(--burgundy);
+        border-color: #e6d4d4;
+    }
+
+    .theme-status-inactive .dot {
+        background: var(--burgundy);
+    }
+
+    .theme-status-pending {
+        background: var(--amber-bg);
+        color: var(--amber);
+        border-color: #e6dab8;
+    }
+
+    .theme-status-pending .dot {
+        background: var(--amber);
+    }
+
+    .theme-status-locked {
+        cursor: default;
+    }
 
     .theme-status-menu {
         border: 1px solid var(--line);
         border-radius: .35rem;
         padding: .4rem;
-        box-shadow: 0 4px 14px rgba(0,53,46,.08);
+        box-shadow: 0 4px 14px rgba(0, 53, 46, .08);
     }
+
     .theme-status-menu .dropdown-item {
         border-radius: .3rem;
         font-size: .88rem;
         padding: .5rem .7rem;
         /* font-family: 'Cairo', sans-serif; */
     }
-    .theme-status-menu .dropdown-item:hover { background: var(--cream); }
-    .theme-status-menu .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-inline-end: .5rem; }
-    .status-dot-active { background: var(--sage); }
-    .status-dot-canceled { background: var(--burgundy); }
-    .status-dot-scheduled { background: var(--amber); }
 
-    .theme-empty-row { padding: 2rem; text-align: center; color: #8b8577;
-     /* font-family: 'Amiri', serif; font-size: 1.05rem; */
-     }
+    .theme-status-menu .dropdown-item:hover {
+        background: var(--cream);
+    }
+
+    .theme-status-menu .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-inline-end: .5rem;
+    }
+
+    .status-dot-active {
+        background: var(--sage);
+    }
+
+    .status-dot-canceled {
+        background: var(--burgundy);
+    }
+
+    .status-dot-scheduled {
+        background: var(--amber);
+    }
+
+    .theme-empty-row {
+        padding: 2rem;
+        text-align: center;
+        color: #8b8577;
+        /* font-family: 'Amiri', serif; font-size: 1.05rem; */
+    }
 
     /* بطاقات البرامج الدراسية */
-    .col-count { width: 150px !important; text-align: center; }
-    .address-truncate { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .col-count {
+        width: 150px !important;
+        text-align: center;
+    }
+
+    .address-truncate {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
     .study-program-card {
         border-radius: .5rem;
@@ -165,13 +264,21 @@
         transition: all .25s ease;
         cursor: pointer;
     }
+
     .study-program-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 .25rem 1rem rgba(0,53,46,.08);
+        box-shadow: 0 .25rem 1rem rgba(0, 53, 46, .08);
         border-color: var(--primary) !important;
     }
-    .study-program-card-link:hover .study-program-arrow { transform: translateX(-4px); color: var(--primary) !important; }
-    .study-program-arrow { transition: transform .25s ease, color .15s ease; }
+
+    .study-program-card-link:hover .study-program-arrow {
+        transform: translateX(-4px);
+        color: var(--primary) !important;
+    }
+
+    .study-program-arrow {
+        transition: transform .25s ease, color .15s ease;
+    }
 
     .study-program-icon {
         width: 44px;
@@ -184,9 +291,13 @@
         background: var(--cream);
         color: var(--primary);
     }
-    .study-program-card h6 { 
+
+    .study-program-card h6 {
         /* font-family: 'Amiri', serif;  */
-        color: var(--ink); font-weight: 700; }
+        color: var(--ink);
+        font-weight: 700;
+    }
+
     .study-program-badge {
         display: inline-flex;
         padding: .25rem .7rem;
@@ -197,6 +308,7 @@
         font-size: .8rem;
         font-weight: 600;
     }
+
     .study-program-card .card-footer {
         background: transparent;
         border-top: 1px solid var(--line) !important;
@@ -340,6 +452,8 @@
                     }
 
                     $statusInfo = $statusMeta[$currentStatus] ?? $statusMeta['canceled'];
+
+                    $sessionType = $sectionSubjectTeacher->type === 'regular' ? 'اساسية' : ($sectionSubjectTeacher->type === 'final' ? 'امتحان نهائي' : ($sectionSubjectTeacher->type === 'quiz' ? 'اختبار' :'تعويضية'))
                     @endphp
                     <tr>
                         <td class="align-middle fw-bold" style="color: var(--ink);">{{ $index + 1 }}</td>
@@ -392,7 +506,14 @@
                         </td>
 
                         <td class="text-center align-middle">
-                            <span class="theme-badge-neutral">{{ $sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                            <span class="theme-badge-neutral">{{ $sessionType }}</span>
+
+                            <form action="{{ route('quizzes.store', [$sectionSubjectTeacher->section_id, $sectionSubjectTeacher->id]) }}" method="POST" class="d-inline ms-1">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="ti ti-plus ti-xs me-1"></i> مذاكرة
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     @empty
