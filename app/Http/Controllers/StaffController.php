@@ -139,22 +139,6 @@ class StaffController extends Controller
             //انشاء حساب
             $acc = $validated['create_account'] ?? null;
             if ($acc !== null && $acc === 'on') {
-                // dd('ga');
-                // $user = [
-                //     'name' => $validated['name'],
-                //     'email' => $validated['email'],
-                //     'password' => $validated['password'],
-                // ];
-
-                // $newUser = User::create($user);
-                // $staff['user_id'] = $newUser->id;
-
-                // SpatieModelHasRole::create([
-                //     'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
-                //     'model_type' => User::class,
-                //     'model_id' => $newUser->id,
-                // ]);
-
                 $AccountUrl = URL::temporarySignedRoute(
                     'account.create',
                     now()->addHour(),
@@ -383,8 +367,7 @@ class StaffController extends Controller
 
     public function accountStore(Request $request, $staffID)
     {
-        // dd($staffID);
-        // dd($request->all());
+  
         try {
             $validated = $request->validate([
                 "new_password" => [

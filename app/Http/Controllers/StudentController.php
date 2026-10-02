@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
+use App\Models\AcademicYear;
 use App\Models\File;
 use App\Models\Grade;
 use App\Models\Guardian;
@@ -10,6 +11,7 @@ use App\Models\OntParent;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\Student_parent;
+use App\Models\StudentEnrollment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -166,6 +168,19 @@ class StudentController extends Controller
                 }
             }
 
+            $academicYear = AcademicYear::where('is_current', 1)->first();
+
+            StudentEnrollment::create([
+                'student_id' => $newStudent->id,
+                'academic_year_id' => $academicYear->id,
+                'section_id' => $newStudent->section_id,
+                'grade_id' => $newStudent->grade_id,
+                'result' => null,
+                'decided_by' => null,
+                'decided_at' => null,
+                'updated_by' => null,
+            ]);
+
             if ($request->fromGuardianID) {
                 return redirect()->route('guardians.index')->with('success', 'تم إضافة الطالب بنجاح');
             } else {
@@ -262,7 +277,7 @@ class StudentController extends Controller
             }
             $student['picture'] = $path;
 
-            
+
             // dd($student);
             $theStudent = Student::findOrFail($id);
             $theStudent->update($student);

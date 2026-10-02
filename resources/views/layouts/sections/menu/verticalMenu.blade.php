@@ -1,28 +1,7 @@
 @php
 $configData = Helper::appClasses();
+$hasAcademicYear = \App\Models\AcademicYear::whereHas('semesters')->exists();
 @endphp
-
-<style>
-  #layout-menu {
-    --menu-ink: #00352e;
-    --menu-cream: #f5f8f7;
-  }
-
-  #layout-menu .menu-inner .menu-link {
-    color: var(--menu-ink) !important;
-  }
-   
-  #layout-menu .menu-inner .menu-sub .menu-item.active>.menu-link {
-    background-color: var(--menu-cream) !important;
-    color: white !important;
-  }
-
-  /* كلاس منفصل: يلوّن الرابط النشط باللون الأبيض */
-  .menu-active-text-white,
-  .menu-active-text-white * {
-    color: #ffffff !important;
-  }
-</style>
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme rounded-4 shadow-lg">
   <!-- ! Hide app brand if navbar-full -->
@@ -51,6 +30,7 @@ $configData = Helper::appClasses();
       </a>
     </li>
 
+    @if ($hasAcademicYear)
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text">المواعيد والجلسات</span>
     </li>
@@ -107,12 +87,21 @@ $configData = Helper::appClasses();
         dot.style.opacity = dot.style.opacity === '0' ? '1' : '0';
       }, 700);
     </script>
+    @endif
 
 
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text">الإدارة</span>
     </li>
 
+    <li class="menu-item {{ request()->routeIs('academicYears.index') ? 'active' : '' }}">
+      <a href="{{ route('academicYears.index') }}" class="menu-link {{ request()->routeIs('academicYears.index') ? 'menu-active-text-white' : '' }}">
+        <i class="fas fa-calendar-alt"></i>
+        <div class="m-1">السنة الدراسية</div>
+      </a>
+    </li>
+
+    @if ($hasAcademicYear)
     {{-- ادارة الصفوف والشعب --}}
     <li class="menu-item {{ request()->routeIs('grades.*') || request()->routeIs('sections.*') ? 'active open' : '' }} ">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -131,14 +120,14 @@ $configData = Helper::appClasses();
     </li>
 
     {{-- ادارة الطلاب --}}
-    <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') ? 'active open' : '' }} ">
+    <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') || request()->routeIs('scores.*') ? 'active open' : '' }} ">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="fas fa-user-graduate"></i>
         <div class="m-1">الطلاب</div>
       </a>
 
       <ul class="menu-sub">
-        <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') || request()->routeIs('scores.*') ? 'active' : '' }}">
           <a href="{{ route('students.index') }}" class="menu-link">قائمة الطلاب</a>
         </li>
       </ul>
@@ -197,5 +186,6 @@ $configData = Helper::appClasses();
         </li>
       </ul>
     </li>
+    @endif
   </ul>
 </aside>

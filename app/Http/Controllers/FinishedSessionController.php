@@ -46,16 +46,16 @@ class FinishedSessionController extends Controller
             'teachers' => $teachers,
         ]);
     }
-    // public function show(string $id)
-    // {
-    //     $theSession = FinishedSession::with(['sectionSubjectTeacher.subject', 'sectionSubjectTeacher.staff', 'sectionSubjectTeacher.appointment', 'sectionSubjectTeacher.section'])->findOrFail($id);
+    public function show(string $id)
+    {
+        $theSession = FinishedSession::with(['subject', 'staff', 'appointment', 'section'])->findOrFail($id);
 
-    //     // dd($request->from);
+        // dd($request->from);
 
-    //     return view('study_schedules.finishedSessions.show', [
-    //         'theSession' => $theSession,
-    //     ]);
-    // }
+        return view('study_schedules.finishedSessions.show', [
+            'theSession' => $theSession,
+        ]);
+    }
     public function finish(FinishedSessionRequest $request, $sectionID, $sessionID)
     {
         // dd($request->all());

@@ -63,4 +63,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Student_penalties::class, 'user_id');
     }
+
+    public function student_enrollments_decided_by()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'decided_by');
+    }
+
+    public function student_enrollments_updated_by()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'updated_by');
+    }
 }

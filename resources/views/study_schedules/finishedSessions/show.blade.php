@@ -69,8 +69,8 @@
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
     <span class="text-muted fw-light">سجل الحصص الدرسية /
-        <a href="{{ route('finishedSessions.index') }}"  class="text-muted">القائمة</a> /
-    </span> عرض سجل حصة {{ $theSession->sectionSubjectTeacher->subject->name }}
+        <a href="{{ route('finishedSessions.index') }}" class="text-muted">القائمة</a> /
+    </span> عرض سجل حصة {{ $theSession->subject->name }}
 </h4>
 
 <div class="container-fluid px-2 py-4" style="position:relative">
@@ -84,9 +84,9 @@
                     <i class="bi bi-journal-bookmark fs-2 text-primary"></i>
                 </div>
                 <div>
-                    <h5 class="mb-1" style="font-size:xx-large;">{{ $theSession->sectionSubjectTeacher->subject->name }}
+                    <h5 class="mb-1" style="font-size:xx-large;">{{ $theSession->subject->name }}
                         <span class="text-center align-middle fs-6">
-                            <span class="badge bg-label-secondary text-dark">{{ $theSession->sectionSubjectTeacher->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                            <span class="badge bg-label-secondary text-dark">{{ $theSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
                         </span>
                     </h5>
                     @php
@@ -103,23 +103,25 @@
                     <div class="patient-details">
                         <div class="mb-1 text-muted" style="font-size:large;">
                             <i class="bi bi-mortarboard me-1"></i>
-                            الصف {{ $theSession->sectionSubjectTeacher->section->grade->name }} - شعبة {{ $theSession->sectionSubjectTeacher->section->name }}
+                            الصف {{ $theSession->grade->name }}
+                            -
+                            شعبة <a href="{{ $theSession->section ? route('sections.show', $theSession->section->id) : '#' }}">{{ $theSession->section->name ?? 'غير محددة'}}</a>
                         </div>
                         <div class="mb-1 text-muted" style="font-size:large;">
                             <i class="bi bi-calendar-week me-2"></i>
                             <span class="me-1">يوم الحصة:</span>
-                            <span class="badge bg-label-secondary text-dark me-3">{{ $daysMap[$theSession->sectionSubjectTeacher->appointment->day] ?? $theSession->sectionSubjectTeacher->appointment->day }} - {{ $theSession->created_at->format('d/m/Y') }}</span>
+                            <span class="badge bg-label-secondary text-dark me-3">{{ $daysMap[$theSession->appointment->day] ?? $theSession->appointment->day }} - {{ $theSession->created_at->format('d/m/Y') }}</span>
                         </div><br>
                         <div class="mb-1 text-muted" style="font-size: 1rem;">
                             <i class="bi bi-clock-history me-2"></i>
                             <span class="me-1">التوقيت:</span>
                             <span class="me-3">
                                 <span class="badge bg-label-secondary text-dark">
-                                    {{ \Carbon\Carbon::parse($theSession->sectionSubjectTeacher->appointment->start_time)->format('h:i A') }}
+                                    {{ $theSession->appointment->start_time ? \Carbon\Carbon::parse($theSession->appointment->start_time)->format('h:i A') : '-' }}
                                 </span>
                                 <span class="mx-1">-</span>
                                 <span class="badge bg-label-secondary text-dark">
-                                    {{ \Carbon\Carbon::parse($theSession->sectionSubjectTeacher->appointment->end_time)->format('h:i A') }}
+                                    {{ $theSession->appointment->start_time ? \Carbon\Carbon::parse($theSession->appointment->end_time)->format('h:i A') : '-' }}
                                 </span>
                             </span>
                         </div>
@@ -128,11 +130,11 @@
                             <span class="me-1">التوقيت الفعلي:</span>
                             <span class="me-3">
                                 <span class="badge bg-label-secondary text-dark">
-                                    {{ \Carbon\Carbon::parse($theSession->actual_start_time)->format('h:i A') }}
+                                    {{ $theSession->actual_start_time ? \Carbon\Carbon::parse($theSession->actual_start_time)->format('h:i A') : '-' }}
                                 </span>
                                 <span class="mx-1">-</span>
                                 <span class="badge bg-label-secondary text-dark">
-                                    {{ \Carbon\Carbon::parse($theSession->actual_end_time)->format('h:i A') }}
+                                    {{ $theSession->actual_end_time ? \Carbon\Carbon::parse($theSession->actual_end_time)->format('h:i A') : '-' }}
                                 </span>
                             </span>
                         </div>
@@ -171,27 +173,27 @@
 
                     <div class="pb-3">
                         <div class="parent-card border rounded-3 p-3 bg-light-subtle" style="max-width: 860px; flex: 0 0 auto;">
-                            <a href="{{ route('staff_members.show',[$theSession->sectionSubjectTeacher->staff->id, 'from' => $theSession->sectionSubjectTeacher->staff->staff_type]) }}" class="d-flex align-items-center gap-3 mb-2">
+                            <a href="{{ route('staff_members.show',[$theSession->staff->id, 'from' => $theSession->staff->staff_type]) }}" class="d-flex align-items-center gap-3 mb-2">
                                 <div class="d-flex align-items-center justify-content-center rounded-circle"
                                     style="width: 48px; height: 48px; min-width: 48px; background-color: #e6f0ef  !important; color: #006559 !important;">
                                     <i class="bi bi-person fs-5"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-0 fw-bold">{{ $theSession->sectionSubjectTeacher->staff->name }}</h6>
-                                    <small class="text-muted">أستاذ مادة {{ $theSession->sectionSubjectTeacher->subject->name }}</small>
+                                    <h6 class="mb-0 fw-bold">{{ $theSession->staff->name }}</h6>
+                                    <small class="text-muted">أستاذ مادة {{ $theSession->subject->name }}</small>
                                 </div>
                             </a>
                             <div class="mt-2 pt-2 border-top">
                                 <div>
-                                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $theSession->sectionSubjectTeacher->staff->phone ) }}" target="_blank" class="me-3 small mb-1">
+                                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $theSession->staff->phone ) }}" target="_blank" class="me-3 small mb-1">
                                         <i class="bi bi-whatsapp me-2 text-success"></i>
-                                        {{ $theSession->sectionSubjectTeacher->staff->phone }} </a>
+                                        {{ $theSession->staff->phone }} </a>
                                 </div>
                                 <div>
-                                    <a href="https://mail.google.com/mail/?view=cm&to={{ $theSession->sectionSubjectTeacher->staff->email }}"
+                                    <a href="https://mail.google.com/mail/?view=cm&to={{ $theSession->staff->email }}"
                                         target="_blank"
                                         class="text-decoration-none me-3 small">
-                                        <i class="bi bi-envelope me-2 text-secondary"></i>{{ $theSession->sectionSubjectTeacher->staff->email ?? '-' }}
+                                        <i class="bi bi-envelope me-2 text-secondary"></i>{{ $theSession->staff->email ?? '-' }}
                                     </a>
                                 </div>
                             </div>
