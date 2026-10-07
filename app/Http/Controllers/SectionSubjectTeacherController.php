@@ -8,8 +8,10 @@ use App\Models\Contract;
 use App\Models\File;
 use App\Models\FinishedSession;
 use App\Models\Grade;
+use App\Models\ScoreComponent;
 use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
+use App\Models\Semester;
 use App\Models\SpatieModelHasRole;
 use App\Models\Staff;
 use App\Models\Subject;
@@ -96,9 +98,7 @@ class SectionSubjectTeacherController extends Controller
      */
     public function index($sectionID, Request $request)
     {
-        // dd($request->all());
         $section = Section::findOrFail($sectionID);
-        // dd($sectionID);
         $gredeID = $section->grade->id;
         $query = SectionSubjectTeacher::query();
         $query->with(['subject', 'staff', 'appointment']);
@@ -152,7 +152,7 @@ class SectionSubjectTeacherController extends Controller
         // dd($request->validated()['day']);
         try {
             $validated = $request->validated();
-
+            // dd($validated);
             if ($request->staff) {
                 $staff = Staff::findOrFail($request->staff);
                 if (!$staff->is_active) {
@@ -160,10 +160,10 @@ class SectionSubjectTeacherController extends Controller
                 }
             }
 
-            $newAppointment =  Appointment::create([
+            $newAppointment = Appointment::create([
                 'Day' => $validated['day'],
                 'start_time' => $validated['start_time'],
-                'end_time' =>  $validated['end_time'],
+                'end_time' => $validated['end_time'],
                 'status' => 'scheduled',
             ]);
 
@@ -253,7 +253,16 @@ class SectionSubjectTeacherController extends Controller
             $session['teacher_id'] = $staffID;
 
             // dd($session);
-            SectionSubjectTeacher::create($session);
+            $newSession = SectionSubjectTeacher::create($session);
+            $semesterID = session('newCurrentSemesterID') ?? Semester::where('is_current', 1)->first()->id;
+            ScoreComponent::create([
+                'name' => 'امتحان نهائي',
+                'finished_session_id' => null,
+                'section_subject_teacher_id' => $newSession->id,
+                'semester_id' => $semesterID,
+                'type' => 'final_exam',
+                'max_score' => 100,
+            ]);
 
             return redirect()->route('studySchedules.index', $sectionID)->with('success', 'تم أضافة الحصة الدرسية بنجاح');
         } catch (\Exception $e) {
@@ -303,10 +312,10 @@ class SectionSubjectTeacherController extends Controller
 
             $theSession = SectionSubjectTeacher::findOrFail($id);
 
-            $newAppointment =  Appointment::create([
+            $newAppointment = Appointment::create([
                 'Day' => $validated['day'],
                 'start_time' => $validated['start_time'],
-                'end_time' =>  $validated['end_time'],
+                'end_time' => $validated['end_time'],
                 'status' => 'scheduled',
             ]);
 

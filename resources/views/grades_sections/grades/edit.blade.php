@@ -16,11 +16,47 @@
 
 
 @section('content')
-<h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الصفوف /
-        <a href="{{ route('grades.index') }}" class="text-muted">القائمة</a> /
-    </span> تعديل تفاصيل الصف {{ $theGreade->name }}
-</h4>
+    <style>
+        .btn-staff-outline {
+            border: 1px solid #dbe6e3;
+            background: #f5f8f7;
+            color: #3a5350;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .55rem 1.4rem;
+            transition: border-color .15s ease, color .15s ease;
+        }
+
+        .btn-staff-outline:hover {
+            border-color: #006559;
+            color: #00352e;
+        }
+
+        .btn-staff-primary {
+            background: #006559;
+            border: 1px solid #006559;
+            color: #fff;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .44rem 1.4rem;
+            transition: background .15s ease;
+        }
+
+        .btn-staff-primary:hover {
+            background: #00473f;
+            border-color: #00473f;
+            color: #fff;
+        }
+    </style>
+<div class="mb-4">
+        <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
+            <span class="d-block fs-6 fw-medium text-muted">إدارة الصفوف</span>
+            <a href="{{ route('grades.index') }}" class="text-muted">القائمة</a> /
+            <span class="border-bottom border-2 border-primary">تعديل تفاصيل الصف {{ $theGreade->name }}</span>
+        </h4>
+    </div>
 
 <div class="card mb-4">
     <div class="card-body">
@@ -37,9 +73,9 @@
                     @enderror
                 </div>
 
-                <div class="col-md-6 text-end">
-                    <button type="submit" class="btn btn-primary">حفظ</button>
-                    <a href="{{ url()->previous() }}" class="btn btn-secondary">رجوع</a>
+                 <div class="mt-4 text-end">
+                    <button type="submit" class="btn-staff-primary">حفظ</button>
+                    <a href="{{ url()->previous() }}" class="btn-staff-outline">رجوع</a>
                 </div>
             </div>
         </form>

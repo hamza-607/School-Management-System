@@ -47,7 +47,7 @@ class StaffController extends Controller
         }
 
         if ($request->has('gender') && $request->gender !== null) {
-            $query->where('gender',  $request->gender);
+            $query->where('gender', $request->gender);
         }
 
         if ($request->has('subject') && $request->subject !== null) {
@@ -148,6 +148,8 @@ class StaffController extends Controller
                 Mail::raw("رابط إنشاء الحساب: \n{$AccountUrl}\n هذا الرابط صالح لساعة واحدة فقط", function ($message) use ($newStaff) {
                     $message->to($newStaff->email)->subject('إنشاء حساب في مدرسةأفق النموذجية');
                 });
+
+                $successMessage[] = 'تم إرسال رابط إنشاء الحساب إلى البريد الإلكتروني للموظف.';
             }
 
             //اضافة عقد
@@ -162,8 +164,10 @@ class StaffController extends Controller
                     'is_active' => 1,
                 ]);
             }
+            
+            $successMessage[] = 'تم إضافة الموظف بنجاح';
 
-            return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('success', 'تم إضافة الموظف بنجاح');
+            return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('success', $successMessage);
         } catch (\Exception $e) {
             return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('error', 'حدث خطأ أثناء إضافة الموظف: ' . $e->getMessage());
         }
@@ -280,6 +284,8 @@ class StaffController extends Controller
                 Mail::raw("رابط إنشاء الحساب: \n{$AccountUrl}\n هذا الرابط صالح لساعة واحدة فقط", function ($message) use ($theStaff) {
                     $message->to($theStaff->email)->subject('إنشاء حساب في مدرسةأفق النموذجية');
                 });
+
+                $successMessage[] = 'تم إرسال رابط إنشاء الحساب إلى البريد الإلكتروني للموظف.';
             } else {
                 $theAccount = $theStaff->user ?? null;
                 // dd($theAccount);
@@ -300,8 +306,8 @@ class StaffController extends Controller
                             'model_id' => $theAccount->id
                         ]
                     )->update([
-                        'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
-                    ]);
+                                'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
+                            ]);
                     // dd('.');
                 }
             }
@@ -309,7 +315,8 @@ class StaffController extends Controller
             // dd($staff);
             $theStaff->update($staff);
 
-            return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('success', 'تم تعديل معلومات الموظف بنجاح');
+            $successMessage[] = 'تم تعديل معلومات الموظف بنجاح.';
+            return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('success', $successMessage);
         } catch (\Exception $e) {
             // dd($e->getMessage());
             return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('error', 'حدث خطأ أثناء تعديل معلومات الموظف: ' . $e->getMessage());
@@ -367,7 +374,7 @@ class StaffController extends Controller
 
     public function accountStore(Request $request, $staffID)
     {
-  
+
         try {
             $validated = $request->validate([
                 "new_password" => [

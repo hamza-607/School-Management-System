@@ -169,12 +169,15 @@
 @endsection
 
 @section('content')
-<h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الموظفين /
-        <a href="{{ route('staff_members.index',['from' => $from]) }}" class="text-muted">القائمة</a> /
-        <a href="{{ route('staff_members.show',[$theStaff->id,'from' => $from]) }}" class="text-muted">تفاصيل الموظف {{ $theStaff->name }}</a> /
-    </span>إضافة ملف 
-</h4>
+ <div class="mb-4">
+        <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
+            <span class="d-block fs-6 fw-medium text-muted">إدارة الموظفين</span>
+            <a href="{{ route('staff_members.index', ['from' => $from]) }}" class="text-muted">القائمة / </a>
+            <a href="{{ route('staff_members.show', [$theStaff->id, 'from' => $from]) }}" class="text-muted">تفاصيل الموظف
+                {{ $theStaff->name }}</a> /
+            <span class="border-bottom border-2 border-primary">إضافة ملف</span>
+        </h4>
+    </div>
 
 <x-nav :staff="$theStaff" />
 

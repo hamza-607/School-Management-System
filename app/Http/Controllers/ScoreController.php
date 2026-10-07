@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\QuizRequest;
 use App\Http\Requests\ScoreRequest;
 use App\Models\AcademicYear;
 use App\Models\ScoreComponent;
@@ -11,6 +12,7 @@ use App\Models\Student;
 use App\Models\StudentScore;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ScoreController extends Controller
 {
@@ -19,8 +21,13 @@ class ScoreController extends Controller
      */
     public function index($studentID, Request $request)
     {
-        $theAcademicYear_id = AcademicYear::where('is_current', 1)
-            ->first()->id;
+        $yearID = session('newCurrentYear') ?? null;
+        if ($yearID) {
+            $theAcademicYear_id = $yearID;
+        } else {
+            $theAcademicYear_id = AcademicYear::where('is_current', 1)
+                ->first()->id;
+        }
         $semesters = Semester::where('academic_year_id', $theAcademicYear_id)
             ->get(['id', 'name'])
             ->toArray();
@@ -72,8 +79,8 @@ class ScoreController extends Controller
                 // dd($quizzes);
 
                 $semestersScores[$index + 1] = [
-                    'id'      => $semester['id'],
-                    'final'   => $final ? $final->toArray() : null,
+                    'id' => $semester['id'],
+                    'final' => $final ? $final->toArray() : null,
                     'quizzes' => $quizzes ? $quizzes->toArray() : null,
                 ];
             }
@@ -92,67 +99,42 @@ class ScoreController extends Controller
         ]);
     }
 
-    public function storeQuiz(Request $request, $sectionID, $sectionSubjectTeacherID)
+    public function storeQuiz(QuizRequest $request)
     {
-        // dd($request->all(), $sectionID, $sectionSubjectTeacherID);
-
         try {
-            $session = SectionSubjectTeacher::findOrFail($sectionSubjectTeacherID);
+            $validated = $request->validated();
 
-            // ScoreComponent::create([
-            //     'finished_session_id' => null,
-            //     'semester_id',
-            //     'type',
-            //     'max_score',
-            //     'created_at',
-            //     'updated_at'
-            // ]);
+            $session = SectionSubjectTeacher::findOrFail($validated['sessionID']);
+            $semesterID = session('newCurrentSemester') ?? null;
+            $semester = null;
+            if ($semesterID) {
+                Semester::findOrFail($semesterID);
+            } else {
+                $semester = Semester::where('is_current', true)->first();
+            }
+
+            $score_component = ScoreComponent::create([
+                'name' => $validated['title'],
+                'finished_session_id' => null,
+                'section_subject_teacher_id' => $session->id,
+                'semester_id' => $semester->id,
+                'type' => 'quiz',
+                'max_score' => $validated['max_score'],
+            ]);
 
             $session->update([
                 'type' => 'quiz',
             ]);
+
+            return redirect()->route('studySchedules.superIndex',['score_componentID' => $score_component->id])->with('success', 'تم اضافة المذاكرة بنجاح');
         } catch (\Exception $e) {
             return back()->with('error', 'حدث خطأ اثناء اضافة المذاكرة' . $e->getMessage());
         }
     }
 
-
-
     public function updateScores(ScoreRequest $request, $studentID)
     {
         // dd($request->all());
-
-        //   "scores" => array:14 [▼
-        //     0 => array:1 [▼
-        //       "name" => "الأحياء"
-        //     ]
-        //     1 => array:2 [▼
-        //       "name" => "الرياضيات"
-        //       "semesters" => array:2 [▼
-        //         1 => array:2 [▼
-        //           "quizzes" => array:1 [▼
-        //             2 => "80.00"
-        //           ]
-        //           "final" => "20.00"
-        //         ]
-        //         2 => array:1 [▼
-        //           "quizzes" => array:1 [▼
-        //             0 => "20.00"
-        //           ]
-        //         ]
-        //       ]
-        //     ]
-        //     2 => array:1 [▼
-        //       "name" => "فيزياء"
-        //     ]
-        //     3 => array:1 [▼
-        //       "name" => "كيمياء"
-        //     ]
-        //     10 => array:1 [▼
-        //       "name" => "علوم عامة(فيزياء-كيمياء-علوم)"
-        //     ]
-
-
         try {
             // dd($scores);
 

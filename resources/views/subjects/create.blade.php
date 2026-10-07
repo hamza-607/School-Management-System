@@ -3,60 +3,104 @@
 @section('title', 'إضافة مادة')
 
 @section('vendor-style')
-<link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
 @endsection
 
 @section('page-script')
-{{-- السكربتات الأساسية للقالب --}}
-<script src="{{ asset('assets/js/forms-selects.js') }}"></script>
-<script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
+    {{-- السكربتات الأساسية للقالب --}}
+    <script src="{{ asset('assets/js/forms-selects.js') }}"></script>
+    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
 @endsection
 
 
 @section('content')
-<h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">المواد / <a href="{{ route('subjects.index') }}" class="text-muted">القائمة</a> /</span> إضافة مادة جديدة
-</h4>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <form action="{{ route('subjects.store') }}" method="POST" enctype="multipart/form-data" id="studentForm">
-            @csrf
+    <style>
+        .btn-staff-outline {
+            border: 1px solid #dbe6e3;
+            background: #f5f8f7;
+            color: #3a5350;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .55rem 1.4rem;
+            transition: border-color .15s ease, color .15s ease;
+        }
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">الاسم بالعربي <span class="text-danger">*</span></label>
-                    <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{ old('name') }}" required>
-                    @error('name')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
+        .btn-staff-outline:hover {
+            border-color: var(--primary);
+            color: var(--ink);
+        }
 
-                <div class="col-md-6">
-                    <label class="form-label">الاسم بالانكليزي</label>
-                    <input class="form-control @error('e_name') is-invalid @enderror" type="text" name="e_name" value="{{ old('e_name') }}">
-                    @error('e_name')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
+        .btn-staff-primary {
+            background: #006559;
+            border: 1px solid #006559;
+            color: #fff;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .44rem 1.4rem;
+            transition: background .15s ease;
+        }
 
-                <div class="col-md-6">
-                    <label class="form-label">وصف</label>
-                    <textarea class="form-control @error('description') is-invalid @enderror" name="description" rows="3">{{ old('description') }}</textarea>
-                    @error('description')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
+        .btn-staff-primary:hover {
+            background: #00473f;
+            border-color: #00473f;
+            color: #fff;
+        }
+    </style>
 
-            </div>
-
-            <div class="mt-4 text-end">
-                <button type="submit" class="btn btn-primary">حفظ</button>
-                <a href="{{ url()->previous() }}" class="btn btn-secondary">رجوع</a>
-            </div>
-        </form>
+    <div class="mb-4">
+        <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
+            <span class="d-block fs-6 fw-medium text-muted">إدارة المواد</span>
+            <a href="{{ route('subjects.index') }}" class="text-muted">القائمة</a> / 
+            <span class="border-bottom border-2 border-primary"> إضافة مادة جديدة</span>
+        </h4>
     </div>
-</div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ route('subjects.store') }}" method="POST" enctype="multipart/form-data" id="studentForm">
+                @csrf
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">الاسم بالعربي <span class="text-danger">*</span></label>
+                        <input class="form-control @error('name') is-invalid @enderror" type="text" name="name"
+                            value="{{ old('name') }}" required>
+                        @error('name')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">الاسم بالانكليزي</label>
+                        <input class="form-control @error('e_name') is-invalid @enderror" type="text" name="e_name"
+                            value="{{ old('e_name') }}">
+                        @error('e_name')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">وصف</label>
+                        <textarea class="form-control @error('description') is-invalid @enderror" name="description"
+                            rows="3">{{ old('description') }}</textarea>
+                        @error('description')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                </div>
+
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn-staff-primary">حفظ</button>
+                    <a href="{{ url()->previous() }}" class="btn-staff-outline">رجوع</a>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection

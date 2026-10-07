@@ -6,6 +6,8 @@ use App\Models\AcademicYear;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 
+use function PHPSTORM_META\type;
+
 class AcademicYearController extends Controller
 {
     public function index()
@@ -34,7 +36,7 @@ class AcademicYearController extends Controller
                 'is_current' => 0,
             ]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم إضافة السنة الدراسية بنجاح.');
+            return redirect()->route('academicYears.index')->with('success', 'تم إضافة السنة الدراسية بنجاح.')->with('alirt', 'يجب أن يتم تفعيل السنة الدراسية الجديدة من خلال الضغط على زر "تفعيل" بجانب السنة الدراسية الجديدة.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة السنة الدراسية: ' . $e->getMessage());
         }
@@ -57,12 +59,56 @@ class AcademicYearController extends Controller
                 'name' => $validated['name'],
                 'start_date' => $validated['start_date'],
                 'end_date' => $validated['end_date'],
-                'is_current' => null,
+                'is_current' => false,
             ]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم إضافة الفصل الدراسي بنجاح.');
+            return redirect()->route('academicYears.index')->with('success', 'تم إضافة الفصل الدراسي بنجاح.')->with('alirt', 'يجب أن يتم تفعيل الفصل الدراسي الجديد من خلال الضغط على زر "تفعيل" بجانب الفصل الدراسي الجديد.');;
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة الفصل الدراسي: ' . $e->getMessage());
+        }
+    }
+
+    public function setYearCurrent($yearID)
+    {
+        try {
+            $year = AcademicYear::findOrFail($yearID);
+            $currentYears = AcademicYear::where('is_current', true)->get();
+
+            foreach ($currentYears as $oneYear) {
+                $oneYear->update([
+                    'is_current' => false,
+                ]);
+            }
+
+            $year->update([
+                'is_current' => true,
+            ]);
+
+            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'حدث خطأ أثناء تفعيل السنة الدراسية: ' . $e->getMessage());
+        }
+    }
+
+    public function setSemesterCurrent($semesterID)
+    {
+        try {
+            $semester = Semester::findOrFail($semesterID);
+            $currentSemesters = Semester::where('is_current', true)->get();
+
+            foreach ($currentSemesters as $oneSemester) {
+                $oneSemester->update([
+                    'is_current' => false,
+                ]);
+            }
+
+            $semester->update([
+                'is_current' => true,
+            ]);
+
+            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل الفصل الدراسي بنجاح.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'حدث خطأ أثناء تفعيل الفصل الدراسي: ' . $e->getMessage());
         }
     }
 }
