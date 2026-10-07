@@ -266,7 +266,7 @@
                                 {{ $theSession->subject->name  }}
                                 <span class="text-center align-middle fs-6">
                                     <span class="badge bg-label-secondary text-dark">
-                                        {{ $theSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}
+                                        {{ $theSession->type === 'regular' ? 'اساسية' : ($theSession->type === 'makeup' ? 'تعويضية' : ($theSession->type === 'final' ? 'امتحان نهائي' : 'اختبار')) }}
                                     </span>
                                 </span>
                             </h5>

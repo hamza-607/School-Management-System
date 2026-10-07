@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
+use App\Models\Appointment;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Validation\Rules\Password;
@@ -39,6 +42,54 @@ class AuthController extends Controller
         }
 
         if (Auth::attempt($validated)) {
+
+            $today = strtolower(now()->dayName);
+            // dd($today);
+            $is_carried_out = Cache::get('is_carried_out') ?? true;
+            // dd($is_carried_out && $today === 'tuesday');
+            if ($today === 'sunday' && $is_carried_out) { // رجعها بكرا ليوم الاحد
+                $sessions = Appointment::where('status', 'canceled')->orWhere('status', 'completed')->get();
+                // dd($sessions);
+                foreach ($sessions as $session) {
+                    $session->update([
+                        'status' => 'scheduled',
+                    ]);
+                }
+                Cache::put('is_carried_out', false, now()->addDays(1));
+            }
+            // dd('i am not here');
+
+
+            $oldCurrentSemester = Semester::where('is_current', 1)->get();
+            $oldCurrentYears = AcademicYear::where('is_current', 1)->get();
+            // dd($nowSemester, $oldCurrentSemester);
+            foreach ($oldCurrentSemester as $semester) {
+                $semester->update([
+                    'is_current' => 0,
+                ]);
+            }
+            foreach ($oldCurrentYears as $year) {
+                $year->update([
+                    'is_current' => 0,
+                ]);
+            }
+
+            $newCurrentSemester = Semester::where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->first();
+            $newCurrentSemester->update([
+                'is_current' => 1,
+            ]);
+            $newCurrentYear = AcademicYear::where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->first();
+            $newCurrentYear->update([
+                'is_current' => 1,
+            ]);
+
+            session('newCurrentSemesterID', $newCurrentSemester->id);
+            session('newCurrentYearID', $newCurrentYear->id);
+
             $request->session()->regenerate();
             return redirect()->route('dashboard')->with('success', 'اهلا بعودتك ' . Auth::user()->name);
         }
@@ -48,6 +99,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        Cache::forget('is_carried_out');
         Auth::logout();
 
         $request->session()->invalidate();
@@ -120,7 +172,6 @@ class AuthController extends Controller
                 return back()->withErrors(['error' => 'لقد تم إرسال رمز التحقق مسبقًا او انك تجاوزت الحد المسموح لمحاولات التحقق. يرجى الانتظار لمدة دقيقة قبل طلب رمز جديد.']);
             }
 
-
             $otp = random_int(100000, 999999);
             // dd($otp);
             // dd(hash('sha256',$otp));
@@ -159,7 +210,7 @@ class AuthController extends Controller
             }
 
             $validated = $request->validate([
-                'otp'   => 'required|numeric'
+                'otp' => 'required|numeric'
             ]);
             // dd($request->all());
 
@@ -188,7 +239,7 @@ class AuthController extends Controller
             }
 
             // dd($checkOtpCounter);
-            if ( $checkOtpTime !== hash('sha256', $validated['otp'])) {
+            if ($checkOtpTime !== hash('sha256', $validated['otp'])) {
                 Cache::increment('otp_counter_' . $email);
                 return back()->withErrors(['errors' => 'هذا الرمز غير صحيح. يرجى المحاولة مرة أخرى.']);
             }

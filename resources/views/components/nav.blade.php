@@ -54,7 +54,56 @@ $filesActive = request()->routeIs('student.addFile')
 // $isScoresActive = request()->routeIs('scores.*');
 @endphp
 
-<ul class="nav nav-pills flex-column flex-md-row mb-4 ms-2">
+<style>
+    :root {
+        --ink: #00352e;
+        --ink-soft: #3a5350;
+        --primary: #006559;
+        --primary-dark: #00473f;
+        --gold: #ab8347;
+        --cream: #f5f8f7;
+        --line: #dbe6e3;
+    }
+
+    .app-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .4rem;
+        list-style: none;
+        margin: 0 0 1.75rem;
+        padding: .5rem;
+        background: var(--cream);
+        border: 1px solid var(--line);
+        border-radius: .5rem;
+    }
+    .app-tabs .nav-item { margin: 0; }
+    .app-tabs .nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        background: transparent;
+        border: none;
+        border-radius: .4rem;
+        padding: .75rem 1.4rem;
+        text-decoration: none;
+        transition: color .15s ease, background .15s ease;
+    }
+    .app-tabs .nav-link i { font-size: 1.05rem; color: var(--gold); transition: color .15s ease; }
+    .app-tabs .nav-link:hover { color: var(--ink); background: #fff; }
+    .app-tabs .nav-link.active {
+        color: #fff;
+        background: var(--primary);
+        box-shadow: 0 2px 6px rgba(0,101,89,.25);
+    }
+    .app-tabs .nav-link.active i { color: #fff; }
+</style>
+
+<ul class="nav nav-pills flex-column flex-md-row mb-4 ms-2 app-tabs" style="padding-right: 7px;">
         <li class="nav-item"><a
                         class="nav-link {{ $showActive ? 'active' : '' }}"
                         href="{{ $showUrl }}"><i
@@ -100,3 +149,4 @@ $filesActive = request()->routeIs('student.addFile')
         </a></li>
         @endif --}}
 </ul>
+

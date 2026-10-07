@@ -47,7 +47,7 @@ class GradeController extends Controller
                 'name' => $validated['name'],
             ]);
 
-            return redirect()->route('grades.index')->with('success', 'تم إضافة الصف بنجاح.');
+            return redirect()->route('grades.index')->with('success',[ 'تم إضافة الصف بنجاح.']);
         } catch (\Exception $e) {
             return redirect()->route('grades.index')->with('error', 'حدث خطأ أثناء إضافة صف: ' . $e->getMessage());
         }

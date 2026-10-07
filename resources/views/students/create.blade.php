@@ -205,8 +205,7 @@
             <div class="card border shadow-sm mb-3 parent-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><i class="ti ti-user me-2"></i>بيانات ولي الامر</h6>
-                    <button type="button" class="btn btn-sm btn-danger remove-parent"><i class="ti ti-trash"></i></button>
-                </div>
+<button type="button" class="btn-theme-remove remove-parent"><i class="ti ti-trash ti-xs"></i></button>                </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -284,11 +283,87 @@
 @endsection
 
 @section('content')
-<h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">الطلاب /
-        <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
-    </span> إضافة طالب جديد
-</h4>
+
+<style>
+     .theme-parents-panel {
+        background: #f5f8f7;
+        border: 1px solid #dbe6e3;
+        border-radius: .35rem;
+        padding: 1.1rem 1.4rem;
+        margin-bottom: 1.5rem;
+    }
+    .theme-parents-panel h6 {
+        color:#00352e;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: .2rem;
+    }
+    .theme-parents-panel small { color: #8b8577; }
+    .btn-theme-primary {
+        background: #006559;
+        border: 1px solid #006559;
+        color: #fff;
+        border-radius: .3rem;
+        font-weight: 600;
+        font-size: .9rem;
+        padding: .55rem 1.4rem;
+        transition: background .15s ease;
+    }
+    .btn-theme-primary:hover { background: #00473f; border-color: #00473f; color: #fff; }
+    .btn-theme-primary.btn-sm { padding: .45rem 1.1rem; font-size: .85rem; }
+ .btn-staff-outline {
+            border: 1px solid #dbe6e3;
+            background: #f5f8f7;
+            color: #3a5350;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .55rem 1.4rem;
+            transition: border-color .15s ease, color .15s ease;
+        }
+
+        .btn-staff-outline:hover {
+            border-color: var(--primary);
+            color: var(--ink);
+        }
+
+        .btn-staff-primary {
+            background: #006559;
+            border: 1px solid #006559;
+            color: #fff;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .44rem 1.4rem;
+            transition: background .15s ease;
+        }
+
+        .btn-staff-primary:hover {
+            background: #00473f;
+            border-color: #00473f;
+            color: #fff;
+        }
+        .btn-theme-remove {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .3rem;
+    border: 1px solid #e6d4d4;
+    background: #f6ecec;
+    color: #7a3540;
+    transition: background .15s ease, color .15s ease;
+}
+.btn-theme-remove:hover { background: #7a3540; color: #fff; }
+</style>
+    <div class="mb-4">
+        <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
+            <span class="d-block fs-6 fw-medium text-muted">إدارة الطلاب</span>
+            <a href="{{ route('students.index') }}" class="text-muted">القائمة</a> /
+            <span class="border-bottom border-2 border-primary">إضافة طالب جديد</span>
+        </h4>
+    </div>
 
 <div class="card mb-4">
     <div class="card-body">
@@ -412,34 +487,20 @@
                     @enderror
                 </div>
 
-                <div class="card border-0 bg-label-secondary mb-4">
-                    <div class="card-body py-3">
-
-                        <div class="d-flex justify-content-between align-items-center">
-
+                 <div class="col-12">
+                        <div class="theme-parents-panel d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
-                                <h6 class="mb-1 fw-semibold">
-                                    أولياء الأمور
-                                </h6>
-
-                                <small class="text-muted">
-                                    أضف ولي أمر واحد على الأقل
-                                </small>
+                                <h6>أولياء الأمور</h6>
+                                <small>أضف ولي أمر واحد على الأقل</small>
                             </div>
 
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id="parentAdd">
-
+                            <button type="button" class="btn-theme-primary btn-sm" id="parentAdd">
                                 <i class="ti ti-plus me-1"></i>
                                 إضافة ولي أمر
                             </button>
-
                         </div>
-
                     </div>
-                </div>
+
 
                 @if ($errors->any())
                 <ul class="mb-0">
@@ -456,8 +517,7 @@
                     <div class="card border shadow-sm mb-3 parent-card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h6 class="mb-0"><i class="ti ti-user me-2"></i>بيانات ولي الامر</h6>
-                            <button type="button" class="btn btn-sm btn-danger remove-parent"><i class="ti ti-trash"></i></button>
-                        </div>
+<button type="button" class="btn-theme-remove remove-parent"><i class="ti ti-trash ti-xs"></i></button>                        </div>
                         <div class="card-body">
                             <div class="row g-3">
                                 <input type="hidden" value="{{ $fromGuardian->id }}" name="old_parent[id]">
@@ -506,9 +566,9 @@
             <input type="hidden" name="new_section_capacity" id="new_section_capacity">
 
             <div class="mt-4 text-end">
-                <button type="submit" class="btn btn-primary">حفظ</button>
-                <a href="{{ url()->previous() }}" class="btn btn-secondary">رجوع</a>
-            </div>
+                    <button type="submit" class="btn-staff-primary">حفظ</button>
+                    <a href="{{ url()->previous() }}" class="btn-staff-outline">رجوع</a>
+                </div>
 
             {{-- Modal Grade --}}
             <div class="modal fade" id="gradeModal" tabindex="-1" aria-hidden="true">

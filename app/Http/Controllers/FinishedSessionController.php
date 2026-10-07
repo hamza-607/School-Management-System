@@ -6,6 +6,7 @@ use App\Http\Requests\FinishedSessionRequest;
 use App\Models\Attendance;
 use App\Models\FinishedSession;
 use App\Models\Grade;
+use App\Models\ScoreComponent;
 use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
 use App\Models\Staff;
@@ -46,6 +47,7 @@ class FinishedSessionController extends Controller
             'teachers' => $teachers,
         ]);
     }
+
     public function show(string $id)
     {
         $theSession = FinishedSession::with(['subject', 'staff', 'appointment', 'section'])->findOrFail($id);
@@ -56,6 +58,7 @@ class FinishedSessionController extends Controller
             'theSession' => $theSession,
         ]);
     }
+
     public function finish(FinishedSessionRequest $request, $sectionID, $sessionID)
     {
         // dd($request->all());
@@ -72,16 +75,29 @@ class FinishedSessionController extends Controller
                 ->where('status', 'active')
                 ->first();
 
-            // dd($finishedSession);
             $finishedSession->update([
                 'actual_end_time' => now()->format('H:i:s'),
                 'status' => 'completed',
             ]);
 
-            if ($session->type === 'makeup') {
+            if ($session->type === 'quiz' || $session->type === 'final') {
+                ScoreComponent::where('section_subject_teacher_id', $session->id)
+                    ->where('finished_session_id', null)
+                    ->first()
+                    ->update([
+                        'finished_session_id' => $finishedSession->id,
+                    ]);
+            }
+
+            $session->appointment()->update(['status' => 'completed']);
+            if ($session->type === 'makeup' || $session->type === 'final') {
                 $session->delete();
             } else {
-                $session->appointment->update(['status' => 'scheduled']);
+                if ($session->type === 'quiz') {
+                    $session->update([
+                        'type' => 'regular',
+                    ]);
+                }
             }
 
             //تسجيل الحضور
@@ -116,6 +132,7 @@ class FinishedSessionController extends Controller
             return redirect()->back()->withInput()->with('error', 'حدث خطأ اثناء انهاء الجلسة' . $e->getMessage());
         }
     }
+
     public function destroy($sessionID)
     {
         try {

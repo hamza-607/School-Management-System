@@ -25,11 +25,11 @@ class SessionRequest extends FormRequest
     {
         $data = [
             "subject" => ['required', Rule::when($this->subject !== 'NEW', ['exists:subjects,id'])],
-            "staff" =>  ['required', Rule::when($this->staff !== 'NEW', ['exists:staff,id'])],
+            "staff" => ['required', Rule::when($this->staff !== 'NEW', ['exists:staff,id'])],
             "start_time" => 'required|date_format:H:i:s',
             "end_time" => 'required|date_format:H:i:s',
             "day" => 'required|in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
-            'type' => 'nullable|in:regular,makeup',
+            'type' => 'nullable|in:regular,makeup,final,quiz',
 
             //مادة جديدة
             "new_subject_name" => 'exclude_unless:subject,NEW|required|string|max:255',

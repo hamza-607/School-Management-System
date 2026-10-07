@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class SectionRequest extends FormRequest
+class QuizRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +22,10 @@ class SectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => 'required|string|max:225',
-            "grade" => ["required", Rule::when($this->grade !== "NEW", ['exists:grades,id'])],
-            "capacity" => 'nullable|numeric|min:0',
-            "new_grade_name" => 'exclude_unless:grade,NEW|required|string|max:255',
+            "sessionID" => 'required|exists:section_subject_teacher,id',
+            "title" => 'required|string|max:255',
+            "date" => 'required|date',
+            "max_score" => 'required|numeric|min:0',
         ];
     }
 }

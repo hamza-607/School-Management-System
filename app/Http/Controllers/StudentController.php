@@ -168,7 +168,13 @@ class StudentController extends Controller
                 }
             }
 
-            $academicYear = AcademicYear::where('is_current', 1)->first();
+            $yearID = session('newCurrentYear') ?? null;
+            $academicYear = null;
+            if ($yearID) {
+                $academicYear = AcademicYear::findOrFail($yearID);
+            } else {
+                $academicYear = AcademicYear::where('is_current', 1)->first();
+            }
 
             StudentEnrollment::create([
                 'student_id' => $newStudent->id,
@@ -213,10 +219,9 @@ class StudentController extends Controller
     public function edit(string $id)
     {
         $student = Student::findOrFail($id);
-        // dd($student);
         $grades = Grade::all();
         $sections = Section::all();
-        // dd($sections);
+
         return view('students.edit', [
             'theStudent' => $student,
             'sections' => $sections,
@@ -229,7 +234,6 @@ class StudentController extends Controller
      */
     public function update(StoreStudentRequest $request, string $id)
     {
-        // dd($request->all());
         $validate = $request->validated();
         // dd(Guardian::whereIn('id', $validate['old_parent_ids'])->pluck('id')->toArray());
         try {
@@ -418,10 +422,10 @@ class StudentController extends Controller
                 File::create([
                     'name' => $file->getClientOriginalName(),
                     'file_path' => $path,
-                    'uploaded_by' => Auth::id(), // Auth::id()
+                    'uploaded_by' => Auth::id(),
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'owner_type' => 'App\Models\Student',
+                    'owner_type' => Student::class,
                     'owner_id' => $studentID,
                 ]);
             }

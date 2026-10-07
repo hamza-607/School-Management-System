@@ -12,7 +12,9 @@ class ScoreComponent extends Model
     protected $table = 'score_components';
 
     protected $fillable = [
+        'name',
         'finished_session_id',
+        'section_subject_teacher_id',
         'semester_id',
         'type',
         'max_score',

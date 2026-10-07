@@ -18,19 +18,19 @@ class UserSeeder extends Seeder
                 'id' => 1,
                 'name' => 'حمزة محمد حيش',
                 'email' => 'superAdmin123@test.com',
-                'password' => '$2y$10$GoF65KHYEcCf2EAfA1x2pulgzOb5NyLo.BzeFga5SqXdhyd39C/.e',
+                'password' => '$2y$10$CwDpkuyPigcWUMtJuoan3eUAvQSVqOoMpa5qKQVCH5Xvl1XZXCJPu',
             ],
             [
                 'id' => 2,
                 'name' => 'حمزة محمد حيش',
                 'email' => 'admin123@test.com',
-                'password' => '$2y$10$GoF65KHYEcCf2EAfA1x2pulgzOb5NyLo.BzeFga5SqXdhyd39C/.e',
+                'password' => '$2y$10$CwDpkuyPigcWUMtJuoan3eUAvQSVqOoMpa5qKQVCH5Xvl1XZXCJPu',
             ],
             [
                 'id' => 3,
                 'name' => 'حمزة محمد حيش',
                 'email' => 'teacher123@test.com',
-                'password' => '$2y$10$GoF65KHYEcCf2EAfA1x2pulgzOb5NyLo.BzeFga5SqXdhyd39C/.e',
+                'password' => '$2y$10$CwDpkuyPigcWUMtJuoan3eUAvQSVqOoMpa5qKQVCH5Xvl1XZXCJPu',
             ]
         ];
 

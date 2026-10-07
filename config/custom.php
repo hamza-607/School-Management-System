@@ -21,7 +21,7 @@ return [
     'showDropdownOnHover' => true, // true, false (for horizontal layout only)
     'customizerControls' => [
       // 'rtl',
-      'style',
+      // 'style',
       // 'layoutType',
       // 'showDropdownOnHover',
       'layoutNavbarFixed',
