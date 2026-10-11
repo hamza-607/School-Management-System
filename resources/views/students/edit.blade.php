@@ -419,7 +419,7 @@
                         <option value="add_new_grade" class="text-primary fw-bold"><span style="color:#006559; font-size:32px;">✚</span> إضافة صف جديد</option>
                         @foreach ($grades as $grade)
                         <option value="{{ $grade->id }}"
-                            {{ $theStudent->grade_id == $grade->id ? 'selected' : '' }}>
+                            {{ $theStudent->student_enrollments->first()->grade_id == $grade->id ? 'selected' : '' }}>
                             {{ $grade->name }}
                         </option>
                         @endforeach
@@ -435,7 +435,7 @@
 
                     <select id="section_select"
                         name="section"
-                        data-current-section="{{ $theStudent->section_id }}"
+                        data-current-section="{{ $theStudent->student_enrollments->first()->section_id }}"
                         class="select2 form-select @error('section') is-invalid @enderror">
 
                         <option value="">اختر الشعبة</option>
@@ -448,7 +448,7 @@
                         <option
                             value="{{ $section->id }}"
                             data-grade="{{ $section->grade_id }}"
-                            {{ $theStudent->section_id == $section->id ? 'selected' : '' }}>
+                            {{ $theStudent->student_enrollments->first()->section_id == $section->id ? 'selected' : '' }}>
                             {{ $section->name }}
                         </option>
                         @endforeach

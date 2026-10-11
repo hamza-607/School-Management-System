@@ -49,7 +49,7 @@
     const attendanceDraftKey = 'attendance-draft-{{ $theSession->id }}';
     const oldAttendance = @json(old('attendance', []));
     const oldPenalties = @json(old('penalties', []));
-    const studentNames = @json($students->pluck('name', 'id'));
+    const studentNames = @json($student_enrollments->pluck('student.name', 'student.id'));
 
     document.addEventListener('DOMContentLoaded', function() {
         if (@json(session()->has('success'))) {
@@ -335,19 +335,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($students as $index => $student)
+                            @forelse ($student_enrollments as $index => $student_enrollment)
                             <tr class="student-row">
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle d-flex align-items-center  justify-content-center" style="width: 48px; height: 48px; min-width: 48px; background-color: #e6f0ef  !important; color: #006559 !important;">
-                                            {{ mb_substr($student->name, 0, 1) }}
+                                            {{ mb_substr($student_enrollment->student->name, 0, 1) }}
                                         </div>
-                                        <span>{{ $student->name }}</span>
+                                        <span>{{ $student_enrollment->student->name }}</span>
                                     </div>
                                 </td>
                                 <td class="align-middle">
-                                    <input type="hidden" name="attendance[{{ $index }}][student_id]" value="{{ $student->id }}">
+                                    <input type="hidden" name="attendance[{{ $index }}][student_id]" value="{{ $student_enrollment->student_id }}">
                                     <div class="col-12 mt-3 d-flex gap-2" style="justify-content: center;">
                                         <label>
                                             <input class="form-check-input" type="radio" name="attendance[{{ $index }}][status]" value="present">
@@ -365,7 +365,7 @@
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-label-danger btn-sm add-penalty-btn"
-                                        data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}">
+                                        data-student-id="{{ $student_enrollment->student_id }}" data-student-name="{{ $student_enrollment->student->name }}">
                                         <i class="bi bi-exclamation-triangle me-1"></i>
                                         إضافة عقوبة
                                     </button>

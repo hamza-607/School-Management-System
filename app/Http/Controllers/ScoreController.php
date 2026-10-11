@@ -21,21 +21,17 @@ class ScoreController extends Controller
      */
     public function index($studentID, Request $request)
     {
-        $yearID = session('newCurrentYear') ?? null;
-        if ($yearID) {
-            $theAcademicYear_id = $yearID;
-        } else {
-            $theAcademicYear_id = AcademicYear::where('is_current', 1)
-                ->first()->id;
-        }
+        $theAcademicYear_id = session('newCurrentYearID') ?? AcademicYear::where('is_current', 1)
+            ->first()->id;
+            
         $semesters = Semester::where('academic_year_id', $theAcademicYear_id)
             ->get(['id', 'name'])
             ->toArray();
 
         // dd($semesters);
 
-        $theStudent = Student::findOrFail($studentID);
-        $subjectIDs = $theStudent->section->section_subject_teachers->unique('subject_id')
+        $theStudentEnrollment = Student::findOrFail($studentID)->student_enrollments()->where('academic_year_id', $theAcademicYear_id)->with('student')->first();
+        $subjectIDs = $theStudentEnrollment->section->section_subject_teachers->unique('subject_id')
             ->pluck('subject_id')
             ->toArray();
         $subjects = Subject::whereIn('id', $subjectIDs)
@@ -90,9 +86,9 @@ class ScoreController extends Controller
             $scoresAsArray[] = $subject;
         }
         // dd($scoresAsArray);
-        // dd($theStudent, $semesters, $scoresAsArray);
+        // dd($theStudentEnrollment, $semesters, $scoresAsArray);
         return view('students.scores.index', [
-            'theStudent' => $theStudent,
+            'theStudentEnrollment' => $theStudentEnrollment,
             'semesters' => $semesters,
             'scoresAsArray' => $scoresAsArray,
             'updateScores' => $request->updateScores ?? false,
@@ -105,19 +101,13 @@ class ScoreController extends Controller
             $validated = $request->validated();
 
             $session = SectionSubjectTeacher::findOrFail($validated['sessionID']);
-            $semesterID = session('newCurrentSemester') ?? null;
-            $semester = null;
-            if ($semesterID) {
-                Semester::findOrFail($semesterID);
-            } else {
-                $semester = Semester::where('is_current', true)->first();
-            }
+            $semesterID = session('newCurrentSemesterID') ?? Semester::where('is_current', true)->first()->id;
 
             $score_component = ScoreComponent::create([
                 'name' => $validated['title'],
                 'finished_session_id' => null,
                 'section_subject_teacher_id' => $session->id,
-                'semester_id' => $semester->id,
+                'semester_id' => $semesterID,
                 'type' => 'quiz',
                 'max_score' => $validated['max_score'],
             ]);
@@ -126,7 +116,7 @@ class ScoreController extends Controller
                 'type' => 'quiz',
             ]);
 
-            return redirect()->route('studySchedules.superIndex',['score_componentID' => $score_component->id])->with('success', 'تم اضافة المذاكرة بنجاح');
+            return redirect()->route('studySchedules.superIndex', ['score_componentID' => $score_component->id])->with('success', 'تم اضافة المذاكرة بنجاح');
         } catch (\Exception $e) {
             return back()->with('error', 'حدث خطأ اثناء اضافة المذاكرة' . $e->getMessage());
         }

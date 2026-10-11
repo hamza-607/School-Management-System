@@ -13,9 +13,7 @@ class Student extends Model
         'name',
         'e_name',
         'picture',
-        'section_id',
         'phoneNumber',
-        'grade_id',
         'date_of_birth',
         'gender',
         'address',
@@ -23,17 +21,7 @@ class Student extends Model
         'created_at',
         'updated_at'
     ];
-
-    public function section()
-    {
-        return $this->belongsTo(Section::class);
-    }
-
-    public function grade()
-    {
-        return $this->belongsTo(Grade::class);
-    }
-
+    
     public function student_parents()
     {
         return $this->hasMany(Student_parent::class, 'student_id', 'id');

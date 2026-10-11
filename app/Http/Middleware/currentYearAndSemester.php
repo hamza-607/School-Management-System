@@ -27,7 +27,7 @@ class currentYearAndSemester
             $year = AcademicYear::where('is_current', 1)->first();
         }
         if ($semesterID) {
-            $semester = $year ? ($year->semesters()->findOrFail($semesterID)) : null;
+            $semester = $year ? ($semesterID) : null;
         } else {
             $semester = $year ? ($year->semesters()->where('is_current', 1)->first()) : null;
         }

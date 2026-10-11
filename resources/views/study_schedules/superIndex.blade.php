@@ -608,7 +608,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6">
-                                        <div class="theme-empty-row">لا يوجد حصص درسية لهذا المدرس</div>
+                                        <div class="text-center py-4">لا يوجد حصص درسية لهذا المدرس</div>
                                     </td>
                                 </tr>
                             @endforelse

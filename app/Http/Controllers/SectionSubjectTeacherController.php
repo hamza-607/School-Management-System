@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SessionRequest;
+use App\Models\AcademicYear;
 use App\Models\Appointment;
 use App\Models\Contract;
 use App\Models\File;
@@ -25,12 +26,12 @@ class SectionSubjectTeacherController extends Controller
     public function controlSession($sessionID, $sectionID)
     {
         $theSession = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->findOrFail($sessionID);
-        $students = $theSession->section->students;
+        $student_enrollments = $theSession->section->student_enrollments()->with('student')->get();
 
         return view('study_schedules.activeSessions.controlSession', [
             'theSession' => $theSession,
             'theSection' => Section::findOrFail($sectionID),
-            'students' => $students,
+            'student_enrollments' => $student_enrollments,
         ]);
     }
 
@@ -70,6 +71,8 @@ class SectionSubjectTeacherController extends Controller
     {
         // dd($request->all());
         // dd(strtolower(now()->dayName));
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+
         if (Auth::check()) {
             $teacher_id = Auth::user()->staff->id;
         } else {
@@ -77,15 +80,17 @@ class SectionSubjectTeacherController extends Controller
         }
 
         // dd($teacher_id);
-        $sectionSubjectTeachers = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])
+        $sectionSubjectTeachers = SectionSubjectTeacher::whereHas('section', function ($q) use ($academicYearID) {
+            $q->where('academic_year_id', $academicYearID);
+        })
             ->where('teacher_id', $teacher_id)
             ->whereHas('appointment', function ($q) use ($request) {
-                $q->where('day', $request->day ?? strtolower(now()->dayName));
-            })
+                $q->where('day', $request->day ?? strtolower(now()->locale('en')->dayName));
+            })->with(['grade', 'section', 'staff', 'appointment'])
             ->get();
         // dd($sectionSubjectTeachers);
 
-        $sections = Section::with('grade')->get();
+        $sections = Section::where('academic_year_id', $academicYearID)->with('grade')->get();
         // dd($sectionSubjectTeacher);
 
         return view('study_schedules.superIndex', [
@@ -153,7 +158,7 @@ class SectionSubjectTeacherController extends Controller
         try {
             $validated = $request->validated();
             // dd($validated);
-            if ($request->staff) {
+            if ($request->staff && $request->staff !== 'NEW') {
                 $staff = Staff::findOrFail($request->staff);
                 if (!$staff->is_active) {
                     return redirect()->back()->withInput()->with('error', 'لا يمكن اختيار هذا المدرس لأنه غير نشط.');
@@ -178,9 +183,9 @@ class SectionSubjectTeacherController extends Controller
             $subjectID = $request->subject;
             if ($subjectID === 'NEW') {
                 $subject = [
-                    "new_subject_name" => $validated['new_subject_name'],
-                    "new_subject_e_name" => $validated['new_subject_e_name'] ?? null,
-                    "new_subject_description" => $validated['new_subject_description'] ?? null,
+                    "name" => $validated['new_subject_name'],
+                    "e_name" => $validated['new_subject_e_name'] ?? null,
+                    "description" => $validated['new_subject_description'] ?? null,
                 ];
 
                 $newSubject = Subject::create($subject);
@@ -254,16 +259,18 @@ class SectionSubjectTeacherController extends Controller
 
             // dd($session);
             $newSession = SectionSubjectTeacher::create($session);
-            $semesterID = session('newCurrentSemesterID') ?? Semester::where('is_current', 1)->first()->id;
-            ScoreComponent::create([
-                'name' => 'امتحان نهائي',
-                'finished_session_id' => null,
-                'section_subject_teacher_id' => $newSession->id,
-                'semester_id' => $semesterID,
-                'type' => 'final_exam',
-                'max_score' => 100,
-            ]);
 
+            if ($newSession->type === 'final') {
+                $semesterID = session('newCurrentSemesterID') ?? Semester::where('is_current', 1)->first()->id;
+                ScoreComponent::create([
+                    'name' => 'امتحان نهائي',
+                    'finished_session_id' => null,
+                    'section_subject_teacher_id' => $newSession->id,
+                    'semester_id' => $semesterID,
+                    'type' => 'final_exam',
+                    'max_score' => 100,
+                ]);
+            }
             return redirect()->route('studySchedules.index', $sectionID)->with('success', 'تم أضافة الحصة الدرسية بنجاح');
         } catch (\Exception $e) {
             return redirect()->route('studySchedules.index', $sectionID)->with('error', 'حدث خطأ أثناء أضافة الحصة الدرسية: ' . $e->getMessage());

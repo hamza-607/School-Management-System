@@ -12,7 +12,7 @@ class AcademicYearController extends Controller
 {
     public function index()
     {
-        $academicYears = AcademicYear::with('semesters')->get();
+        $academicYears = AcademicYear::with('semesters')->latest()->get();
 
         return view('academicYears.index', [
             'academicYears' => $academicYears
@@ -36,7 +36,7 @@ class AcademicYearController extends Controller
                 'is_current' => 0,
             ]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم إضافة السنة الدراسية بنجاح.')->with('alirt', 'يجب أن يتم تفعيل السنة الدراسية الجديدة من خلال الضغط على زر "تفعيل" بجانب السنة الدراسية الجديدة.');
+            return redirect()->route('academicYears.index')->with('success', 'تم إضافة السنة الدراسية بنجاح.')->with('alert', 'يجب أن يتم تفعيل السنة الدراسية الجديدة من خلال الضغط على زر "تفعيل" بجانب السنة الدراسية الجديدة.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة السنة الدراسية: ' . $e->getMessage());
         }
@@ -62,7 +62,8 @@ class AcademicYearController extends Controller
                 'is_current' => false,
             ]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم إضافة الفصل الدراسي بنجاح.')->with('alirt', 'يجب أن يتم تفعيل الفصل الدراسي الجديد من خلال الضغط على زر "تفعيل" بجانب الفصل الدراسي الجديد.');;
+            return redirect()->route('academicYears.index')->with('success', 'تم إضافة الفصل الدراسي بنجاح.')->with('alert', 'يجب أن يتم تفعيل الفصل الدراسي الجديد من خلال الضغط على زر "تفعيل" بجانب الفصل الدراسي الجديد.');
+            ;
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة الفصل الدراسي: ' . $e->getMessage());
         }
@@ -84,7 +85,9 @@ class AcademicYearController extends Controller
                 'is_current' => true,
             ]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.');
+            session(['newCurrentYearID' => $year->id]);
+
+            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.')->with('alert', 'هذا التعديل سوف ينعكس على كل المستخدمين');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء تفعيل السنة الدراسية: ' . $e->getMessage());
         }
@@ -106,9 +109,19 @@ class AcademicYearController extends Controller
                 'is_current' => true,
             ]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل الفصل الدراسي بنجاح.');
+            session(['newCurrentSemesterID' => $semester->id]);
+
+            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل الفصل الدراسي بنجاح.')->with('alert', 'هذا التعديل سوف ينعكس على كل المستخدمين');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء تفعيل الفصل الدراسي: ' . $e->getMessage());
         }
+    }
+
+    public function setSessionYear($yearID)
+    {
+        // dd($yearID);
+        session(['newCurrentYearID' => $yearID]);
+
+        return redirect()->route('dashboard')->with('success', 'تمت فلترة جميع البيانات حسب السنة الدراسية المحددة بنجاح.');
     }
 }

@@ -91,13 +91,12 @@
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">إدارة الطلاب</span>
             <a href="{{ route('students.index') }}" class="text-muted">القائمة / </a>
-            <a href="{{ route('students.show', $theStudent->id) }}" class="text-muted">تفاصيل الطالب
-                {{ $theStudent->name }}</a> /
+            <a href="{{ route('students.show', $theStudentEnrollment->student_id) }}" class="text-muted"> تفاصيل الطالب {{ $theStudentEnrollment->student->name }}</a> /
             <span class="border-bottom border-2 border-primary"> النتائج</span>
         </h4>
     </div>
 
-    <x-nav :student="$theStudent" />
+    <x-nav :student="$theStudentEnrollment->student" />
 
     <div class="card mt-3">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -105,7 +104,7 @@
 
             <div class="d-flex align-items-center gap-2">
                 @if (!$updateScores)
-                    <a href="{{ route('scores.index', [$theStudent->id, 'updateScores' => true]) }}"
+                    <a href="{{ route('scores.index', [$theStudentEnrollment->student_id, 'updateScores' => true]) }}"
                         class="btn btn-sm btn-outline-primary text-primary">
                         <i class="ti ti-edit-circle me-1 "></i> تعديل
                     </a>
@@ -118,7 +117,7 @@
                 @endif
 
                 @if ($updateScores)
-                    <a href="{{ route('scores.index', $theStudent->id) }}" class="btn btn-secondary">
+                    <a href="{{ route('scores.index', $theStudentEnrollment->student_id) }}" class="btn btn-secondary">
                         رجوع
                     </a>
                 @endif
@@ -134,7 +133,7 @@
 
         <div class="card-body">
             <div class="table-responsive">
-                <form action="{{ route('scores.update', [$theStudent->id, null]) }}" id="updateScoresForm" method="POST">
+                <form action="{{ route('scores.update', [$theStudentEnrollment->student_id, null]) }}" id="updateScoresForm" method="POST">
                     @csrf
                     @method('PUT')
                 </form>

@@ -22,7 +22,7 @@
             background-color: #e6f1ef !important;
         }
 
-         .btn-staff-outline {
+        .btn-staff-outline {
             border: 1px solid #dbe6e3;
             background: #f5f8f7;
             color: #3a5350;
@@ -34,8 +34,7 @@
         }
 
         .btn-staff-outline:hover {
-            border-color: #006559
-            color:  #00352e;
+            border-color: #006559 color: #00352e;
         }
 
         .btn-staff-primary {
@@ -73,6 +72,7 @@
         <div class="card-body">
             <div class="accordion" id="yearsAccordion">
                 @forelse ($academicYears as $year)
+                    
                     <div class="accordion-item">
                         <h2 class="accordion-header d-flex align-items-center justify-content-between">
                             <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" type="button"
@@ -211,7 +211,7 @@
                     </div>
                 </div>
 
-                 <div class="modal-footer">
+                <div class="modal-footer">
                     <button type="button" class="btn-staff-outline" data-bs-dismiss="modal">إلغاء</button>
                     <button type="submit" class="btn-staff-primary">حفظ</button>
                 </div>

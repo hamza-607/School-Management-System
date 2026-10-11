@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\BinaryOp\Greater;
@@ -13,12 +14,18 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+
         $query = Grade::query();
         if ($request->has('search') && !empty($request->search)) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        
-        $grades = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
+
+        $grades = $query->with([
+            'sections' => function ($q) use ($academicYearID) {
+                $q->where('academic_year_id', $academicYearID);
+            }
+        ])->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
         return view('grades_sections.grades.index', [
             'grades' => $grades,
@@ -47,7 +54,7 @@ class GradeController extends Controller
                 'name' => $validated['name'],
             ]);
 
-            return redirect()->route('grades.index')->with('success',[ 'تم إضافة الصف بنجاح.']);
+            return redirect()->route('grades.index')->with('success', ['تم إضافة الصف بنجاح.']);
         } catch (\Exception $e) {
             return redirect()->route('grades.index')->with('error', 'حدث خطأ أثناء إضافة صف: ' . $e->getMessage());
         }
