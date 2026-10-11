@@ -19,16 +19,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                        <div>
-                            هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                            <br>
-                            <span class="text-danger">
-                            هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                            </span>
-                            <br>
-                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>
-                    `,
+                            <div>
+                                هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                <br>
+                                <span class="text-danger">
+                                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                </span>
+                                <br>
+                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -291,6 +291,10 @@
                             <h5 class="mb-0">معلومات إضافية</h5>
                         </div>
 
+                        @php
+                            $enrollment = $theStudent->student_enrollments->first() ?? null;
+                        @endphp
+
                         <div class="row g-4">
                             <!-- 1. الصف -->
                             <div class="col-6 col-md-4">
@@ -301,7 +305,7 @@
                                     <div class="d-flex flex-column">
                                         <span class="fw-bold mb-1">الصف:</span>
                                         <span class="text-secondary fw-medium" style="font-size: 0.9rem;">
-                                            {{ $theStudent->grade->name }}
+                                            {{  $enrollment->grade->name }}
                                         </span>
                                     </div>
                                 </div>
@@ -350,7 +354,7 @@
                                         <span class="fw-bold mb-1">الشعبة:</span>
                                         <span class="text-secondary fw-medium" style="font-size: 0.9rem;">
                                             <a
-                                                href="{{ $theStudent->section ? route('sections.show', $theStudent->section->id) : '#' }}">{{ $theStudent->section->name ?? '-' }}</a>
+                                                href="{{ $enrollment ? route('sections.show', $enrollment->section_id) : '#' }}">{{ $enrollment ? $enrollment->section->name : '-' }}</a>
                                         </span>
                                     </div>
                                 </div>

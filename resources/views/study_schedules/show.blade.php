@@ -19,8 +19,7 @@
                 html: `
                     <div>
                         هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
-                        <br>
-                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                        <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
                     </div>
                 `,
                 icon: 'warning',

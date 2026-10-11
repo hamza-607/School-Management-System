@@ -60,8 +60,13 @@
                 let $btn = $(this);
                 Swal.fire({
                     title: 'تأكيد الحذف',
-                    html: `<div>هل أنت متأكد أنك تريد حذف هذه العقوبة؟<br>
-                                            <strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                    html: `
+                            <div>
+                                هل أنت متأكد أنك تريد حذف عقوبة هذا الطالب؟
+                                <br>
+                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -70,11 +75,13 @@
                     focusCancel: true,
                     buttonsStyling: false,
                     customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
+                        confirmButton: 'btn-swal-danger',
+                        cancelButton: 'btn-swal-cancel',
                         popup: 'swal2-popup-custom'
                     },
                     allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
                     backdrop: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -101,14 +108,36 @@
             --primary: #006559;
             --line: #dbe6e3;
             --info: #2f5d8a;
+            --burgundy: #7a3540;
+        }
+
+
+        .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
         }
 
         .swal2-container {
             z-index: 20000 !important;
         }
 
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
+        .btn-swal-danger {
+            background: var(--burgundy) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
         }
 
         .col-count {
@@ -223,7 +252,8 @@
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">إدارة الطلاب</span>
             <a href="{{ route('students.index') }}" class="text-muted">القائمة / </a>
-            <a href="{{ route('students.show', $theStudent->id) }}" class="text-muted">تفاصيل الطالب {{ $theStudent->name }}</a> /
+            <a href="{{ route('students.show', $theStudent->id) }}" class="text-muted">تفاصيل الطالب
+                {{ $theStudent->name }}</a> /
 
             <span class="border-bottom border-2 border-primary"> العقوبات</span>
         </h4>

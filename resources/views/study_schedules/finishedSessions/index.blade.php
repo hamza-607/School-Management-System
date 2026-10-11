@@ -106,7 +106,7 @@
                 let $btn = $(this);
                 Swal.fire({
                     title: 'تأكيد الحذف',
-                    html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                    html: `<div>هل أنت متأكد أنك تريد حذف سجل هذه الحصة الدرسية؟<br><strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong></div>`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -115,11 +115,13 @@
                     focusCancel: true,
                     buttonsStyling: false,
                     customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
+                        confirmButton: 'btn-swal-danger',
+                        cancelButton: 'btn-swal-cancel',
                         popup: 'swal2-popup-custom'
                     },
                     allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
                     backdrop: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -162,9 +164,31 @@
             z-index: 20000 !important;
         }
 
+
         .swal2-popup-custom {
-            border-radius: 0.5rem;
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
         }
+
+        .btn-swal-danger {
+            background: #7a3540 !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+        }
+
 
         .col-count {
             width: 150px !important;

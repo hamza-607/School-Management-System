@@ -420,10 +420,11 @@ class SectionSubjectTeacherController extends Controller
         try {
             $session = SectionSubjectTeacher::findOrFail($id);
 
+            $sectionID = $session->section_id;
             $session->delete();
             $session->appointment->delete();
 
-            return redirect(url()->previous())->with('success', 'تم حذف هذه الجلسة بنجاح');
+            return redirect()->route('studySchedules.index', $sectionID)->with('success', 'تم حذف هذه الجلسة بنجاح');
         } catch (\Exception $e) {
             return redirect(url()->previous())->with('error', 'حدث خطأ أثناء تحديث حالة الجلسة: ' . $e->getMessage());
         }

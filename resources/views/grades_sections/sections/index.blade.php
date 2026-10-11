@@ -102,14 +102,14 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `<div>
-                                هل أنت متأكد أنك تريد حذف هذه الشعبة؟
-                                <br>
-                                <span class="text-danger">
-                                هذه العملية سوف تؤدي إلى حذف جميع الملفات (بما فيها ملفات الحضور) المرتبطة بهذه الشعبة
-                                </span>
-                                <br>
-                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                </div>`,
+                                        هل أنت متأكد أنك تريد حذف هذه الشعبة؟
+                                        <br>
+                                        <span class="text-danger">
+                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات (بما فيها ملفات الحضور) المرتبطة بهذه الشعبة
+                                        </span>
+                                        <br>
+                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                        </div>`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -118,8 +118,8 @@
                     focusCancel: true,
                     buttonsStyling: false,
                     customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
+                        confirmButton: 'btn-swal-danger',
+                        cancelButton: 'btn-swal-cancel',
                         popup: 'swal2-popup-custom'
                     },
                     allowOutsideClick: false,
@@ -127,9 +127,9 @@
                     allowEnterKey: false,
                     backdrop: true
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        $btn.closest('form').submit();
-                    }
+                  if (result.isConfirmed) {
+        $btn.closest('form').submit();
+    }
                 });
             });
 
@@ -147,17 +147,40 @@
     <style>
         :root {
             --ink: #00352e;
+            --ink-soft: #3a5350;
             --primary: #006559;
             --cream: #f5f8f7;
             --line: #dbe6e3;
+            --burgundy: #7a3540;
+            --burgundy-bg: #f6ecec;
+        }
+
+        .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
         }
 
         .swal2-container {
             z-index: 20000 !important;
         }
 
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
+        .btn-swal-danger {
+            background: var(--burgundy) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
         }
 
         .staff-action-btn {

@@ -173,7 +173,7 @@ class ScoreController extends Controller
                 }
             }
 
-            return back()->with('success', 'تم تعديل العلامات بنجاح');
+            return redirect()->route('scores.index', [$studentID, 'updateScores' => false])->with('success', 'تم تعديل العلامات بنجاح');
         } catch (\Exception $e) {
             return back()->with('error', 'حدث خطأ اثناء تعديل العلامات' . $e->getMessage());
         }

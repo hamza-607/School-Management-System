@@ -29,7 +29,7 @@ class StudentEnrollment extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function students()
+    public function student()
     {
         return $this->belongsTo(Student::class);
     }

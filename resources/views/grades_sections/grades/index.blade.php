@@ -96,13 +96,12 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `
-                        <div>
-                            هل أنت متأكد أنك تريد حذف هذا الصف؟
-                            <br>
-                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>
-                    `,
-                    icon: 'warning',
+                            <div>
+                                هل أنت متأكد أنك تريد حذف هذا الصف؟
+                                <br>
+                                <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `, icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
                     cancelButtonText: 'إلغاء',
@@ -110,8 +109,8 @@
                     focusCancel: true,
                     buttonsStyling: false,
                     customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
+                        confirmButton: 'btn-swal-danger',
+                        cancelButton: 'btn-swal-cancel',
                         popup: 'swal2-popup-custom'
                     },
                     allowOutsideClick: false,
@@ -151,12 +150,32 @@
     </div>
 
     <style>
+        .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
         .swal2-container {
             z-index: 20000 !important;
         }
 
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
+        .btn-swal-danger {
+            background: #7a3540 !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: #f5f8f7 !important;
+            border: 1px solid  #dbe6e3 !important;
+            color: #3a5350 !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
         }
 
         .staff-action-btn {
@@ -263,9 +282,8 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-inline-block text-nowrap">
-                                    <a href="{{ route('grades.edit', $grade->id) }}"
-                                        class="staff-action-btn">
-                                       <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
+                                    <a href="{{ route('grades.edit', $grade->id) }}" class="staff-action-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
                                             width="18px" fill="#ab8347">
                                             <path
                                                 d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z" />
@@ -278,10 +296,10 @@
                                         @method('DELETE')
                                         <button type="submit" class="staff-action-btn delete-record action-btn-hover">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
-                                                    width="18px" fill="#7a3540">
-                                                    <path
-                                                        d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
-                                                </svg>
+                                                width="18px" fill="#7a3540">
+                                                <path
+                                                    d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
+                                            </svg>
                                         </button>
                                     </form>
                                 </div>
