@@ -156,8 +156,7 @@
         <li class="nav-item">
           <div class="icon-actions-group d-flex align-items-center">
 
-            <a href="#" class="icon-action" data-bs-toggle="modal"
-              data-bs-target="#servicesGuideModal">
+            <a href="#" class="icon-action" data-bs-toggle="modal" data-bs-target="#servicesGuideModal">
               <span class="icon-action-icon">
                 <i class='ti ti-compass ti-md'></i>
               </span>
@@ -194,14 +193,14 @@
             @endif
 
             @php
-            // $realeYear = \App\Models\AcademicYear::where('start_date', '<=', now())->where('end_date', '>=', now())->first();
-              $yearID = session('newCurrentYear') ?? null;
+              // $realeYear = \App\Models\AcademicYear::where('start_date', '<=', now())->where('end_date', '>=', now())->first();
+              $yearID = session('newCurrentYearID') ?? null;
               if ($yearID) {
                 $academicYear = \App\Models\AcademicYear::findOrFail($yearID);
               } else {
                 $academicYear = \App\Models\AcademicYear::where('is_current', true)->first();
               }
-              $allYears = \App\Models\AcademicYear::orderBy('start_date', 'desc')->get();
+              $allYears = \App\Models\AcademicYear::latest()->get();
             @endphp
 
             <div class="dropdown">
@@ -216,12 +215,12 @@
                 style="max-height: 280px; overflow-y: auto;">
                 @foreach ($allYears as $year)
                   <li>
-                    <a href=""
+                    <a href="{{ route('setYearCurrent', $year->id) }}"
                       class="dropdown-item academic-year-item d-flex justify-content-between align-items-center {{ $academicYear && $academicYear->id === $year->id ? 'active' : '' }}"
                       data-year-id="{{ $year->id }}">
                       <span>{{ $year->name }}</span>
                       {{-- @if ($year->id === $realeYear->id)
-                        <span class="badge ms-3" style="background-color: #f5f8f7; color: #00352e;">الحالية</span>
+                      <span class="badge ms-3" style="background-color: #f5f8f7; color: #00352e;">الحالية</span>
                       @endif --}}
                     </a>
                   </li>
@@ -253,8 +252,8 @@
     @endforeach
   @endif
 
-  @if(session('alirt'))
-    @foreach(\Illuminate\Support\Arr::wrap(session('alirt')) as $message)
+  @if(session('alert'))
+    @foreach(\Illuminate\Support\Arr::wrap(session('alert')) as $message)
       <div class="alert alert-warning alert-dismissible" role="alert">
         {{ $message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

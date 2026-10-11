@@ -354,7 +354,7 @@
                                         <span class="fw-bold mb-1">الشعبة:</span>
                                         <span class="text-secondary fw-medium" style="font-size: 0.9rem;">
                                             <a
-                                                href="{{ $enrollment ? route('sections.show', $enrollment->section_id) : '#' }}">{{ $enrollment ? $enrollment->section->name : '-' }}</a>
+                                                href="{{ $enrollment->section ? route('sections.show', $enrollment->section_id) : '#' }}">{{ $enrollment->section->name ?? '-' }}</a>
                                         </span>
                                     </div>
                                 </div>

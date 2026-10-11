@@ -96,7 +96,7 @@
                                 <span class="study-program-badge">شعبة {{ $section->name }}</span>
                             </div>
                             <div class="text-muted">
-                                <i class="ti ti-users ti-xs me-1"></i>{{ $section->students->count() }} طالب
+                                <i class="ti ti-users ti-xs me-1"></i>{{ $section->student_enrollments->count() }} طالب
                             </div>
                         </div>
                         @php

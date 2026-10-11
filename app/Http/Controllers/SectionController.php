@@ -20,9 +20,12 @@ class SectionController extends Controller
     {
 
         // dd($request->all());
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $query = Section::query();
 
+        $query->where('academic_year_id', $academicYearID);
+        
         if ($request->has('grade_id') && !empty($request->grade_id)) {
             $query->where('grade_id', $request->grade_id);
         }
@@ -59,11 +62,13 @@ class SectionController extends Controller
     {
         try {
             $validated = $request->validated();
+            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
             // dd($validated);
             $section = [
                 'name' => $validated['name'],
                 'capacity' => $validated['capacity'] ?? 30,
+                'academic_year_id' => $academicYearID,
             ];
 
             if ($request->has('grade') && $validated['grade'] === 'NEW') {
@@ -89,7 +94,7 @@ class SectionController extends Controller
      */
     public function show(string $id)
     {
-        $academicYearID = session('newCurrentAcademicYear') ?? AcademicYear::where('is_current', true)->first()->id;
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
         $theSection = Section::with([
             'student_enrollments' => function ($q) use ($academicYearID) {
                 $q->where('student_enrollments.academic_year_id', $academicYearID);
@@ -124,12 +129,14 @@ class SectionController extends Controller
     {
         try {
             $validated = $request->validated();
+            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
             $section = Section::findOrFail($id);
             // dd($validated);
             $newSection = [
                 'name' => $validated['name'],
                 'capacity' => $validated['capacity'] ?? 30,
+                'academic_year_id' => $academicYearID,
             ];
 
             if ($request->has('grade') && $validated['grade'] === 'NEW') {

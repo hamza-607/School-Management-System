@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FinishedSessionRequest;
+use App\Models\AcademicYear;
 use App\Models\Attendance;
 use App\Models\FinishedSession;
 use App\Models\Grade;
@@ -20,8 +21,12 @@ class FinishedSessionController extends Controller
     public function index(Request $request)
     {
         // dd($request->all());
-        $query = FinishedSession::query();
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
+        $query = FinishedSession::query();
+        $query->whereHas('section', function ($q) use ($academicYearID) {
+            $q->where('academic_year_id', $academicYearID);
+        });
         $query->with('staff', 'grade', 'subject', 'section');
 
         if ($request->has('grade_id') && $request->grade_id !== null) {
@@ -38,7 +43,11 @@ class FinishedSessionController extends Controller
 
         $finishedSessions = $query->latest()->paginate($request->per_page ?? 10);
 
-        $grades = Grade::with('sections')->get();
+        $grades = Grade::with([
+            'sections' => function ($q) use ($academicYearID) {
+                $q->where('academic_year_id', $academicYearID);
+            }
+        ])->get();
         $teachers = Staff::where('staff_type', 'teacher')->get();
 
         return view('study_schedules.finishedSessions.index', [

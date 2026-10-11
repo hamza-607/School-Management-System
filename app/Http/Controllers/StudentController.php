@@ -24,7 +24,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         // dd($request->all());
-        $academicYearID = session('newCurrentAcademicYear') ?? AcademicYear::where('is_current', true)->first()->id;
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $query = Student::query();
 
@@ -69,7 +69,12 @@ class StudentController extends Controller
         ])->latest()->paginate($request->per_page ?? 10)->withQueryString();
         // dd($students);
         // $studentSection = 
-        $gradesWithSections = Grade::with('sections')->get();
+
+        $gradesWithSections = Grade::with([
+            'sections' => function ($q) use ($academicYearID) {
+                $q->where('academic_year_id', $academicYearID);
+            }
+        ])->get();
 
         return view('students.index', [
             'students' => $students,
@@ -83,8 +88,11 @@ class StudentController extends Controller
     public function create(Request $request)
     {
         // dd($request->fromGuardianID);
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+
         $grades = Grade::all();
-        $sections = Section::all();
+        $sections = Section::where('academic_year_id', $academicYearID)->get();
+        // dd($grades, $sections, $academicYearID);
 
         return view('students.create', [
             'sections' => $sections,
@@ -106,12 +114,13 @@ class StudentController extends Controller
         $validate = $request->validated();
         try {
             // dd($validate);
+            $section_id = $validate['section'] !== 'NEW' ? $validate['section'] : null;
+            $grade_id = $validate['grade'] !== 'NEW' ? $validate['grade'] : null;
+            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
             $student = [
                 'name' => $validate['name'],
                 'e_name' => $validate['e_name'] ?? null,
-                'section_id' => $validate['section'] !== 'NEW' ? $validate['section'] : null,
-                'grade_id' => $validate['grade'] !== 'NEW' ? $validate['grade'] : null,
                 'date_of_birth' => $validate['date_of_birth'],
                 'gender' => $validate['gender'],
                 'address' => $validate['address'],
@@ -126,20 +135,21 @@ class StudentController extends Controller
                     'name' => $validate['new_grade_name'],
                 ]);
 
-                $student['grade_id'] = $grade->id;
+                $grade_id = $grade->id;
             }
 
             // dd($student);
             if ($validate['section'] === 'NEW') {
                 $section = Section::create([
                     'name' => $validate['new_section_name'],
+                    'academic_year_id' => $academicYearID,
                     'capacity' => $validate['new_section_capacity'] ?? 30,
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'grade_id' => $student['grade_id'],
+                    'grade_id' => $grade_id,
                 ]);
 
-                $student['section_id'] = $section->id;
+                $section_id = $section->id;
             }
 
             $path = null;
@@ -181,19 +191,11 @@ class StudentController extends Controller
                 }
             }
 
-            $yearID = session('newCurrentYear') ?? null;
-            $academicYear = null;
-            if ($yearID) {
-                $academicYear = AcademicYear::findOrFail($yearID);
-            } else {
-                $academicYear = AcademicYear::where('is_current', 1)->first();
-            }
-
             StudentEnrollment::create([
                 'student_id' => $newStudent->id,
-                'academic_year_id' => $academicYear->id,
-                'section_id' => $newStudent->section_id,
-                'grade_id' => $newStudent->grade_id,
+                'academic_year_id' => $academicYearID,
+                'section_id' => $section_id,
+                'grade_id' => $grade_id,
                 'result' => null,
                 'decided_by' => null,
                 'decided_at' => null,
@@ -219,7 +221,7 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        $academicYearID = session('newCurrentAcademicYear') ?? AcademicYear::where('is_current', true)->first()->id;
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $theStudent = Student::with([
             'student_enrollments' => function ($q) use ($academicYearID) {
@@ -239,9 +241,10 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
         $student = Student::findOrFail($id);
         $grades = Grade::all();
-        $sections = Section::all();
+        $sections = Section::where('academic_year_id', $academicYearID)->get();
 
         return view('students.edit', [
             'theStudent' => $student,
@@ -259,12 +262,13 @@ class StudentController extends Controller
         // dd(Guardian::whereIn('id', $validate['old_parent_ids'])->pluck('id')->toArray());
         try {
             // dd($validate);
+            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+            $section_id = $validate['section'] !== 'NEW' ? $validate['section'] : null;
+            $grade_id = $validate['grade'] !== 'NEW' ? $validate['grade'] : null;
 
             $student = [
                 'name' => $validate['name'],
                 'e_name' => $validate['e_name'] ?? null,
-                'section_id' => $validate['section'] !== 'NEW' ? $validate['section'] : null,
-                'grade_id' => $validate['grade'] !== 'NEW' ? $validate['grade'] : null,
                 'date_of_birth' => $validate['date_of_birth'],
                 'gender' => $validate['gender'],
                 'address' => $validate['address'],
@@ -280,20 +284,21 @@ class StudentController extends Controller
                     'name' => $validate['new_grade_name'],
                 ]);
 
-                $student['grade_id'] = $grade->id;
+                $grade_id = $grade->id;
             }
 
             // dd($student);
             if ($request->section === 'NEW') {
                 $section = Section::create([
                     'name' => $validate['new_section_name'],
+                    'academic_year_id' => $academicYearID,
                     'capacity' => $validate['new_section_capacity'] ?? 30,
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'grade_id' => $student['grade_id'],
+                    'grade_id' => $grade_id,
                 ]);
 
-                $student['section_id'] = $section->id;
+                $section_id = $section->id;
             }
 
             $path = null;
@@ -307,6 +312,11 @@ class StudentController extends Controller
             $theStudent = Student::findOrFail($id);
             $theStudent->update($student);
 
+
+            StudentEnrollment::where('student_id', $theStudent->id)->where('academic_year_id', $academicYearID)->update([
+                'section_id' => $section_id,
+                'grade_id' => $grade_id,
+            ]);
             //حذف ولي امر قديم
             if ($request->has('old_parent_ids') && is_array($request->old_parent_ids)) {
                 $dataIds = Student_parent::where('student_id', $theStudent->id)->pluck('parent_id')->toArray();

@@ -29,4 +29,10 @@ class AcademicYear extends Model
     {
         return $this->hasMany(StudentEnrollment::class);
     }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class);
+    }
+
 }

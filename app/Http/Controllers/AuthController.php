@@ -74,21 +74,29 @@ class AuthController extends Controller
                 ]);
             }
 
-            $newCurrentSemester = Semester::where('start_date', '<=', now())
-                ->where('end_date', '>=', now())
-                ->first();
-            $newCurrentSemester->update([
-                'is_current' => 1,
-            ]);
             $newCurrentYear = AcademicYear::where('start_date', '<=', now())
                 ->where('end_date', '>=', now())
+                ->orderBy('created_at', 'desc')
                 ->first();
-            $newCurrentYear->update([
-                'is_current' => 1,
-            ]);
+            // dd($newCurrentYear->get());
+            if ($newCurrentYear) {
+                $newCurrentYear->update([
+                    'is_current' => 1,
+                ]);
+                session(['newCurrentYearID' => $newCurrentYear->id]);
 
-            session('newCurrentSemesterID', $newCurrentSemester->id);
-            session('newCurrentYearID', $newCurrentYear->id);
+                $newCurrentSemester = $newCurrentYear->semesters()->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now())
+                    ->orderByDesc('start_date')
+                    ->first();
+                if ($newCurrentSemester) {
+                    $newCurrentSemester->update([
+                        'is_current' => 1,
+                    ]);
+                    session(['newCurrentSemesterID' => $newCurrentSemester->id]);
+                }
+            }
+
 
             $request->session()->regenerate();
             return redirect()->route('dashboard')->with('success', 'اهلا بعودتك ' . Auth::user()->name);

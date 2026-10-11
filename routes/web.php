@@ -114,6 +114,8 @@ Route::middleware(['auth', 'currentYearAndSemester'])->group(function () {
     Route::get('finishedSessions', [FinishedSessionController::class, 'index'])->name('finishedSessions.index');
     Route::get('finishedSessions/{sessionID}', [FinishedSessionController::class, 'show'])->name('finishedSessions.show');
     Route::delete('finishedSessions/{sessionID}', [FinishedSessionController::class, 'destroy'])->name('finishedSessions.destroy');
+
+    Route::get('setYearCurrent/{yearID}', [AcademicYearController::class, 'setSessionYear'])->name('setYearCurrent');
 });
 
 

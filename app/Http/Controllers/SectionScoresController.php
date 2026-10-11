@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\ScoreComponent;
 use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
@@ -17,9 +18,10 @@ class SectionScoresController extends Controller
     {
         // dd();
         $sectionIDs = SectionSubjectTeacher::where('teacher_id', Auth::user()->id)->pluck('section_id')->toArray();
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
-        $sections = Section::whereIn('id', $sectionIDs)
-            ->with(['grade', 'students'])
+        $sections = Section::where('academic_year_id', $academicYearID)->whereIn('id', $sectionIDs)
+            ->with(['grade', 'student_enrollments'])
             ->get();
 
         return view('grades_sections.sections.addScores.index', [
@@ -43,11 +45,11 @@ class SectionScoresController extends Controller
         })->get();
         // dd($scoreComponents);
 
-        $students = $section->students;
+        $student_enrollments = $section->student_enrollments()->with('student')->get();
 
         return view('grades_sections.sections.addScores.create', [
             'section' => $section,
-            'students' => $students,
+            'student_enrollments' => $student_enrollments,
             'scoreComponents' => $scoreComponents,
             'semester' => $semester,
         ]);
@@ -84,8 +86,8 @@ class SectionScoresController extends Controller
                             // dd($scoreID,$score);
                             $maxScore = ScoreComponent::findOrFail($scoreID)->max_score;
                             // dd($maxScore);
-                            if($score > $maxScore){
-                                return back()->withInput()->with('error', 'لقد تم تجاوز الحد المسموح به للعلامة المحددة من قبل المدرس ,والتي هي'.$maxScore);
+                            if ($score > $maxScore) {
+                                return back()->withInput()->with('error', 'لقد تم تجاوز الحد المسموح به للعلامة المحددة من قبل المدرس ,والتي هي' . $maxScore);
                             }
                             StudentScore::create([
                                 'student_id' => $oneStudent['student'],
@@ -99,7 +101,7 @@ class SectionScoresController extends Controller
                 }
             }
 
-return redirect()->route('sectionScores.index')->with('success','تم إضافة علامات الطلاب بنجاح');
+            return redirect()->route('sectionScores.index')->with('success', 'تم إضافة علامات الطلاب بنجاح');
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'حدث خطأ أثناء إضافة العلامات: ' . $e->getMessage());
         }

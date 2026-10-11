@@ -11,20 +11,20 @@ class Section extends Model
 
     protected $fillable = [
         'name',
+        'academic_year_id',
         'capacity',
         'created_at',
         'updated_at',
         'grade_id'
     ];
 
+    public function academic_year()
+    {
+        return $this->belongsTo(AcademicYear::class);
+    }
     public function grade()
     {
         return $this->belongsTo(Grade::class);
-    }
-
-    public function students()
-    {
-        return $this->hasMany(Student::class);
     }
 
     public function files()

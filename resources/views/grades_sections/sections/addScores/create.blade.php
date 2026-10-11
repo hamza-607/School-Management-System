@@ -156,12 +156,12 @@
                         </tr>
                     </thead>
                     <tbody id="resultsBody">
-                        @foreach ($students as $indexStudent => $student)
+                        @foreach ($student_enrollments as $indexStudent => $student_enrollment)
                             <tr>
                                 <td>
-                                    {{ $student->name }}
+                                    {{ $student_enrollment->student->name }}
                                     <input type="hidden" form="updateScoresForm" name="students[{{ $indexStudent }}][student]"
-                                        value="{{ $student->id }}">
+                                        value="{{ $student_enrollment->student_id }}">
                                 </td>
                                 <td>
                                     @forelse ($scoreComponents as $scoreComponent)

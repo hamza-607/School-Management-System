@@ -596,11 +596,11 @@
                             @php
                                 $enrollment = $student->student_enrollments->first() ?? null;
                             @endphp
-                            <td class="truncate">{{ $enrollment ? $enrollment->first()->grade->name : '-' }}</td>
+                            <td class="truncate">{{ $enrollment ? $enrollment->grade->name : '-' }}</td>
                             <td class="truncate">
 
                                 <a
-                                    href="{{  $enrollment ? route('sections.show', $enrollment->section_id) : '#' }}">{{ $enrollment ? $enrollment->section->name : '-' }}
+                                    href="{{  $enrollment->section ? route('sections.show', $enrollment->section_id) : '#' }}">{{ $enrollment->section->name ?? '-' }}
                                 </a>
                             </td>
                             @php
