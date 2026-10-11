@@ -258,16 +258,17 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `
-                                                                                <div>
-                                                                                    هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                                                                                    <br>
-                                                                                    <span class="text-danger">
-                                                                                    هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                                                                                    </span>
-                                                                                    <br>
-                                                                                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                                                                </div>
-                                                                            `,
+                                    <div>
+                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                        <br>
+                                        <span class="text-danger">
+                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                        </span>
+                                        <br>
+                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                    </div>
+                                `,
+                    icon: 'warning',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -276,8 +277,8 @@
                     focusCancel: true,
                     buttonsStyling: false,
                     customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
+                        confirmButton: 'btn-swal-danger',
+                        cancelButton: 'btn-swal-cancel',
                         popup: 'swal2-popup-custom'
                     },
                     allowOutsideClick: false,
@@ -330,6 +331,35 @@
             --burgundy: #7a3540;
             --burgundy-bg: #f6ecec;
         }
+
+        .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .swal2-container {
+            z-index: 20000 !important;
+        }
+
+        .btn-swal-danger {
+            background: var(--burgundy) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+        }
+
 
         .btn-staff-outline {
             border: 1px solid var(--line);
@@ -563,11 +593,15 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="truncate">{{ $student->grade->name ?? '-' }}</td>
+                            @php
+                                $enrollment = $student->student_enrollments->first() ?? null;
+                            @endphp
+                            <td class="truncate">{{ $enrollment ? $enrollment->first()->grade->name : '-' }}</td>
                             <td class="truncate">
 
                                 <a
-                                    href="{{ $student->section ? route('sections.show', $student->section->id) : '#' }}">{{ $student->section->name ?? '-' }}</a>
+                                    href="{{  $enrollment ? route('sections.show', $enrollment->section_id) : '#' }}">{{ $enrollment ? $enrollment->section->name : '-' }}
+                                </a>
                             </td>
                             @php
                                 $status = $student->is_active ? 'نشط' : 'غير نشط';

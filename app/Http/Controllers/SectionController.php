@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SectionRequest;
+use App\Models\AcademicYear;
 use App\Models\File;
 use App\Models\Grade;
 use App\Models\Section;
@@ -88,8 +89,15 @@ class SectionController extends Controller
      */
     public function show(string $id)
     {
-        $theSection = Section::with('students')->findOrFail($id);
-
+        $academicYearID = session('newCurrentAcademicYear') ?? AcademicYear::where('is_current', true)->first()->id;
+        $theSection = Section::with([
+            'student_enrollments' => function ($q) use ($academicYearID) {
+                $q->where('student_enrollments.academic_year_id', $academicYearID);
+            },
+            'student_enrollments.student'
+        ])->findOrFail($id);
+        // $theSection = Section::findOrFail($id)->student_enrollments()->with('student')->get();
+// dd($theSection);
         return view('grades_sections.sections.show', [
             'theSection' => $theSection,
         ]);

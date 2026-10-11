@@ -55,10 +55,6 @@
             background: var(--info);
         }
 
-        .swal2-container {
-            z-index: 10000 !important;
-        }
-
         /* .theme-breadcrumb { font-family: 'Cairo', sans-serif; } */
         .theme-breadcrumb a {
             color: #8b8577;
@@ -336,6 +332,34 @@
             background: transparent;
             border-top: 1px solid var(--line) !important;
         }
+
+        .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .swal2-container {
+            z-index: 20000 !important;
+        }
+
+        .btn-swal-danger {
+            background: var(--burgundy) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+        }
     </style>
 @endsection
 
@@ -364,34 +388,29 @@
                     let href = this.getAttribute('href');
 
                     Swal.fire({
-                        title: 'تأكيد إلغاء الحصة',
+                        title: 'تأكيد الحذف',
                         html: `
-                                        <div>
-                                            هل أنت متأكد أنك تريد إلغاء هذه الحصة الدرسية؟
-                                            <br>
-                                            <strong>بعد الإلغاء لن تتمكن من التراجع أو إعادة جدولتها بنفسك، ويجب التواصل مع قسم  الإدارة.</strong>
-                                        </div>
-                                    `,
+                            <div>
+                                هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
+                                <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `,
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'نعم، إلغاء الحصة',
-                        cancelButtonText: 'تراجع',
+                        confirmButtonText: 'نعم، احذف',
+                        cancelButtonText: 'إلغاء',
                         reverseButtons: true,
                         focusCancel: true,
                         buttonsStyling: false,
                         customClass: {
-                            confirmButton: 'btn btn-danger ms-2',
-                            cancelButton: 'btn btn-secondary',
+                            confirmButton: 'btn-swal-danger',
+                            cancelButton: 'btn-swal-cancel',
                             popup: 'swal2-popup-custom'
                         },
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         allowEnterKey: false,
-                        backdrop: true,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        willOpen: () => { document.body.style.overflow = 'hidden'; },
-                        willClose: () => { document.body.style.overflow = ''; }
+                        backdrop: true
                     }).then((result) => {
                         if (result.isConfirmed) {
                             window.location.href = href;
@@ -530,8 +549,7 @@
                                     <td class="align-middle">
                                         @if ($isLocked)
                                             <span class="theme-status-pill {{ $statusInfo['badgeClass'] }} theme-status-locked"
-                                                data-bs-toggle="tooltip"
-                                                style="cursor: help;"
+                                                data-bs-toggle="tooltip" style="cursor: help;"
                                                 title="{{ $currentStatus === 'completed' ? 'تم إكمال هذه الحصة نهائياً ولا يمكن تغيير حالتها إلا من قبل الإدارة او الانتظار لنهاية الاسبوع لتجدول تلقائياً.' : 'تم إلغاء هذه الحصة نهائياً. لإعادة جدولتها يرجى التواصل مع قسم الجداول الدراسية.' }}">
                                                 <i class="ti ti-lock ti-xs"></i>{{ $statusInfo['label'] }}
                                             </span>
@@ -547,8 +565,7 @@
                                                         <li>
                                                             @if ($altKey === 'active' && $isActiveLocked)
                                                                 <span class="dropdown-item d-flex align-items-center locked-status"
-                                                                    data-bs-toggle="tooltip"
-                                                                    aria-disabled="true"
+                                                                    data-bs-toggle="tooltip" aria-disabled="true"
                                                                     title="لا يمكن تنشيط الحصة قبل حلول يومها المحدد.">
                                                                     <span class="{{ $statusMeta[$altKey]['dotClass'] }}"></span>
                                                                     <i class="ti ti-lock ti-xs me-1"></i>

@@ -99,26 +99,32 @@
                 e.preventDefault();
                 let $btn = $(this);
                 Swal.fire({
-                    title: 'تأكيد الحذف',
-                    html: `<div>
-                                    هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
-                                    <br>
-                                    <span class="text-danger">
-                                    هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
-                                    </span>
-                                    <br>
-                                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                    </div>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'نعم، احذف',
-                    cancelButtonText: 'إلغاء',
-                    reverseButtons: true,
-                    customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
-                        popup: 'swal2-popup-custom'
-                    }
+                  title: 'تأكيد الحذف',
+                html: `<div>
+                هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
+                <br>
+                <span class="text-danger">
+                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
+                </span>
+                <br>
+                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                </div>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                focusCancel: true,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn-swal-danger',
+                    cancelButton: 'btn-swal-cancel',
+                    popup: 'swal2-popup-custom'
+                },
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                backdrop: true
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $btn.closest('form').submit();
@@ -152,12 +158,32 @@
             --burgundy-bg: #f6ecec;
         }
 
+       .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
         .swal2-container {
             z-index: 20000 !important;
         }
 
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
+        .btn-swal-danger {
+            background: var(--burgundy) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
         }
 
         .staff-filter-bar {

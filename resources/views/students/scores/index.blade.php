@@ -187,7 +187,7 @@
                                                             name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][quizzes][{{ $index }}][value]"
                                                             value="{{ $oneQuiz['scoreValue'] }}" min="0"
                                                             max="{{ $oneQuiz['scoreMaxValue'] }}" placeholder="0"
-                                                            title="العلامة هي : {{ $oneQuiz['scoreValue'] }}">
+                                                            title="العلامة هي : {{ $oneQuiz['scoreValue'] }}"  step="0.01">
                                                         <span class="text-muted">/{{ $oneQuiz['scoreMaxValue'] }}</span>
                                                     </div>
                                                 </div>
@@ -221,7 +221,7 @@
                                                         class="form-control form-control-sm final-input"
                                                         name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][final][value]"
                                                         value="{{ $oneSemester['final']['scoreValue'] }}" min="0" placeholder="0.00"
-                                                        title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}">
+                                                        title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}"  step="0.01">
 
                                                     <span class="text-muted">/{{ $oneSemester['final']['scoreMaxValue']  }}</span>
                                                 </div>

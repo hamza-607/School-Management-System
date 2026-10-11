@@ -59,26 +59,26 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">نوع التعديل</label>
-                    <div class="form-control" style="border:1px #ab8347 solid">
+                    <div class="form-control" >
                         {{ $employeeSalaryAdjustment->type === 'deduction' ? 'خصومات' : 'علاوات' }}
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">نوع القيمة</label>
-                    <div class="form-control" style="border:1px #ab8347 solid">
+                    <div class="form-control" >
                         {{ $employeeSalaryAdjustment->amount_type === 'fixed' ? 'قيمة معلومة SP' : 'نسبة %' }}
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">السبب</label>
-                    <div class="form-control" style="border:1px #ab8347 solid">{{ $employeeSalaryAdjustment->reason }}</div>
+                    <div class="form-control" >{{ $employeeSalaryAdjustment->reason }}</div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">القيمة</label>
-                    <div class="form-control" style="border:1px #ab8347 solid">{{ $employeeSalaryAdjustment->amount }}</div>
+                    <div class="form-control" >{{ $employeeSalaryAdjustment->amount }}</div>
                 </div>
             </div>
 

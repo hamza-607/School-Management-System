@@ -80,7 +80,7 @@
                 let $btn = $(this);
                 Swal.fire({
                     title: 'تأكيد الحذف',
-                    html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                    html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong></div>`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -88,11 +88,11 @@
                     reverseButtons: true,
                     focusCancel: true,
                     buttonsStyling: false,
-                    customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
-                        popup: 'swal2-popup-custom'
-                    },
+                     customClass: {
+                            confirmButton: 'btn-swal-danger',
+                            cancelButton: 'btn-swal-cancel',
+                            popup: 'swal2-popup-custom'
+                        },
                     allowOutsideClick: false,
                     backdrop: true
                 }).then((result) => {
@@ -116,12 +116,49 @@
 @section('content')
     <style>
         /* Ensure SweetAlert overlays above everything and style popup */
+         :root {
+            --ink: #00352e;
+            --ink-soft: #3a5350;
+            --primary: #006559;
+            --gold: #ab8347;
+            --cream: #f5f8f7;
+            --line: #dbe6e3;
+            --sage: #006559;
+            --sage-bg: #e6f1ef;
+            --burgundy: #7a3540;
+            --burgundy-bg: #f6ecec;
+            --amber: #8a6530;
+            --amber-bg: #f3ead6;
+            --info: #2f5d8a;
+            --info-bg: #e7eef6;
+        }
+
+       .swal2-popup-custom {
+            border-radius: .4rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
         .swal2-container {
             z-index: 20000 !important;
         }
 
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
+        .btn-swal-danger {
+            background: var(--burgundy) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
+            margin-inline-start: .5rem;
+        }
+
+        .btn-swal-cancel {
+            background: var(--cream) !important;
+            border: 1px solid var(--line) !important;
+            color: var(--ink-soft) !important;
+            border-radius: .3rem !important;
+            padding: .5rem 1.3rem !important;
+            font-weight: 600 !important;
         }
 
         .col-count {

@@ -194,6 +194,7 @@
             @endif
 
             @php
+            // $realeYear = \App\Models\AcademicYear::where('start_date', '<=', now())->where('end_date', '>=', now())->first();
               $yearID = session('newCurrentYear') ?? null;
               if ($yearID) {
                 $academicYear = \App\Models\AcademicYear::findOrFail($yearID);
@@ -219,9 +220,9 @@
                       class="dropdown-item academic-year-item d-flex justify-content-between align-items-center {{ $academicYear && $academicYear->id === $year->id ? 'active' : '' }}"
                       data-year-id="{{ $year->id }}">
                       <span>{{ $year->name }}</span>
-                      @if ($year->is_current)
+                      {{-- @if ($year->id === $realeYear->id)
                         <span class="badge ms-3" style="background-color: #f5f8f7; color: #00352e;">الحالية</span>
-                      @endif
+                      @endif --}}
                     </a>
                   </li>
                 @endforeach

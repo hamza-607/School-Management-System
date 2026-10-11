@@ -24,8 +24,13 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         // dd($request->all());
+        $academicYearID = session('newCurrentAcademicYear') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $query = Student::query();
+
+        $query->whereHas('student_enrollments', function ($q) use ($academicYearID) {
+            $q->where('student_enrollments.academic_year_id', $academicYearID);
+        });
 
         if ($request->has('search') && $request->search !== null) {
             $query->where(function ($q) use ($request) {
@@ -55,7 +60,15 @@ class StudentController extends Controller
         //     $query->where('financial_status', $request->financial_status);
         // }
 
-        $students = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
+        $students = $query->with([
+            'student_enrollments' => function ($q) use ($academicYearID) {
+                $q->where('student_enrollments.academic_year_id', $academicYearID);
+            },
+            'student_enrollments.section',
+            'student_enrollments.grade'
+        ])->latest()->paginate($request->per_page ?? 10)->withQueryString();
+        // dd($students);
+        // $studentSection = 
         $gradesWithSections = Grade::with('sections')->get();
 
         return view('students.index', [
@@ -206,7 +219,15 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        $theStudent = Student::findOrFail($id);
+        $academicYearID = session('newCurrentAcademicYear') ?? AcademicYear::where('is_current', true)->first()->id;
+
+        $theStudent = Student::with([
+            'student_enrollments' => function ($q) use ($academicYearID) {
+                $q->where('student_enrollments.academic_year_id', $academicYearID);
+            },
+            'student_enrollments.section',
+            'student_enrollments.grade'
+        ])->findOrFail($id);
 
         return view('students.show', [
             'theStudent' => $theStudent,
@@ -363,6 +384,13 @@ class StudentController extends Controller
         try {
             $student = Student::findOrFail($id);
             $studentFiles = $student->files;
+            $studentEnrollments = $student->student_enrollments;
+
+            if ($studentEnrollments) {
+                foreach ($studentEnrollments as $enrollment) {
+                    $enrollment->delete();
+                }
+            }
 
             if ($studentFiles) {
                 foreach ($studentFiles as $file) {

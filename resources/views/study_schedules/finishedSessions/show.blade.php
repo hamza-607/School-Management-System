@@ -26,13 +26,7 @@
         function confirmDelete(id) {
             Swal.fire({
                 title: 'تأكيد الحذف',
-                html: `
-                        <div>
-                            هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                            <br>
-                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>
-                    `,
+                                html: `<div>هل أنت متأكد أنك تريد حذف سجل هذه الحصة الدرسية؟<br><strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong></div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -41,10 +35,10 @@
                 focusCancel: true,
                 buttonsStyling: false,
                 customClass: {
-                    confirmButton: 'btn btn-danger ms-2',
-                    cancelButton: 'btn btn-secondary',
-                    popup: 'swal2-popup-custom'
-                },
+                            confirmButton: 'btn-swal-danger',
+                            cancelButton: 'btn-swal-cancel',
+                            popup: 'swal2-popup-custom'
+                        },
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 allowEnterKey: false,
