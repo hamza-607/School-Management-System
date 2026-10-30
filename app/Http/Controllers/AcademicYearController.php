@@ -12,7 +12,7 @@ class AcademicYearController extends Controller
 {
     public function index()
     {
-        $academicYears = AcademicYear::with('semesters')->latest()->get();
+        $academicYears = AcademicYear::with('semesters')->orderByDesc('name')->get();
 
         return view('academicYears.index', [
             'academicYears' => $academicYears
@@ -24,7 +24,7 @@ class AcademicYearController extends Controller
         // dd($request->all());
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:academic_years,name',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after:start_date',
             ]);
@@ -87,7 +87,7 @@ class AcademicYearController extends Controller
 
             session(['newCurrentYearID' => $year->id]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.')->with('alert', 'هذا التعديل سوف ينعكس على كل المستخدمين');
+            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.')->with('alert',['هذا التعديل سوف ينعكس على كل المستخدمين', 'يجب أن يتم تفعيل الفصل الدراسي من خلال الضغط على زر "تفعيل" بجانب الفصل الدراسي.']);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء تفعيل السنة الدراسية: ' . $e->getMessage());
         }

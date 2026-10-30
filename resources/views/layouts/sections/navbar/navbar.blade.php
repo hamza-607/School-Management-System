@@ -200,7 +200,7 @@
               } else {
                 $academicYear = \App\Models\AcademicYear::where('is_current', true)->first();
               }
-              $allYears = \App\Models\AcademicYear::latest()->get();
+              $allYears = \App\Models\AcademicYear::orderByDesc('name')->get();
             @endphp
 
             <div class="dropdown">

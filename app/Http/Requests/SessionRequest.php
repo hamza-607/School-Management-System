@@ -31,6 +31,7 @@ class SessionRequest extends FormRequest
             "day" => 'required|in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
             'type' => 'nullable|in:regular,makeup,final,quiz',
 
+            'max_score' => ['exclude_unless:type,final', 'required', 'numeric', 'min:0'],
             //مادة جديدة
             "new_subject_name" => 'exclude_unless:subject,NEW|required|string|max:255',
             "new_subject_e_name" => 'exclude_unless:subject,NEW|nullable|string|max:255',

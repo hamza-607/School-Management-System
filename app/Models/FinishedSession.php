@@ -9,7 +9,7 @@ class FinishedSession extends Model
 {
     use HasFactory;
 
-    protected $table;
+    protected $table = 'finished_sessions';
 
     protected $fillable = [
         'actual_start_time',

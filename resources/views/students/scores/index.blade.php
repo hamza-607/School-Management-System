@@ -17,7 +17,7 @@
             const body = document.getElementById('resultsBody');
             const semesterCount = {{
         count($semesters)
-                }};
+                            }};
 
             function getValue(el) {
                 if (!el) return 0;
@@ -77,6 +77,24 @@
 @endsection
 @section('content')
 
+    <style>
+        .btn-staff-outline {
+            border: 1px solid #dbe6e3;
+            background: #f5f8f7;
+            color: #3a5350;
+            border-radius: .3rem;
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .39rem 1.4rem;
+            transition: border-color .15s ease, color .15s ease;
+        }
+
+        .btn-staff-outline:hover {
+            border-color: #006559;
+            color: #00352e;
+        }
+    </style>
+
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -91,7 +109,8 @@
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">إدارة الطلاب</span>
             <a href="{{ route('students.index') }}" class="text-muted">القائمة / </a>
-            <a href="{{ route('students.show', $theStudentEnrollment->student_id) }}" class="text-muted"> تفاصيل الطالب {{ $theStudentEnrollment->student->name }}</a> /
+            <a href="{{ route('students.show', $theStudentEnrollment->student_id) }}" class="text-muted"> تفاصيل الطالب
+                {{ $theStudentEnrollment->student->name }}</a> /
             <span class="border-bottom border-2 border-primary"> النتائج</span>
         </h4>
     </div>
@@ -105,27 +124,28 @@
             <div class="d-flex align-items-center gap-2">
                 @if (!$updateScores)
                     <a href="{{ route('scores.index', [$theStudentEnrollment->student_id, 'updateScores' => true]) }}"
-                        class="btn btn-sm btn-outline-primary text-primary">
-                        <i class="ti ti-edit-circle me-1 "></i> تعديل
+                        class="btn btn-sm btn-primary text-white">
+                        <i class="ti ti-edit-circle me-1"></i> تعديل
                     </a>
                 @endif
 
                 @if ($updateScores)
-                    <button type="submit" id="saveScoresBtn" class="btn btn-sm btn-success" form="updateScoresForm">
+                    <button type="submit" id="saveScoresBtn" class="btn-primary" form="updateScoresForm">
                         <i class="ti ti-device-floppy me-1"></i> حفظ التعديلات
                     </button>
                 @endif
 
                 @if ($updateScores)
-                    <a href="{{ route('scores.index', $theStudentEnrollment->student_id) }}" class="btn btn-secondary">
+                    <div class="vr mx-1"></div>
+                    <a href="{{ route('scores.index', $theStudentEnrollment->student_id) }}" class="btn-staff-outline">
                         رجوع
                     </a>
                 @endif
 
                 @if (!$updateScores)
                     <div class="vr mx-1"></div>
-                    <button type="button" class="btn btn-sm btn-label-secondary">
-                        <i class="ti ti-download me-1"></i> طباعة
+                    <button class="btn-staff-outline d-flex align-items-center px-3">
+                        <i class="ti ti-download me-1"></i> تحميل
                     </button>
                 @endif
             </div>
@@ -133,14 +153,15 @@
 
         <div class="card-body">
             <div class="table-responsive">
-                <form action="{{ route('scores.update', [$theStudentEnrollment->student_id, null]) }}" id="updateScoresForm" method="POST">
+                <form action="{{ route('scores.update', [$theStudentEnrollment->student_id, null]) }}" id="updateScoresForm"
+                    method="POST">
                     @csrf
                     @method('PUT')
                 </form>
                 <table class="table table-bordered text-center align-middle" id="resultsTable">
                     <thead class="table-light">
                         <tr>
-                            <th rowspan="2">اسم المادة</th>
+                            <th rowspan="2" style="text-align: center; vertical-align: middle;">اسم المادة</th>
                             @foreach ($semesters as $oneSemester)
                                 <th colspan="3" class="final-col">{{ $oneSemester['name'] }}</th>
                             @endforeach
@@ -186,7 +207,7 @@
                                                             name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][quizzes][{{ $index }}][value]"
                                                             value="{{ $oneQuiz['scoreValue'] }}" min="0"
                                                             max="{{ $oneQuiz['scoreMaxValue'] }}" placeholder="0"
-                                                            title="العلامة هي : {{ $oneQuiz['scoreValue'] }}"  step="0.01">
+                                                            title="العلامة هي : {{ $oneQuiz['scoreValue'] }}" step="0.01">
                                                         <span class="text-muted">/{{ $oneQuiz['scoreMaxValue'] }}</span>
                                                     </div>
                                                 </div>
@@ -220,7 +241,7 @@
                                                         class="form-control form-control-sm final-input"
                                                         name="scores[{{ $subjectIndex }}][semesters][{{ $semesterIndex }}][final][value]"
                                                         value="{{ $oneSemester['final']['scoreValue'] }}" min="0" placeholder="0.00"
-                                                        title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}"  step="0.01">
+                                                        title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}" step="0.01">
 
                                                     <span class="text-muted">/{{ $oneSemester['final']['scoreMaxValue']  }}</span>
                                                 </div>
@@ -234,7 +255,8 @@
                                                 <div class="small mb-1 d-flex align-items-center justify-content-center gap-1">
                                                     <div class="form-control form-control-sm final-input"
                                                         title="العلامة هي : {{ $oneSemester['final']['scoreValue'] }}">
-                                                        {{ $oneSemester['final']['scoreValue'] }}</div>
+                                                        {{ $oneSemester['final']['scoreValue'] }}
+                                                    </div>
                                                     <span class="text-muted">/{{ $oneSemester['final']['scoreMaxValue']  }}</span>
                                                 </div>
                                             </td>

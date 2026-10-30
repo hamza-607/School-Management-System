@@ -46,7 +46,7 @@ class AuthController extends Controller
             $today = strtolower(now()->dayName);
             // dd($today);
             $is_carried_out = Cache::get('is_carried_out') ?? true;
-            // dd($is_carried_out && $today === 'tuesday');
+
             if ($today === 'sunday' && $is_carried_out) { // رجعها بكرا ليوم الاحد
                 $sessions = Appointment::where('status', 'canceled')->orWhere('status', 'completed')->get();
                 // dd($sessions);
@@ -89,6 +89,7 @@ class AuthController extends Controller
                     ->where('end_date', '>=', now())
                     ->orderByDesc('start_date')
                     ->first();
+                    
                 if ($newCurrentSemester) {
                     $newCurrentSemester->update([
                         'is_current' => 1,

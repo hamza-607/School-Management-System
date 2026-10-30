@@ -2,7 +2,49 @@
 
 @section('title', 'السنوات الدراسية')
 
+@section('vendor-style')
+    <!-- استدعاء ملفات الـ CSS الخاصة بـ Flatpickr -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+@endsection
+
+@section('vendor-script')
+    <!-- استدعاء ملفات الـ JS الخاصة بـ Flatpickr -->
+    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+@endsection
+
 @section('content')
+  <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // تفعيل الـ Flatpickr لحقلي تاريخ السنة الدراسية الجديدة
+            flatpickr('#academic-start-date', {
+                dateFormat: 'Y-m-d',
+                allowInput: true
+            });
+
+            flatpickr('#academic-end-date', {
+                dateFormat: 'Y-m-d',
+                allowInput: true
+            });
+
+            // تفعيل الـ Flatpickr لحقلي تاريخ الفصل الدراسي
+            flatpickr('#semester-start-date', {
+                dateFormat: 'Y-m-d',
+                allowInput: true
+            });
+
+            flatpickr('#semester-end-date', {
+                dateFormat: 'Y-m-d',
+                allowInput: true
+            });
+
+            // تمرير academic_year_id الصحيح لمودال "إضافة فصل"
+            document.querySelectorAll('.add-semester-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.getElementById('semesterYearId').value = btn.dataset.yearId;
+                });
+            });
+        });
+    </script>
 
     <style>
         .button_2 {
@@ -72,7 +114,7 @@
         <div class="card-body">
             <div class="accordion" id="yearsAccordion">
                 @forelse ($academicYears as $year)
-                    
+
                     <div class="accordion-item">
                         <h2 class="accordion-header d-flex align-items-center justify-content-between">
                             <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" type="button"
@@ -93,7 +135,7 @@
                                     @method('PUT')
 
                                     <button type="submit" class="btn btn-sm button_2">
-                                        <i class="ti ti-star me-1"></i> تعيين كحالية
+                                        <i class="ti ti-star me-1"></i> تفعيل
                                     </button>
                                 </form>
                             @endif
@@ -132,7 +174,7 @@
                                                     @method('PUT')
 
                                                     <button type="submit" class="btn btn-sm btn btn-sm button_2">
-                                                        تعيين كحالي
+                                                        تفعيل
                                                     </button>
                                                 </form>
                                             @endif
@@ -168,11 +210,13 @@
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">تاريخ البداية</label>
-                            <input type="date" name="start_date" class="form-control" required>
+                            <input type="text" name="start_date" id="academic-start-date" class="form-control"
+                                placeholder="YYYY-MM-DD" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">تاريخ النهاية</label>
-                            <input type="date" name="end_date" class="form-control" required>
+                            <input type="text" name="end_date" id="academic-end-date" class="form-control"
+                                placeholder="YYYY-MM-DD" required>
                         </div>
                     </div>
                 </div>
@@ -200,13 +244,13 @@
                         <input type="text" name="name" class="form-control" placeholder="مثال: الفصل الأول" required>
                     </div>
                     <div class="row">
-                        <div class="col-6 mb-3">
+                       <div class="col-6 mb-3">
                             <label class="form-label">تاريخ البداية</label>
-                            <input type="date" name="start_date" class="form-control" required>
+                            <input type="text" name="start_date" id="semester-start-date" class="form-control" placeholder="YYYY-MM-DD" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">تاريخ النهاية</label>
-                            <input type="date" name="end_date" class="form-control" required>
+                            <input type="text" name="end_date" id="semester-end-date" class="form-control" placeholder="YYYY-MM-DD" required>
                         </div>
                     </div>
                 </div>

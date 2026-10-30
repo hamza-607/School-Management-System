@@ -47,12 +47,20 @@ class GradeController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:100'
+                'name' => 'required|string|max:100|unique:grades,name',
             ]);
 
-            Grade::create([
+            $lastGrade = Grade::orderByDesc('id')->first();
+
+            $newGrade = Grade::create([
                 'name' => $validated['name'],
             ]);
+
+            if ($lastGrade) {
+                $lastGrade->update([
+                    'next_grade_id' => $newGrade->id,
+                ]);
+            }
 
             return redirect()->route('grades.index')->with('success', ['تم إضافة الصف بنجاح.']);
         } catch (\Exception $e) {
@@ -91,7 +99,7 @@ class GradeController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:100'
+                'name' => 'required|string|max:100|unique:grades,name',
             ]);
 
             $grade = Grade::findOrFail($id);

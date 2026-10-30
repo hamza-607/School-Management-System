@@ -22,7 +22,7 @@ class FinishedSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attendance' => 'required|array',
+            'attendance' => 'array',
             'attendance.*' => 'required|array',
             "attendance.*.student_id" => 'required|exists:students,id',
             "attendance.*.status" => "required|in:present,absent,excused",

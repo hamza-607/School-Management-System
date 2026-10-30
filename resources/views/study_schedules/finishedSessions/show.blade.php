@@ -26,7 +26,7 @@
         function confirmDelete(id) {
             Swal.fire({
                 title: 'تأكيد الحذف',
-                                html: `<div>هل أنت متأكد أنك تريد حذف سجل هذه الحصة الدرسية؟<br><strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong></div>`,
+                html: `<div>هل أنت متأكد أنك تريد حذف سجل هذه الحصة الدرسية؟<br><strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong></div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -35,10 +35,10 @@
                 focusCancel: true,
                 buttonsStyling: false,
                 customClass: {
-                            confirmButton: 'btn-swal-danger',
-                            cancelButton: 'btn-swal-cancel',
-                            popup: 'swal2-popup-custom'
-                        },
+                    confirmButton: 'btn-swal-danger',
+                    cancelButton: 'btn-swal-cancel',
+                    popup: 'swal2-popup-custom'
+                },
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 allowEnterKey: false,
@@ -134,9 +134,21 @@
             border-color: var(--primary);
             color: var(--ink);
         }
+
+        .theme-badge-neutral {
+            display: inline-flex;
+            align-items: center;
+            padding: .3rem .75rem;
+            border-radius: .3rem;
+            background: #f5f8f7;
+            border: 1px solid #dbe6e3;
+            color: #3a5350;
+            font-size: .82rem;
+            font-weight: 600;
+        }
     </style>
 
-   <div class="mb-4">
+    <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">سجل الحصص الدرسية</span>
             <a href="{{ route('finishedSessions.index') }}" class="text-muted">القائمة / </a>
@@ -169,7 +181,7 @@
                         @endphp
                         <h5 class="mb-1" style="font-size:xx-large;">{{ $theSession->subject->name }}
                             <span class="text-center align-middle fs-6">
-                                <span class="badge bg-label-secondary text-dark">{{ $sessionType }}</span>
+                                <span class="theme-badge-neutral">{{ $sessionType }}</span>
                             </span>
                         </h5>
 
@@ -185,18 +197,18 @@
                                 <i class="bi bi-calendar-week me-2"></i>
                                 <span class="me-1">يوم الحصة:</span>
                                 <span
-                                    class="badge bg-label-secondary text-dark me-3">{{ $daysMap[$theSession->appointment->day] ?? $theSession->appointment->day }}
+                                    class="theme-badge-neutral me-3">{{ $daysMap[$theSession->appointment->day] ?? $theSession->appointment->day }}
                                     - {{ $theSession->created_at->format('d/m/Y') }}</span>
                             </div><br>
                             <div class="staff-detail-sub">
                                 <i class="bi bi-clock-history me-2"></i>
                                 <span class="me-1">التوقيت:</span>
                                 <span class="me-3">
-                                    <span class="badge bg-label-secondary text-dark">
+                                    <span class="theme-badge-neutral">
                                         {{ $theSession->appointment->start_time ? \Carbon\Carbon::parse($theSession->appointment->start_time)->format('h:i A') : '-' }}
                                     </span>
                                     <span class="mx-1">-</span>
-                                    <span class="badge bg-label-secondary text-dark">
+                                    <span class="theme-badge-neutral">
                                         {{ $theSession->appointment->start_time ? \Carbon\Carbon::parse($theSession->appointment->end_time)->format('h:i A') : '-' }}
                                     </span>
                                 </span>
@@ -205,11 +217,11 @@
                                 <i class="bi bi-clock-history me-2"></i>
                                 <span class="me-1">التوقيت الفعلي:</span>
                                 <span class="me-3">
-                                    <span class="badge bg-label-secondary text-dark">
+                                    <span class="theme-badge-neutral">
                                         {{ $theSession->actual_start_time ? \Carbon\Carbon::parse($theSession->actual_start_time)->format('h:i A') : '-' }}
                                     </span>
                                     <span class="mx-1">-</span>
-                                    <span class="badge bg-label-secondary text-dark">
+                                    <span class="theme-badge-neutral">
                                         {{ $theSession->actual_end_time ? \Carbon\Carbon::parse($theSession->actual_end_time)->format('h:i A') : '-' }}
                                     </span>
                                 </span>
@@ -219,16 +231,19 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSession->id }})">
-                        حذف الحصة
-                    </button>
 
-                    <form id="delete-form-{{ $theSession->id }}"
-                        action="{{ route('finishedSessions.destroy', $theSession->id)  }}" method="POST"
-                        style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                    @if ($theSession->status !== 'active')
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSession->id }})">
+                            حذف الحصة
+                        </button>
+
+                        <form id="delete-form-{{ $theSession->id }}"
+                            action="{{ route('finishedSessions.destroy', $theSession->id)  }}" method="POST"
+                            style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    @endif
 
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع

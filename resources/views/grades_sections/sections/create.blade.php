@@ -42,23 +42,23 @@
                     return;
                 }
 
-                // إنشاء خيار جديد في السيلكت
-                let option = new Option(name, 'NEW', true, true);
-                $('#grade_select').append(option).trigger('change');
-
-                // وضع الاسم في الحقل المخفي ليتم إرساله مع الفورم
+                // 1. وضع الاسم في الحقل المخفي ليتم إرساله مع الفورم
                 $('#new_grade_name').val(name);
 
-                // تفريغ المدخل وإغلاق المودال
+                // 2. إزالة أي خيار مؤقت قديم وإضافة خيار وهمي جديد يقبله الـ Select2 والـ Validation
+                $('#grade_select').find('option[value="NEW"]').remove();
+                let option = new Option(name + ' (جديد)', 'NEW', true, true);
+                $('#grade_select').append(option).trigger('change');
+
+                // 3. تفريغ المدخل وإغلاق المودال
                 $('#grade_name_input').val('');
-                bootstrap.Modal.getInstance(
-                    document.getElementById('gradeModal')
-                ).hide();
+                var modalEl = document.getElementById('gradeModal');
+                var modalInstance = bootstrap.Modal.getInstance(modalEl);
+                modalInstance.hide();
             });
         });
     </script>
 @endsection
-
 
 @section('content')
 
@@ -185,10 +185,11 @@
                                             placeholder="أدخل اسم الصف">
                                     </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn-staff-outline" data-bs-dismiss="modal">إلغاء</button>
-                                    <button type="submit" class="btn-staff-primary">حفظ</button>
-                                </div>
+                               <div class="modal-footer">
+                <button type="button" class="btn-staff-outline" data-bs-dismiss="modal">إلغاء</button>
+                {{-- تم تغيير type إلى button وإضافة id ليتم برمجته بالسكربت --}}
+                <button type="button" id="confirmGrade" class="btn-staff-primary">حفظ الصف</button>
+            </div>
                             </div>
                         </div>
                     </div>

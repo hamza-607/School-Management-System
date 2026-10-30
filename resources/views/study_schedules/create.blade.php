@@ -26,6 +26,28 @@
     <script>
         $(document).ready(function () {
 
+           // دالة التحكم بظهور حقل العلامة العظمى بناءً على نوع الحصة
+            function toggleMaxScoreField() {
+                let selectedType = $('#typeSelect').val();
+                
+                if (selectedType === 'final') {
+                    $('#maxScoreContainer').slideDown();
+                    $('#max_score_id').attr('required', true);
+                } else {
+                    $('#maxScoreContainer').slideUp();
+                    $('#max_score_id').attr('required', false);
+                    $('#max_score_id').val(''); // تفريغ الحقل عند إخفائه
+                }
+            }
+
+            // تشغيل الدالة عند تغيير نوع الحصة (عبر Bootstrap Select أو Select عادي)
+            $('#typeSelect').on('change', function () {
+                toggleMaxScoreField();
+            });
+
+            // تشغيل الدالة عند تحميل الصفحة (في حال وجود قيمة قديمة عند حدوث خطأ validation)
+            toggleMaxScoreField();
+
             // المواد + المدرسين من الكونترولر
             const subjectsData = @json($subjects);
 
@@ -333,7 +355,7 @@
                     <div class="col-md-6">
                         <label class="form-label">نوع الحصة الدرسية<span class="text-danger">*</span></label>
                         <select class="selectpicker w-100 @error('type') is-invalid @enderror" data-style="btn-default"
-                            name="type">
+                            name="type" id="typeSelect">
                             <option value="regular" {{ old('type') == 'regular' ? 'selected' : '' }}>اساسية</option>
                             <option value="makeup" {{ old('type') == 'makeup' ? 'selected' : '' }}>تعويضية</option>
                             <option value="final" {{ old('type') == 'final' ? 'selected' : '' }}>امتحان نهائي</option>
@@ -355,6 +377,15 @@
                         <label class="form-label">وقت الانتهاء<span class="text-danger">*</span></label>
                         <input type="text" name="end_time" class="form-control time-mask" placeholder="23:59:59" required>
                         @error('staff')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6" id="maxScoreContainer" style="display: none;">
+                        <label class="form-label">العلامة العظمى<span class="text-danger">*</span></label>
+                        <input class="form-control @error('max_score') is-invalid @enderror" type="number" step="0.1"
+                            name="max_score" placeholder="0.00" id="max_score_id">
+                        @error('max_score')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>

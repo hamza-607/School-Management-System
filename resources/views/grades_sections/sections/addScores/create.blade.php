@@ -147,7 +147,7 @@
                 <table class="table table-bordered text-center align-middle" id="resultsTable">
                     <thead class="table-light">
                         <tr>
-                            <th rowspan="2">اسم الطالب</th>
+                            <th rowspan="2" style="text-align: center; vertical-align: middle;">اسم الطالب</th>
                             <th colspan="2" class="final-col">{{ $semester->name }}</th>
                         </tr>
                         <tr>
@@ -172,7 +172,7 @@
                                                     form="updateScoresForm"
                                                     name="students[{{ $indexStudent }}][scores][{{ $scoreComponent->id }}]" min="0"
                                                     max="{{ $scoreComponent->max_score }}" step="0.01" placeholder="0"
-                                                    value="{{ old("students[$indexStudent][scores][$scoreComponent->id]") }}">
+                                                    value="{{ $scoreComponent->students_scores->first() ? $scoreComponent->students_scores->where('student_id', $student_enrollment->student_id)->first()->score : null }}">
                                                 <span class="text-muted">/{{ $scoreComponent->max_score }}</span>
                                             </div>
                                         </div>
