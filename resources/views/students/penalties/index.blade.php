@@ -61,12 +61,12 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `
-                            <div>
-                                هل أنت متأكد أنك تريد حذف عقوبة هذا الطالب؟
-                                <br>
-                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                            </div>
-                        `,
+                                        <div>
+                                            هل أنت متأكد أنك تريد حذف عقوبة هذا الطالب؟
+                                            <br>
+                                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                        </div>
+                                    `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -306,7 +306,7 @@
                 <div class="d-flex align-items-center justify-content-md-end justify-content-start">
                     <label class="d-flex align-items-center">بحث:
                         <input id="penaltySearchInput" type="search" class="form-control form-control-sm ms-2"
-                            placeholder="بحث عن عقوبة..." value="{{ request('search') }}"> </label>
+                            placeholder="بحث عن عقوبة..." value="{{ request('search') }}" style="fo"> </label>
                 </div>
             </div>
         </div>
@@ -344,15 +344,22 @@
 
                             <td class="align-middle fw-bold text-dark">{{ $penalty->penalty_type }}</td>
 
-                            <td>{{ $penalty->reason }}</td>
+                            <td class="address-truncate">{{ $penalty->reason }}</td>
 
-                            <td><a
-                                    href="{{ route('staff_members.show', [$penalty->user->staff->id, 'from' => $penalty->user->staff->staff_type]) }}">{{ $penalty->user->name }}</a>
+                            <td>
+                                <a
+                                    href="{{ route('staff_members.show', [$penalty->user->staff->id, 'from' => $penalty->user->staff->staff_type]) }}">{{ $penalty->user->name }}
+                                    <br>
+                                    ({{ $penalty->created_at->format('Y-m-d') }})
+                                </a>
                             </td>
                             <td>
                                 @if ($penalty->updated_by_user)
                                     <a
-                                        href="{{ route('staff_members.show', [$penalty->updated_by_user->staff->id, 'from' => $penalty->updated_by_user->staff->staff_type]) }}">{{ $penalty->updated_by_user->name ?? '-'}}</a>
+                                        href="{{ route('staff_members.show', [$penalty->updated_by_user->staff->id, 'from' => $penalty->updated_by_user->staff->staff_type]) }}">{{ $penalty->updated_by_user->name ?? '-'}}
+                                        <br>
+                                        ({{ $penalty->updated_at->format('Y-m-d') }})
+                                    </a>
                                 @else
                                     -
                                 @endif

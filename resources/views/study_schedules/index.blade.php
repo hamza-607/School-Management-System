@@ -88,11 +88,11 @@
                     reverseButtons: true,
                     focusCancel: true,
                     buttonsStyling: false,
-                     customClass: {
-                            confirmButton: 'btn-swal-danger',
-                            cancelButton: 'btn-swal-cancel',
-                            popup: 'swal2-popup-custom'
-                        },
+                    customClass: {
+                        confirmButton: 'btn-swal-danger',
+                        cancelButton: 'btn-swal-cancel',
+                        popup: 'swal2-popup-custom'
+                    },
                     allowOutsideClick: false,
                     backdrop: true
                 }).then((result) => {
@@ -116,7 +116,7 @@
 @section('content')
     <style>
         /* Ensure SweetAlert overlays above everything and style popup */
-         :root {
+        :root {
             --ink: #00352e;
             --ink-soft: #3a5350;
             --primary: #006559;
@@ -133,7 +133,7 @@
             --info-bg: #e7eef6;
         }
 
-       .swal2-popup-custom {
+        .swal2-popup-custom {
             border-radius: .4rem;
             font-family: 'Cairo', sans-serif;
         }
@@ -171,19 +171,6 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        :root {
-            --sage: #006559;
-            --sage-bg: #e6f1ef;
-            --burgundy: #7a3540;
-            --burgundy-bg: #f6ecec;
-            --amber: #8a6530;
-            --amber-bg: #f3ead6;
-            --info: #2f5d8a;
-            --info-bg: #e7eef6;
-            --cream: #f5f8f7;
-            --line: #dbe6e3;
         }
 
         .theme-status-pill {
@@ -301,14 +288,25 @@
         .staff-action-btn:hover {
             border-color: var(--primary);
             background: var(--cream);
-            Pw
+        }
+
+        .theme-badge-neutral {
+            display: inline-flex;
+            align-items: center;
+            padding: .3rem .75rem;
+            border-radius: .3rem;
+            background: #f5f8f7;
+            border: 1px solid #dbe6e3;
+            color: #3a5350;
+            font-size: .82rem;
+            font-weight: 600;
         }
     </style>
 
     <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">البرامج الدراسية</span>
-            <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة</a> / 
+            <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة</a> /
             <span class="border-bottom border-2 border-primary"> برنامج الصف {{ $section->grade->name }} - الشعبة
                 {{ $section->name }}</span>
         </h4>
@@ -466,11 +464,11 @@
                             </td>
 
                             <td class="text-center align-middle">
-                                <span class="badge bg-label-secondary text-dark">
+                                <span class="theme-badge-neutral">
                                     {{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->start_time)->format('h:i A') }}
                                 </span>
                                 <span class="mx-1">-</span>
-                                <span class="badge bg-label-secondary text-dark">
+                                <span class="theme-badge-neutral">
                                     {{ \Carbon\Carbon::parse($sectionSubjectTeacher->appointment->end_time)->format('h:i A') }}
                                 </span>
                             </td>
@@ -499,7 +497,7 @@
                             </td>
 
                             <td>
-                                <span class="badge bg-label-secondary text-dark">{{ $sessionType }}</span>
+                                <span class="theme-badge-neutral">{{ $sessionType }}</span>
 
                                 @if ($sessionType === 'اساسية' || $sessionType === 'تعويضية')
                                     <button type="button" class="btn btn-sm btn-outline-primary ms-1 add-quiz-btn"

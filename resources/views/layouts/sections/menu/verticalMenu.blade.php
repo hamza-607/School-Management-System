@@ -50,12 +50,19 @@
     </li>
 
     @php
+      $currentYear = App\Models\AcademicYear::where('is_current', true)->first();
+      $academicYearID = session('newCurrentYearID') ? ($currentYear ? $currentYear->id : null) : null;
 
-      $isActiveSession = App\Models\SectionSubjectTeacher::whereHas('appointment', function ($q) {
-        $q->where('status', 'active');
-      })->get()->isEmpty();
+
+      $isActiveSession = App\Models\SectionSubjectTeacher::whereHas('section', function ($q) use ($academicYearID) {
+        $q->where('academic_year_id', $academicYearID);
+      })
+        ->whereHas('appointment', function ($q) {
+          $q->where('status', 'active');
+        })->get()->isEmpty();
 
       // dd(!$isActiveSession);
+
     @endphp
     @if (!$isActiveSession)
       <li
@@ -106,7 +113,7 @@
       <a href="{{ route('academicYears.index') }}"
         class="menu-link session-link {{ request()->routeIs('academicYears.index') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-calendar-alt me-2"></i>
-        <span>السنة الدراسية</span>
+        <span>السنوات الدراسية</span>
       </a>
     </li>
 
@@ -115,6 +122,14 @@
         class="menu-link session-link {{ request()->routeIs('sectionScores.*') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-chart-line me-2"></i>
         <span>رصد العلامات</span>
+      </a>
+    </li>
+
+    <li class="menu-item {{ request()->routeIs('passFailLists.*') ? 'active' : '' }}">
+      <a href="{{ route('passFailLists.index') }}"
+        class="menu-link session-link {{ request()->routeIs('passFailLists.*') ? 'menu-active-text-white' : '' }}">
+        <i class="fas fa-chart-line me-2"></i>
+        <span>قوائم الترفع والرسوب</span>
       </a>
     </li>
 

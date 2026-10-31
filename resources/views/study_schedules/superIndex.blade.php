@@ -55,7 +55,6 @@
             background: var(--info);
         }
 
-        /* .theme-breadcrumb { font-family: 'Cairo', sans-serif; } */
         .theme-breadcrumb a {
             color: #8b8577;
             text-decoration: none;
@@ -71,14 +70,6 @@
         .theme-card-header {
             border-bottom: 1px solid var(--line);
             padding: 1.35rem 1.5rem;
-        }
-
-        .theme-card-title {
-            /* font-family: 'Amiri', serif; */
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--ink);
-            margin: 0;
         }
 
         /* Day picker */
@@ -122,7 +113,6 @@
         .table-theme thead th {
             /* font-family: 'Cairo', sans-serif; */
             font-weight: 700;
-            font-size: .86rem;
             color: var(--ink);
             background: var(--cream);
             border-bottom: 1px solid var(--line);
@@ -135,7 +125,6 @@
             padding: .85rem 1rem;
             vertical-align: middle;
             border-bottom: 1px solid var(--line);
-            font-size: .92rem;
         }
 
         .table-theme .theme-link {
@@ -261,7 +250,6 @@
             padding: 2rem;
             text-align: center;
             color: #8b8577;
-            /* font-family: 'Amiri', serif; font-size: 1.05rem; */
         }
 
         /* بطاقات البرامج الدراسية */
@@ -333,9 +321,8 @@
             border-top: 1px solid var(--line) !important;
         }
 
-        .swal2-popup-custom {
+     .swal2-popup-custom {
             border-radius: .4rem;
-            font-family: 'Cairo', sans-serif;
         }
 
         .swal2-container {
@@ -390,11 +377,11 @@
                     Swal.fire({
                         title: 'تأكيد الحذف',
                         html: `
-                            <div>
-                                هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
-                                <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
-                            </div>
-                        `,
+                                    <div>
+                                        هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
+                                        <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                                    </div>
+                                `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'نعم، احذف',
@@ -510,16 +497,12 @@
                                     $appointmentDay = $sectionSubjectTeacher->appointment->day;
                                     $currentStatus = $sectionSubjectTeacher->appointment->status; // scheduled | active | canceled
                                     $isToday = $appointmentDay === $today;
-                                    $isLocked = $currentStatus === 'canceled' || $currentStatus === 'completed'; // ← قفل نهائي بعد الإلغاء
+                                    // $isLocked = $currentStatus === 'canceled' || $currentStatus === 'completed'; // ← قفل نهائي بعد الإلغاء
+                                    $isLocked = in_array($currentStatus, ['canceled', 'completed', 'active']);
 
                                     $alternatives = array_diff(array_keys($statusMeta), [$currentStatus]);
 
                                     $isActiveLocked = $currentStatus === 'scheduled' && !$isToday;
-
-                                    // "مكتملة" فقط بعد ما تكون نشطة
-                                    if ($currentStatus !== 'active') {
-                                        $alternatives = array_diff($alternatives, ['completed']);
-                                    }
 
                                     // من نشطة: الخيار الوحيد هو مكتملة
                                     if ($currentStatus === 'active') {
@@ -548,11 +531,12 @@
 
                                     <td class="align-middle">
                                         @if ($isLocked)
-                                            <span class="theme-status-pill {{ $statusInfo['badgeClass'] }} theme-status-locked"
-                                                data-bs-toggle="tooltip" style="cursor: help;"
-                                                title="{{ $currentStatus === 'completed' ? 'تم إكمال هذه الحصة نهائياً ولا يمكن تغيير حالتها إلا من قبل الإدارة او الانتظار لنهاية الاسبوع لتجدول تلقائياً.' : 'تم إلغاء هذه الحصة نهائياً. لإعادة جدولتها يرجى التواصل مع قسم الجداول الدراسية.' }}">
-                                                <i class="ti ti-lock ti-xs"></i>{{ $statusInfo['label'] }}
-                                            </span>
+                                                        <span class="theme-status-pill {{ $statusInfo['badgeClass'] }} theme-status-locked"
+                                                            data-bs-toggle="tooltip" style="cursor: help;" title="{{ $currentStatus === 'completed' ? 'تم إكمال هذه الحصة نهائياً ولا يمكن تغيير حالتها إلا من قبل الإدارة او الانتظار لنهاية الاسبوع لتجدول تلقائياً.' : ($currentStatus === 'active'
+                                            ? 'هذه الحصة نشطة حالياً ,لتغيير حالتها اذهب الى الجلسات الفعالة.'
+                                            : 'تم إلغاء هذه الحصة نهائياً. لإعادة جدولتها يرجى التواصل مع قسم الجداول الدراسية.') }}">
+                                                            <i class="ti ti-lock ti-xs"></i>{{ $statusInfo['label'] }}
+                                                        </span>
                                         @else
                                             <div class="dropdown">
                                                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow"

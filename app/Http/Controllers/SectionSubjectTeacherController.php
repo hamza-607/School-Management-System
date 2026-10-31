@@ -38,7 +38,12 @@ class SectionSubjectTeacherController extends Controller
     public function activeSessions(Request $request)
     {
         // dd($request->all());
-        $query = SectionSubjectTeacher::query();
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+
+        $query = SectionSubjectTeacher::query()->whereHas('section', function ($q) use ($academicYearID) {
+            $q->where('academic_year_id',$academicYearID);
+        });
+        
         $query->with(['subject', 'staff', 'appointment'])->whereHas('appointment', function ($q) {
             $q->where('status', 'active');
         });
@@ -51,19 +56,21 @@ class SectionSubjectTeacherController extends Controller
             $query->where('section_id', $request->section_id);
         }
 
-        if ($request->has('day') && $request->day !== null) {
-            $query->whereHas('appointment', function ($q) use ($request) {
-                $q->where('day', $request->day);
-            });
+        if ($request->has('teacher_id') && $request->teacher_id !== null) {
+            if ($request->has('teacher_id') && $request->teacher_id !== null) {
+                $query->where('teacher_id', $request->teacher_id);
+            }
         }
 
         $activeSessions = $query->paginate($request->per_page ?? 10)->withQueryString();
 
         $grades = Grade::with('sections')->get();
+        $teachers = Staff::where('staff_type', 'teacher')->get();
 
         return view('study_schedules.activeSessions.acitveSession', [
             'activeSessions' => $activeSessions,
             'grades' => $grades,
+            'teachers' => $teachers,
         ]);
     }
 
@@ -268,7 +275,7 @@ class SectionSubjectTeacherController extends Controller
                     'section_subject_teacher_id' => $newSession->id,
                     'semester_id' => $semesterID,
                     'type' => 'final_exam',
-                    'max_score' => 100,
+                    'max_score' => $validated['max_score'],
                 ]);
             }
             return redirect()->route('studySchedules.index', $sectionID)->with('success', 'تم أضافة الحصة الدرسية بنجاح');
@@ -476,7 +483,7 @@ class SectionSubjectTeacherController extends Controller
                     'status' => 'canceled',
                     'created_at' => now(),
                 ]);
-                if ($theSession->type === 'makeup') {
+                if ($theSession->type === 'makeup' || $theSession->type === 'final') {
                     $theSession->delete();
                 }
                 return redirect(url()->previous())->with('success', 'تم إلغاء الجلسة بنجاح.');

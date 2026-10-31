@@ -36,4 +36,9 @@ class ScoreComponent extends Model
     {
         return $this->hasMany(StudentScore::class);
     }
+
+    public function section_subject_teacher()
+    {
+        return $this->belongsTo(SectionSubjectTeacher::class);
+    }
 }

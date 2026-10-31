@@ -35,7 +35,7 @@ class StoreStudentRequest extends FormRequest
             "phone" => "nullable|string|max:25",
             "address" => "required|string|max:255",
 
-            "new_grade_name" => 'exclude_unless:grade,NEW|required|string|max:255',
+            "new_grade_name" => 'exclude_unless:grade,NEW|required|string|max:255|unique:grades,name',
             "new_section_name" => 'exclude_unless:section,NEW|required|string|max:255',
             "new_section_capacity" => 'exclude_unless:section,NEW|nullable',
 

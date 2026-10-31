@@ -19,16 +19,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                            <div>
-                                هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                                <br>
-                                <span class="text-danger">
-                                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                                </span>
-                                <br>
-                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                            </div>
-                        `,
+                                        <div>
+                                            هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                            <br>
+                                            <span class="text-danger">
+                                            هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                            </span>
+                                            <br>
+                                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                        </div>
+                                    `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -292,7 +292,9 @@
                         </div>
 
                         @php
-                            $enrollment = $theStudent->student_enrollments->first() ?? null;
+                            $academicYearID = session('newCurrentYearID') ?? App\Models\AcademicYear::where('is_current', true)->first()->id;
+
+                            $enrollment = $theStudent->student_enrollments->where('academic_year_id', $academicYearID)->first() ?? null;
                         @endphp
 
                         <div class="row g-4">
@@ -462,10 +464,15 @@
                                         class="d-flex align-items-center justify-content-between py-1 px-2 border rounded-3 bg-light-subtle">
                                         <div>
                                             <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">الصف:
-                                                {{ $enrollment->grade->name }}
+                                                {{ $enrollment->grade->name }} /
+                                                <small class="text-muted" style="font-size: 0.75rem;">السنة الدراسية:
+                                                    {{ $enrollment->academic_year->name }}</small>
                                             </h6>
-                                            <small class="text-muted" style="font-size: 0.75rem;">السنة الدراسية:
-                                                {{ $enrollment->academic_year->name }}</small>
+                                            <small class="text-muted" style="font-size: 0.75rem;">قرر من قبل :
+                                                <a
+                                                    href="{{ $enrollment->decided_by ? route('staff_members.show', $enrollment->decided_by_user->staff->id) : '#' }}">{{ $enrollment->decided_by ? $enrollment->decided_by_user->staff->name : null}}</a>
+                                                /
+                                                {{ $enrollment->decided_at ?? null }}</small>
                                         </div>
                                         <span class="badge rounded-pill {{ $result['class'] }}">
                                             {{ $result['label'] }}

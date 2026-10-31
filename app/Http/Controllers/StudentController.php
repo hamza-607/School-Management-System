@@ -12,6 +12,7 @@ use App\Models\Section;
 use App\Models\Student;
 use App\Models\Student_parent;
 use App\Models\StudentEnrollment;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +29,7 @@ class StudentController extends Controller
 
         $query = Student::query();
 
-        $query->whereHas('student_enrollments', function ($q) use ($academicYearID) {
+        $query->whereHas('student_enrollments', function ($q) use ($academicYearID, $request) {
             $q->where('student_enrollments.academic_year_id', $academicYearID);
         });
 
@@ -45,11 +46,15 @@ class StudentController extends Controller
         }
 
         if ($request->has('grade_id') && $request->grade_id !== null) {
-            $query->where('grade_id', $request->grade_id);
+            $query->whereHas('student_enrollments', function ($q) use ($request) {
+                $q->where('grade_id', $request->grade_id);
+            });
         }
 
         if ($request->has('section_id') && $request->section_id !== null) {
-            $query->where('section_id', $request->section_id);
+            $query->whereHas('student_enrollments', function ($q) use ($request) {
+                $q->where('section_id', $request->section_id);
+            });
         }
 
         if ($request->has('gender') && $request->gender !== null) {
@@ -116,7 +121,7 @@ class StudentController extends Controller
             // dd($validate);
             $section_id = $validate['section'] !== 'NEW' ? $validate['section'] : null;
             $grade_id = $validate['grade'] !== 'NEW' ? $validate['grade'] : null;
-            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+            $academicYearID = AcademicYear::where('is_current', true)->first()->id;
 
             $student = [
                 'name' => $validate['name'],
@@ -131,9 +136,17 @@ class StudentController extends Controller
             ];
 
             if ($validate['grade'] === 'NEW') {
+                $lastGrade = Grade::orderByDesc('id')->first();
+
                 $grade = Grade::create([
                     'name' => $validate['new_grade_name'],
                 ]);
+
+                if ($lastGrade) {
+                    $lastGrade->update([
+                        'next_grade_id' => $grade->id,
+                    ]);
+                }
 
                 $grade_id = $grade->id;
             }
@@ -224,9 +237,7 @@ class StudentController extends Controller
         $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $theStudent = Student::with([
-            'student_enrollments' => function ($q) use ($academicYearID) {
-                $q->where('student_enrollments.academic_year_id', $academicYearID);
-            },
+            'student_enrollments',
             'student_enrollments.section',
             'student_enrollments.grade'
         ])->findOrFail($id);
@@ -262,7 +273,7 @@ class StudentController extends Controller
         // dd(Guardian::whereIn('id', $validate['old_parent_ids'])->pluck('id')->toArray());
         try {
             // dd($validate);
-            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+            $academicYearID = AcademicYear::where('is_current', true)->first()->id;
             $section_id = $validate['section'] !== 'NEW' ? $validate['section'] : null;
             $grade_id = $validate['grade'] !== 'NEW' ? $validate['grade'] : null;
 
@@ -280,9 +291,18 @@ class StudentController extends Controller
             // $grade_id = $validate['grade'] !== 'NEW' ? $validate['grade'] : null;
 
             if ($request->grade === 'NEW') {
+
+                $lastGrade = Grade::orderByDesc('id')->first();
+
                 $grade = Grade::create([
                     'name' => $validate['new_grade_name'],
                 ]);
+
+                if ($lastGrade) {
+                    $lastGrade->update([
+                        'next_grade_id' => $grade->id,
+                    ]);
+                }
 
                 $grade_id = $grade->id;
             }

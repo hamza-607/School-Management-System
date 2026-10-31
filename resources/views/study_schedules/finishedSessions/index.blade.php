@@ -268,6 +268,18 @@
             border-bottom: 1px solid var(--line);
             padding: 1.35rem 1.5rem;
         }
+
+        .theme-badge-neutral {
+            display: inline-flex;
+            align-items: center;
+            padding: .3rem .75rem;
+            border-radius: .3rem;
+            background: var(--cream);
+            border: 1px solid var(--line);
+            color: var(--ink-soft);
+            font-size: .82rem;
+            font-weight: 600;
+        }
     </style>
 
     <div class="mb-4">
@@ -404,13 +416,13 @@
                             </td>
 
                             <td class="text-center align-middle">
-                                <span class="badge bg-label-secondary text-dark">
+                                <span class="theme-badge-neutral">
                                     {{ $finishedSession->actual_start_time ? \Carbon\Carbon::parse($finishedSession->actual_start_time)->format('h:i A') : '-'}}
                                 </span>
                             </td>
 
                             <td class="text-center align-middle">
-                                <span class="badge bg-label-secondary text-dark">
+                                <span class="theme-badge-neutral">
                                     {{ $finishedSession->actual_end_time ? \Carbon\Carbon::parse($finishedSession->actual_end_time)->format('h:i A') : '-'}}
                                 </span>
                             </td>
@@ -427,7 +439,7 @@
                             </td>
 
                             <td class="text-center align-middle">
-                                <span class="badge bg-label-secondary text-dark">{{ $sessionType }}</span>
+                                <span class="theme-badge-neutral">{{ $sessionType }}</span>
                             </td>
 
                             <td>

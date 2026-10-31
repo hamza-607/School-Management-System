@@ -51,4 +51,9 @@ class SectionSubjectTeacher extends Model
     {
         return $this->morphMany(File::class, 'owner')->latest();
     }
+
+    public function score_components()
+    {
+        return $this->hasOne(ScoreComponent::class);
+    }
 }

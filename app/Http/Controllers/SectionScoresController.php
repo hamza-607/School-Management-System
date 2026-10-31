@@ -17,7 +17,7 @@ class SectionScoresController extends Controller
     public function index()
     {
         // dd();
-        $sectionIDs = SectionSubjectTeacher::where('teacher_id', Auth::user()->id)->pluck('section_id')->toArray();
+        $sectionIDs = SectionSubjectTeacher::where('teacher_id', Auth::user()->staff->id)->pluck('section_id')->toArray();
         $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $sections = Section::where('academic_year_id', $academicYearID)->whereIn('id', $sectionIDs)
@@ -39,9 +39,9 @@ class SectionScoresController extends Controller
         } else {
             $semester = Semester::where('is_current', 1)->first();
         }
-        // dd(Auth::user()->id, $sectionID);
+        // dd(Auth::user()->staff->id, $sectionID);
         $scoreComponents = $semester->score_components()->whereHas('finished_session', function ($query) use ($sectionID) {
-            $query->where('teacher_id', Auth::user()->id)->where('section_id', $sectionID);
+            $query->where('teacher_id', Auth::user()->staff->id)->where('section_id', $sectionID);
         })->get();
         // dd($scoreComponents);
 
@@ -55,21 +55,11 @@ class SectionScoresController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $sectionID)
     {
         // dd($request->all());
         // dd($request->has('students.scores'));
         try {
-
-            //      0 => array:2 [▼
-            //   "student" => "7"
-            //   "scores" => array:4 [▼
-            //     18 => "20"
-            //     19 => "7.96"
-            //     20 => "10"
-            //     21 => "90"
-            //   ]
-            // ]
             $validated = $request->validate([
                 'students' => 'required|array',
                 'students.*.student' => 'required|exists:students,id',
@@ -89,7 +79,10 @@ class SectionScoresController extends Controller
                             if ($score > $maxScore) {
                                 return back()->withInput()->with('error', 'لقد تم تجاوز الحد المسموح به للعلامة المحددة من قبل المدرس ,والتي هي' . $maxScore);
                             }
-                            StudentScore::create([
+                            StudentScore::updateOrCreate([
+                                'student_id' => $oneStudent['student'],
+                                'score_component_id' => $scoreID,
+                            ], [
                                 'student_id' => $oneStudent['student'],
                                 'score_component_id' => $scoreID,
                                 'score' => $score,
@@ -101,9 +94,10 @@ class SectionScoresController extends Controller
                 }
             }
 
-            return redirect()->route('sectionScores.index')->with('success', 'تم إضافة علامات الطلاب بنجاح');
+            return redirect()->route('sectionScores.create', ['sectionID' => $sectionID])->with('success', 'تم تعديل علامات الطلاب بنجاح');
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'حدث خطأ أثناء إضافة العلامات: ' . $e->getMessage());
         }
     }
+
 }

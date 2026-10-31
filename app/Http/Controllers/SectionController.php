@@ -25,7 +25,7 @@ class SectionController extends Controller
         $query = Section::query();
 
         $query->where('academic_year_id', $academicYearID);
-        
+
         if ($request->has('grade_id') && !empty($request->grade_id)) {
             $query->where('grade_id', $request->grade_id);
         }
@@ -60,9 +60,10 @@ class SectionController extends Controller
      */
     public function store(SectionRequest $request)
     {
+
         try {
             $validated = $request->validated();
-            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+            $academicYearID = AcademicYear::where('is_current', true)->first()->id;
 
             // dd($validated);
             $section = [
@@ -72,9 +73,18 @@ class SectionController extends Controller
             ];
 
             if ($request->has('grade') && $validated['grade'] === 'NEW') {
+
+                $lastGrade = Grade::orderByDesc('id')->first();
+
                 $newGrade = Grade::create([
                     'name' => $validated['new_grade_name'],
                 ]);
+
+                if ($lastGrade) {
+                    $lastGrade->update([
+                        'next_grade_id' => $newGrade->id,
+                    ]);
+                }
 
                 $section['grade_id'] = $newGrade->id;
             } else {
@@ -129,7 +139,7 @@ class SectionController extends Controller
     {
         try {
             $validated = $request->validated();
-            $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+            $academicYearID = AcademicYear::where('is_current', true)->first()->id;
 
             $section = Section::findOrFail($id);
             // dd($validated);
@@ -140,9 +150,17 @@ class SectionController extends Controller
             ];
 
             if ($request->has('grade') && $validated['grade'] === 'NEW') {
+                $lastGrade = Grade::orderByDesc('id')->first();
+
                 $newGrade = Grade::create([
                     'name' => $validated['new_grade_name'],
                 ]);
+
+                if ($lastGrade) {
+                    $lastGrade->update([
+                        'next_grade_id' => $newGrade->id,
+                    ]);
+                }
 
                 $newSection['grade_id'] = $newGrade->id;
             } else {

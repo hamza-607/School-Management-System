@@ -309,15 +309,7 @@
 @endsection
 
 @section('content')
-    <style>
-        .swal2-container {
-            z-index: 20000 !important;
-        }
-
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
-        }
-    </style>
+   
     <style>
         :root {
             --ink: #00352e;

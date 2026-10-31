@@ -21,6 +21,10 @@ class currentYearAndSemester
         $semester = null;
         $yearID = session('newCurrentYearID') ?? null;
         $semesterID = session('newCurrentSemesterID') ?? null;
+
+        $currentYear = AcademicYear::where('is_current', true)->first();
+        $currentSemester = $currentYear ? $currentYear->semesters()->where('is_current', true)->first() : null;
+
         if ($yearID) {
             $year = AcademicYear::findOrFail($yearID);
         } else {
@@ -32,7 +36,7 @@ class currentYearAndSemester
             $semester = $year ? ($year->semesters()->where('is_current', 1)->first()) : null;
         }
 
-        if (!$year) {
+        if (!$year || !$currentYear) {
             if (Auth::user()->staff->staff_type === 'admin' || Auth::user()->staff->staff_type === 'Super Admin') {
                 return redirect()->route('academicYears.index')->with('error', 'لا يوجد سنة دراسية فعالة، يرجى إضافة سنة دراسية حالية أولاً.');
             }
@@ -41,7 +45,7 @@ class currentYearAndSemester
             }
         }
 
-        if (!$semester) {
+        if (!$semester || !$currentSemester) {
             if (Auth::user()->staff->staff_type === 'admin' || Auth::user()->staff->staff_type === 'Super Admin') {
                 return redirect()->route('academicYears.index')->with('error', 'لا يوجد فصل دراسي فعال، يرجى إضافة فصل دراسي حالي أولاً.');
             }

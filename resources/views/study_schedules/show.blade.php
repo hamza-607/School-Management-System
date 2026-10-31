@@ -17,11 +17,11 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                    <div>
-                        هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
-                        <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
-                    </div>
-                `,
+                        <div>
+                            هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
+                            <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                        </div>
+                    `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -199,14 +199,26 @@
             border-color: var(--primary);
             color: var(--ink);
         }
+
+        .theme-badge-neutral {
+            display: inline-flex;
+            align-items: center;
+            padding: .3rem .75rem;
+            border-radius: .3rem;
+            background: #f5f8f7;
+            border: 1px solid #dbe6e3;
+            color: #3a5350;
+            font-size: .82rem;
+            font-weight: 600;
+        }
     </style>
 
     <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">البرامج الدراسية</span>
-           <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة / </a>
+            <a href="{{ route('studySchedules.superIndex') }}" class="text-muted">القائمة / </a>
             <a href="{{ route('studySchedules.index', $theSection->id) }}" class="text-muted"> برنامج الصف
-                {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }}</a> / 
+                {{ $theSection->grade->name }} - الشعبة {{ $theSection->name }}</a> /
             <span class="border-bottom border-2 border-primary">عرض معلومات حصة {{ $theSession->subject->name }}</span>
         </h4>
     </div>
@@ -238,7 +250,7 @@
                         @endphp
                         <h5 class="mb-1" style="font-size:xx-large;">{{ $theSession->subject->name }}
                             <span class="text-center align-middle fs-6">
-                                <span class="badge bg-label-secondary text-dark">{{ $sessionType }}</span>
+                                <span class="theme-badge-neutral">{{ $sessionType }}</span>
                             </span>
                         </h5>
 
@@ -259,17 +271,17 @@
                                     <span class="me-1">يوم الحصة:</span>
                                 </div>
                                 <span
-                                    class="badge bg-label-secondary text-dark me-3">{{ $daysMap[$theSession->appointment->day] ?? $theSession->appointment->day }}</span>
+                                    class="theme-badge-neutral me-3">{{ $daysMap[$theSession->appointment->day] ?? $theSession->appointment->day }}</span>
                                 <div class="staff-detail-sub">
                                     <i class="bi bi-clock-history"></i>
                                     <span class="me-1">التوقيت:</span>
                                 </div>
                                 <span class="me-3">
-                                    <span class="badge bg-label-secondary text-dark">
+                                    <span class="theme-badge-neutral">
                                         {{ \Carbon\Carbon::parse($theSession->appointment->start_time)->format('h:i A') }}
                                     </span>
                                     <span class="mx-1">-</span>
-                                    <span class="badge bg-label-secondary text-dark">
+                                    <span class="theme-badge-neutral">
                                         {{ \Carbon\Carbon::parse($theSession->appointment->end_time)->format('h:i A') }}
                                     </span>
                                 </span>

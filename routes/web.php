@@ -7,6 +7,7 @@ use App\Http\Controllers\EmployeeSalaryAdjustmentsController;
 use App\Http\Controllers\FinishedSessionController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\passFailListController;
 use App\Http\Controllers\ScoreContoller;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\ScoreCrontroller;
@@ -98,12 +99,18 @@ Route::middleware(['auth', 'currentYearAndSemester'])->group(function () {
             Route::resource('studySchedules', SectionSubjectTeacherController::class);
             Route::get('session/{sessionID}/control', [SectionSubjectTeacherController::class, 'controlSession'])->name('controlSession');
             Route::post('session/{sessionID}/attendance', [FinishedSessionController::class, 'finish'])->name('finishedSession');
+
             Route::get('addFile', [SectionController::class, 'addFile'])->name('sections.addFile');
             Route::post('files', [SectionController::class, 'saveFile'])->name('sections.saveFile');
-            Route::get('scores', [SectionScoresController::class, 'create'])->name('sectionScores.create');
+
+            Route::get('scores/create', [SectionScoresController::class, 'create'])->name('sectionScores.create');
             Route::post('scores', [SectionScoresController::class, 'store'])->name('sectionScores.store');
+
+            Route::get('passFailLists/create', [passFailListController::class, 'create'])->name('passFailLists.create')->middleware('nextYearMiddleware');
+            Route::post('passFailLists', [passFailListController::class, 'store'])->name('passFailLists.store')->middleware('nextYearMiddleware');
         });
     Route::get('section/scores', [SectionScoresController::class, 'index'])->name('sectionScores.index');
+    Route::get('passFailLists', [passFailListController::class, 'index'])->name('passFailLists.index');
 
     Route::post('quizzes', [ScoreController::class, 'storeQuiz'])->name('quizzes.store');
 
@@ -116,6 +123,7 @@ Route::middleware(['auth', 'currentYearAndSemester'])->group(function () {
     Route::delete('finishedSessions/{sessionID}', [FinishedSessionController::class, 'destroy'])->name('finishedSessions.destroy');
 
     Route::get('setYearCurrent/{yearID}', [AcademicYearController::class, 'setSessionYear'])->name('setYearCurrent');
+
 });
 
 

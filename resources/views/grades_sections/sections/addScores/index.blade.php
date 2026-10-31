@@ -99,28 +99,14 @@
                                 <i class="ti ti-users ti-xs me-1"></i>{{ $section->student_enrollments->count() }} طالب
                             </div>
                         </div>
-                        @php
-                            $semesterID = session('newCurrentSemesterID') ?? \App\Models\Semester::where('is_current', 1)->first()->id;
-                            $hasScores = \App\Models\StudentScore::whereHas('score_component', function ($q) use ($semesterID, $section) {
-                                $q->where('semester_id', $semesterID)->whereHas('finished_session', function ($q2) use ($section) {
-                                    $q2->where('section_id', $section->id);
-                                });
-                            })
-                                ->exists();
-                        @endphp
+                        
                         <div class="card-footer d-flex gap-2 py-2 px-3">
-                            @if (!$hasScores)
-                                <a href="{{ route('sectionScores.create', $section->id) }}"
-                                    class="btn btn-primary btn-sm py-1 flex-grow-1">
-                                    <i class="ti ti-edit ti-xs me-1"></i>إدخال العلامات
-                                </a>
-                            @else
-                                <span class="btn btn-sm btn-light-success disabled py-1 flex-grow-1 text-success fw-medium">
-                                    <i class="ti ti-check ti-xs me-1"></i>تم إدخال العلامات
-                                </span>
-                            @endif
+                            <a href="{{ route('sectionScores.create', $section->id) }}"
+                                class="btn btn-primary btn-sm py-1 flex-grow-1">
+                                <i class="ti ti-edit ti-xs me-1"></i>إدخال العلامات
+                            </a>
 
-                            <button class="btn-staff-outline">
+                            <button class="btn-staff-outline w-25 h-100">
                                 <i class="ti ti-download me-1"></i> طباعة
                             </button>
                         </div>

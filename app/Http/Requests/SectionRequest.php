@@ -26,7 +26,7 @@ class SectionRequest extends FormRequest
             "name" => 'required|string|max:225',
             "grade" => ["required", Rule::when($this->grade !== "NEW", ['exists:grades,id'])],
             "capacity" => 'nullable|numeric|min:0',
-            "new_grade_name" => 'exclude_unless:grade,NEW|required|string|max:255',
+            "new_grade_name" => 'exclude_unless:grade,NEW|required|string|max:255|unique:grades,name',
         ];
     }
 }

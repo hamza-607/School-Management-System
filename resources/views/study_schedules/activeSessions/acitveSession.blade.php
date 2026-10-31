@@ -53,7 +53,7 @@
 
             function updateFilters() {
                 let perPage = $('#sessionPerPage').val();
-                let day = $('#dayFilter').val();
+                let teacher = $('#teacherFilter').val();
                 let grade = $('#gradeFilter').val();
                 let section = $('#sectionFilter').val();
 
@@ -62,8 +62,8 @@
                 if (perPage) url.searchParams.set('per_page', perPage);
                 else url.searchParams.delete('per_page');
 
-                if (day) url.searchParams.set('day', day);
-                else url.searchParams.delete('day');
+                if (teacher) url.searchParams.set('teacher_id', teacher);
+                else url.searchParams.delete('teacher_id');
 
                 if (grade) url.searchParams.set('grade_id', grade);
                 else url.searchParams.delete('grade_id');
@@ -95,39 +95,10 @@
                 updateFilters();
             });
 
-            $('#sessionPerPage, #dayFilter, #sectionFilter').on('change', function () {
+            $('#sessionPerPage, #teacherFilter, #sectionFilter').on('change', function () {
                 updateFilters();
             });
 
-
-
-            // تأكيد الحذف (SweetAlert2)
-            $(document).on('click', '.delete-record', function (e) {
-                e.preventDefault();
-                let $btn = $(this);
-                Swal.fire({
-                    title: 'تأكيد الحذف',
-                    html: `<div>هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br><strong>هذه العملية لا يمكن التراجع عنها.</strong></div>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'نعم، احذف',
-                    cancelButtonText: 'إلغاء',
-                    reverseButtons: true,
-                    focusCancel: true,
-                    buttonsStyling: false,
-                    customClass: {
-                        confirmButton: 'btn btn-danger ms-2',
-                        cancelButton: 'btn btn-secondary',
-                        popup: 'swal2-popup-custom'
-                    },
-                    allowOutsideClick: false,
-                    backdrop: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $btn.closest('form').submit();
-                    }
-                });
-            });
 
             $(document).on('click', '.clickable-row', function (e) {
                 if ($(e.target).closest('a').length || $(e.target).closest('button').length || $(e.target).closest('form').length) {
@@ -143,14 +114,6 @@
 @section('content')
 
     <style>
-        .swal2-container {
-            z-index: 20000 !important;
-        }
-
-        .swal2-popup-custom {
-            border-radius: 0.5rem;
-        }
-
         .col-count {
             width: 150px !important;
             text-align: center;
@@ -185,8 +148,26 @@
             background: #006559;
 
         }
+
+        .staff-filter-bar {
+            background: #f5f8f7;
+            border-bottom: 1px solid #dbe6e3;
+            padding: 1.35rem 1.5rem;
+        }
+
+        .theme-badge-neutral {
+            display: inline-flex;
+            align-items: center;
+            padding: .3rem .75rem;
+            border-radius: .3rem;
+            background: #f5f8f7;
+            border: 1px solid #dbe6e3;
+            color: #3a5350;
+            font-size: .82rem;
+            font-weight: 600;
+        }
     </style>
-    
+
     <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">الجلسات الفعالة </span>
@@ -199,21 +180,19 @@
             <h5 class="card-title mb-0">قائمة الحصص الدرسية </h5>
         </div>
 
-        <div class="card-header border-bottom">
+        <div class="staff-filter-bar">
             <div>
                 <div class="row g-3">
                     <div class="col-12 col-md-4">
                         <label class="fw-bold mb-1">المدرس</label>
-                        <select id="dayFilter" name="day" class="selectpicker w-100" data-style="btn-default"
+                        <select id="teacherFilter" name="teacher_id" class="selectpicker w-100" data-style="btn-default"
                             data-width="100%">
-                            <option value="" {{ request('day') == '' ? 'selected' : '' }}>كل الأيام</option>
-                            <option value="sunday" {{ request('day') == 'sunday' ? 'selected' : '' }}>الأحد</option>
-                            <option value="monday" {{ request('day') == 'monday' ? 'selected' : '' }}>الاثنين</option>
-                            <option value="tuesday" {{ request('day') == 'tuesday' ? 'selected' : '' }}>الثلاثاء</option>
-                            <option value="wednesday" {{ request('day') == 'wednesday' ? 'selected' : '' }}>الأربعاء</option>
-                            <option value="thursday" {{ request('day') == 'thursday' ? 'selected' : '' }}>الخميس</option>
-                            <option value="friday" {{ request('day') == 'friday' ? 'selected' : '' }}>الجمعة</option>
-                            <option value="saturday" {{ request('day') == 'saturday' ? 'selected' : '' }}> السبت</option>
+                            <option value="" {{ request('teacher_id') == '' ? 'selected' : '' }}>كل المدرسين</option>
+                            @foreach ($teachers as $teacher)
+                                <option value="{{ $teacher->id }}" {{ request('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                                    {{ $teacher->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -302,11 +281,11 @@
                             </td>
 
                             <td class="text-center align-middle">
-                                <span class="badge bg-label-secondary text-dark">
+                                <span class="theme-badge-neutral">
                                     {{ \Carbon\Carbon::parse($activeSession->appointment->start_time)->format('h:i A') }}
                                 </span>
                                 <span class="mx-1">-</span>
-                                <span class="badge bg-label-secondary text-dark">
+                                <span class="theme-badge-neutral">
                                     {{ \Carbon\Carbon::parse($activeSession->appointment->end_time)->format('h:i A') }}
                                 </span>
                             </td>
