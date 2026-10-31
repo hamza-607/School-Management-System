@@ -19,16 +19,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                                        <div>
-                                            هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                                            <br>
-                                            <span class="text-danger">
-                                            هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                                            </span>
-                                            <br>
-                                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                        </div>
-                                    `,
+                                                    <div>
+                                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                                        <br>
+                                                        <span class="text-danger">
+                                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                                        </span>
+                                                        <br>
+                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                                    </div>
+                                                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -439,44 +439,65 @@
                 <div class="card shadow-sm border-0 header-card2">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between mb-4">
-
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-journal-text fs-3 text-primary"></i>
                                 <h5 class="mb-0 fw-bold">السجل الأكاديمي</h5>
                             </div>
-
-                            <button class="btn-staff-outline d-flex align-items-center px-3">
+                            <button class="btn-staff-outline d-flex align-items-center px-3 btn-sm"
+                                title="تحميل السجل الأكاديمي لهذا الطالب">
                                 <i class="ti ti-download me-1"></i> تحميل
                             </button>
                         </div>
 
-                        <div class="row g-2" id="enrollmentsList">
+                        <div class="d-flex flex-column gap-3" id="enrollmentsList">
                             @foreach ($theStudent->student_enrollments as $index => $enrollment)
                                 @php
                                     $result = match ($enrollment->result) {
-                                        'passed' => ['label' => 'ناجح', 'class' => 'bg-success'],
-                                        'failed' => ['label' => 'راسب', 'class' => 'bg-danger'],
-                                        default => ['label' => 'قيد الدراسة', 'class' => 'bg-secondary'],
+                                        'passed' => ['label' => 'ناجح', 'class' => 'bg-label-success'],
+                                        'failed' => ['label' => 'راسب', 'class' => 'bg-label-danger'],
+                                        default => ['label' => 'قيد الدراسة', 'class' => 'bg-label-secondary'],
                                     };
                                 @endphp
-                                <div class="col-12 {{ $index >= 4 ? 'enrollment-extra d-none' : '' }}">
-                                    <div
-                                        class="d-flex align-items-center justify-content-between py-1 px-2 border rounded-3 bg-light-subtle">
+                                <div
+                                    class="p-3 border rounded-3 bg-white shadow-none position-relative {{ $index >= 4 ? 'enrollment-extra d-none' : '' }}">
+                                    <!-- رأس البطاقة: الصف والسنة وزر التحميل -->
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
                                         <div>
-                                            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">الصف:
-                                                {{ $enrollment->grade->name }} /
-                                                <small class="text-muted" style="font-size: 0.75rem;">السنة الدراسية:
-                                                    {{ $enrollment->academic_year->name }}</small>
+                                            <span class="badge bg-label-primary mb-1" style="font-size: 0.75rem;">
+                                                {{ $enrollment->academic_year->name ?? '-' }}
+                                            </span>
+                                            <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">
+                                                {{ $enrollment->grade->name ?? '-' }}
                                             </h6>
-                                            <small class="text-muted" style="font-size: 0.75rem;">قرر من قبل :
-                                                <a
-                                                    href="{{ $enrollment->decided_by ? route('staff_members.show', $enrollment->decided_by_user->staff->id) : '#' }}">{{ $enrollment->decided_by ? $enrollment->decided_by_user->staff->name : null}}</a>
-                                                /
-                                                {{ $enrollment->decided_at ?? null }}</small>
                                         </div>
-                                        <span class="badge rounded-pill {{ $result['class'] }}">
-                                            {{ $result['label'] }}
+
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge {{ $result['class'] }} px-2 py-1" style="font-size: 0.75rem;">
+                                                {{ $result['label'] }}
+                                            </span>
+                                            <!-- زر التحميل الخاص بهذه السنة -->
+                                            <button class="btn-staff-outline d-flex align-items-center px-2 py-1"
+                                                style="font-size: .8rem;" title="تحميل سجل حضور الطالب لهذه السنة">
+                                                <i class="ti ti-download fs-6 text-primary"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- تفاصيل القرار والمقرر -->
+                                    <div class="pt-2 border-top text-muted d-flex align-items-center justify-content-between"
+                                        style="font-size: 0.75rem;">
+                                        <span>
+                                            قرر بواسطة:
+                                            @if($enrollment->decided_by && $enrollment->decided_by_user && $enrollment->decided_by_user->staff)
+                                                <a href="{{ route('staff_members.show', $enrollment->decided_by_user->staff->id) }}"
+                                                    class="fw-medium text-decoration-underline">
+                                                    {{ $enrollment->decided_by_user->staff->name }}
+                                                </a>
+                                            @else
+                                                -
+                                            @endif
                                         </span>
+                                        <span>{{ $enrollment->decided_at ?? '' }}</span>
                                     </div>
                                 </div>
                             @endforeach
@@ -487,28 +508,29 @@
                         @endphp
 
                         @if($enrollmentCount > 4)
-                            <div class="text-center mt-2">
-                                <button type="button" class="btn btn-sm btn-link text-decoration-none"
+                            <div class="text-center mt-3">
+                                <button type="button" class="btn btn-sm btn-link text-decoration-none fw-semibold"
                                     id="toggleEnrollmentsBtn">
                                     عرض المزيد {{ '(' . ($enrollmentCount - 4) . ')' }}
                                 </button>
                             </div>
                         @endif
-
                     </div>
                 </div>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         const btn = document.getElementById('toggleEnrollmentsBtn');
-                        const extras = document.querySelectorAll('.enrollment-extra');
-                        const extraCount = extras.length;
+                        if (btn) {
+                            const extras = document.querySelectorAll('.enrollment-extra');
+                            const extraCount = extras.length;
 
-                        btn.addEventListener('click', function () {
-                            const isHidden = extras[0]?.classList.contains('d-none');
-                            extras.forEach(el => el.classList.toggle('d-none'));
-                            this.textContent = isHidden ? 'عرض أقل' : `عرض المزيد (${extraCount})`;
-                        });
+                            btn.addEventListener('click', function () {
+                                const isHidden = extras[0]?.classList.contains('d-none');
+                                extras.forEach(el => el.classList.toggle('d-none'));
+                                this.textContent = isHidden ? 'عرض أقل' : `عرض المزيد (${extraCount})`;
+                            });
+                        }
                     });
                 </script>
 

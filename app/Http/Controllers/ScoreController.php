@@ -23,7 +23,7 @@ class ScoreController extends Controller
     {
         $theAcademicYear_id = session('newCurrentYearID') ?? AcademicYear::where('is_current', 1)
             ->first()->id;
-            
+
         $semesters = Semester::where('academic_year_id', $theAcademicYear_id)
             ->get(['id', 'name'])
             ->toArray();
@@ -31,6 +31,11 @@ class ScoreController extends Controller
         // dd($semesters);
 
         $theStudentEnrollment = Student::findOrFail($studentID)->student_enrollments()->where('academic_year_id', $theAcademicYear_id)->with('student')->first();
+        
+        if (!$theStudentEnrollment || $theStudentEnrollment->section_id === null) {
+            return redirect()->back()->with('error', 'لم يتم ربط الطالب بشعبة دراسية بعد.');
+        }
+
         $subjectIDs = $theStudentEnrollment->section->section_subject_teachers->unique('subject_id')
             ->pluck('subject_id')
             ->toArray();
