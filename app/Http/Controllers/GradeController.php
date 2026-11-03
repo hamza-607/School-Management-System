@@ -9,6 +9,10 @@ use PhpParser\Node\Expr\BinaryOp\Greater;
 
 class GradeController extends Controller
 {
+     public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */

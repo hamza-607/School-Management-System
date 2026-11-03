@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
     'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     'currentYearAndSemester' => \App\Http\Middleware\currentYearAndSemester::class,
     'nextYearMiddleware' => \App\Http\Middleware\nextYearMiddleware::class,
+    'isCurrentYear' => \App\Http\Middleware\isCurrentYear::class,
   ];
 }

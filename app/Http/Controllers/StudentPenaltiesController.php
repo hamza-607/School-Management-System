@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Auth;
 
 class StudentPenaltiesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index','show']);
+    }
     /**
      * Display a listing of the resource.
      */

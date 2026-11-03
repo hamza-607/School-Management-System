@@ -419,7 +419,7 @@
                         <option value="add_new_grade" class="text-primary fw-bold"><span style="color:#006559; font-size:32px;">✚</span> إضافة صف جديد</option>
                         @foreach ($grades as $grade)
                         <option value="{{ $grade->id }}"
-                            {{ $theStudent->student_enrollments->first()->grade_id == $grade->id ? 'selected' : '' }}>
+                            {{ $theStudent->student_enrollments->where('academic_year_id', $academicYearID)->first()->grade_id == $grade->id ? 'selected' : '' }}>
                             {{ $grade->name }}
                         </option>
                         @endforeach

@@ -13,7 +13,7 @@
 @endsection
 
 @section('content')
-  <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             // تفعيل الـ Flatpickr لحقلي تاريخ السنة الدراسية الجديدة
             flatpickr('#academic-start-date', {
@@ -106,9 +106,11 @@
     <div class="card">
         <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
             <h5 class="mb-0">قائمة السنوات الدراسية</h5>
-            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addYearModal">
-                <i class="ti ti-plus me-1"></i> سنة دراسية جديدة
-            </button>
+            @if ($yearCanDo)
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addYearModal">
+                    <i class="ti ti-plus me-1"></i>إضافة سنة دراسية جديدة
+                </button>
+            @endif
         </div>
 
         <div class="card-body">
@@ -129,7 +131,7 @@
                                 @endif
                             </button>
 
-                            @if (!$year->is_current)
+                            @if (!$year->is_current && $yearCanDo)
                                 <form action="{{ route('academicYears.setCurrent', $year->id) }}" method="POST" class="px-3">
                                     @csrf
                                     @method('PUT')
@@ -146,13 +148,15 @@
                             data-bs-parent="#yearsAccordion">
                             <div class="accordion-body">
 
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <button type="button" class="btn btn-sm button_2 mt-1 add-semester-btn"
-                                        data-bs-toggle="modal" data-bs-target="#addSemesterModal"
-                                        data-year-id="{{ $year->id }}">
-                                        <i class="ti ti-plus me-1"></i> إضافة فصل
-                                    </button>
-                                </div>
+                                @if ($yearCanDo)
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <button type="button" class="btn btn-sm button_2 mt-1 add-semester-btn"
+                                            data-bs-toggle="modal" data-bs-target="#addSemesterModal"
+                                            data-year-id="{{ $year->id }}">
+                                            <i class="ti ti-plus me-1"></i> إضافة فصل جديد
+                                        </button>
+                                    </div>
+                                @endif
 
                                 <ul class="list-group">
                                     @forelse ($year->semesters as $semester)
@@ -168,7 +172,7 @@
                                                 @endif
                                             </div>
 
-                                            @if (!$semester->is_current)
+                                            @if (!$semester->is_current && $yearCanDo)
                                                 <form action="{{ route('semesters.setCurrent', $semester->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
@@ -244,13 +248,15 @@
                         <input type="text" name="name" class="form-control" placeholder="مثال: الفصل الأول" required>
                     </div>
                     <div class="row">
-                       <div class="col-6 mb-3">
+                        <div class="col-6 mb-3">
                             <label class="form-label">تاريخ البداية</label>
-                            <input type="text" name="start_date" id="semester-start-date" class="form-control" placeholder="YYYY-MM-DD" required>
+                            <input type="text" name="start_date" id="semester-start-date" class="form-control"
+                                placeholder="YYYY-MM-DD" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">تاريخ النهاية</label>
-                            <input type="text" name="end_date" id="semester-end-date" class="form-control" placeholder="YYYY-MM-DD" required>
+                            <input type="text" name="end_date" id="semester-end-date" class="form-control"
+                                placeholder="YYYY-MM-DD" required>
                         </div>
                     </div>
                 </div>

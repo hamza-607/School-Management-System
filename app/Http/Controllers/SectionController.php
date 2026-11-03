@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Storage;
 
 class SectionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */

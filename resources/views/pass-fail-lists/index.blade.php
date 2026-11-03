@@ -169,7 +169,7 @@
                                                 </div>
 
                                                 <div class="card-footer d-flex gap-2 py-2 px-3">
-                                                    @if (!$section->results_locked)
+                                                    @if ($yearCanDo)
                                                         <a href="{{ route('passFailLists.create', $section->id) }}"
                                                             class="btn btn-primary btn-sm py-2 flex-grow-1">
                                                             <i class="ti ti-edit ti-xs me-1"></i>تحديد النتائج
@@ -179,10 +179,10 @@
                                                             class="btn-staff-outline flex-grow-1 text-center">
                                                             <i class="ti ti-eye ti-xs me-1"></i>عرض النتائج
                                                         </a>
-                                                        <button type="button" class="btn-staff-outline">
-                                                            <i class="ti ti-download me-1"></i> طباعة
-                                                        </button>
                                                     @endif
+                                                    <button type="button" class="btn-staff-outline">
+                                                        <i class="ti ti-download me-1"></i> طباعة
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

@@ -443,7 +443,7 @@
                             </td>
 
                             <td>
-                                @if ($finishedSession->status !== 'active')
+                                @if ($finishedSession->status !== 'active' && $yearCanDo)
                                     <div class="d-inline-block text-nowrap">
                                         <form action="{{ route('finishedSessions.destroy', $finishedSession->id) }}" method="POST"
                                             style="display:inline-block">

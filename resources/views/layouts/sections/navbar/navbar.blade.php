@@ -156,7 +156,7 @@
         <li class="nav-item">
           <div class="icon-actions-group d-flex align-items-center">
 
-            <a href="#" class="icon-action" data-bs-toggle="modal" data-bs-target="#servicesGuideModal">
+            <a href="{{ route('ServicesGuide') }}" class="icon-action">
               <span class="icon-action-icon">
                 <i class='ti ti-compass ti-md'></i>
               </span>

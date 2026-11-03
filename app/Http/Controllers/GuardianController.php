@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Storage;
 
 class GuardianController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
+
     public function index(Request $request)
     {
         // dd($request->all());
@@ -51,17 +53,11 @@ class GuardianController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('guardians.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreGuardianRequest $request)
     {
         // dd($request->validated());
@@ -84,9 +80,6 @@ class GuardianController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $theGuardian = Guardian::findOrFail($id);
@@ -96,9 +89,6 @@ class GuardianController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $theGuardian = Guardian::findOrFail($id);
@@ -108,9 +98,6 @@ class GuardianController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(StoreGuardianRequest $request, string $id)
     {
         $validated = $request->validated();
@@ -134,9 +121,6 @@ class GuardianController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         try {

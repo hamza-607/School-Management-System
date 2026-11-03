@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class EmployeeSalaryAdjustmentsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
+    
     public function index($staffID, Request $request)
     {
         $staff = Staff::findOrFail($staffID);
@@ -104,7 +109,7 @@ class EmployeeSalaryAdjustmentsController extends Controller
     {
         // dd($staffID, $id);
         try {
-           $validated = $request->validate([
+            $validated = $request->validate([
                 "type" => 'required|in:allowance,deduction',
                 'amount_type' => 'required|in:fixed,percentage',
                 'amount' => 'required|numeric|min:0',

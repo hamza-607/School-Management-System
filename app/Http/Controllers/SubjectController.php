@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Storage;
 
 class SubjectController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -123,7 +127,7 @@ class SubjectController extends Controller
             $subject = Subject::findOrFail($id);
             $subjectFiles = $subject->files;
 
-            if($subjectFiles){
+            if ($subjectFiles) {
                 foreach ($subjectFiles as $file) {
                     Storage::disk('public')->delete($file->file_path);
                     $file->delete();

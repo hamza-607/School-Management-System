@@ -25,8 +25,12 @@ class Attendance extends Model
         return $this->belongsTo(Student::class);
     }
 
-    public function sectionSubjectTeacher()
+    public function finishedSession()
     {
-        return $this->belongsTo(SectionSubjectTeacher::class);
+        return $this->belongsTo(FinishedSession::class);
+    }
+
+    public function section(){
+        return $this->belongsTo(Section::class);
     }
 }

@@ -1,57 +1,57 @@
 @props([
-'student' => null,
-'subject' => null,
-'guardian' => null,
-'staff' => null,
-'section' => null,
+    'student' => null,
+    'subject' => null,
+    'guardian' => null,
+    'staff' => null,
+    'section' => null,
 ])
 
 @php
-$showUrl = null;
-$showActive = false;
-$filesUrl = null;
-$filesActive = false;
+    $showUrl = null;
+    $showActive = false;
+    $filesUrl = null;
+    $filesActive = false;
 
-if ($student){
-$showUrl = route('students.show', $student->id);
-$filesUrl = route('student.addFile', $student->id);
-}
-if ($subject) {
-$showUrl = route('subjects.show', $subject->id);
-$filesUrl = route('subject.addFile', $subject->id);
-}
-if($guardian){
-$showUrl = route('guardians.show', $guardian->id);
-$filesUrl = route('guardian.addFile', $guardian->id);
-}
-if($staff){
-$showUrl = route('staff_members.show', [$staff->id, 'from' => $staff->staff_type === 'teacher' ? 'teacher' : ($staff->staff_type === 'admin' ? 'admin' : 'other')]);
-$filesUrl = route('staff_members.addFile', [$staff->id, 'from' => $staff->staff_type === 'teacher' ? 'teacher' : ($staff->staff_type === 'admin' ? 'admin' : 'other')]);
-}
+    if ($student) {
+        $showUrl = route('students.show', $student->id);
+        $filesUrl = route('student.addFile', $student->id);
+    }
+    if ($subject) {
+        $showUrl = route('subjects.show', $subject->id);
+        $filesUrl = route('subject.addFile', $subject->id);
+    }
+    if ($guardian) {
+        $showUrl = route('guardians.show', $guardian->id);
+        $filesUrl = route('guardian.addFile', $guardian->id);
+    }
+    if ($staff) {
+        $showUrl = route('staff_members.show', [$staff->id, 'from' => $staff->staff_type === 'teacher' ? 'teacher' : ($staff->staff_type === 'admin' ? 'admin' : 'other')]);
+        $filesUrl = route('staff_members.addFile', [$staff->id, 'from' => $staff->staff_type === 'teacher' ? 'teacher' : ($staff->staff_type === 'admin' ? 'admin' : 'other')]);
+    }
 
-if($section){
-$showUrl = route('sections.show', $section->id);
-$filesUrl = route('sections.addFile', $section->id);
-}
+    if ($section) {
+        $showUrl = route('sections.show', $section->id);
+        $filesUrl = route('sections.addFile', $section->id);
+    }
 
-// if($session){
-// $showUrl = route('studySchedules.show', [$session->id,$session->section_id]);
-// }
+    // if($session){
+    // $showUrl = route('studySchedules.show', [$session->id,$session->section_id]);
+    // }
 
-$showActive = request()->routeIs('students.show')
-|| request()->routeIs('subjects.show')
-|| request()->routeIs('staff_members.show')
-|| request()->routeIs('guardians.show')
-|| request()->routeIs('sections.show')
-|| request()->routeIs('studySchedules.show');
+    $showActive = request()->routeIs('students.show')
+        || request()->routeIs('subjects.show')
+        || request()->routeIs('staff_members.show')
+        || request()->routeIs('guardians.show')
+        || request()->routeIs('sections.show')
+        || request()->routeIs('studySchedules.show');
 
-$filesActive = request()->routeIs('student.addFile')
-|| request()->routeIs('subject.addFile')
-|| request()->routeIs('staff_members.addFile')
-|| request()->routeIs('guardian.addFile')
-|| request()->routeIs('sections.addFile');
+    $filesActive = request()->routeIs('student.addFile')
+        || request()->routeIs('subject.addFile')
+        || request()->routeIs('staff_members.addFile')
+        || request()->routeIs('guardian.addFile')
+        || request()->routeIs('sections.addFile');
 
-// $isScoresActive = request()->routeIs('scores.*');
+    // $isScoresActive = request()->routeIs('scores.*');
 @endphp
 
 <style>
@@ -77,7 +77,11 @@ $filesActive = request()->routeIs('student.addFile')
         border: 1px solid var(--line);
         border-radius: .5rem;
     }
-    .app-tabs .nav-item { margin: 0; }
+
+    .app-tabs .nav-item {
+        margin: 0;
+    }
+
     .app-tabs .nav-link {
         display: inline-flex;
         align-items: center;
@@ -93,60 +97,65 @@ $filesActive = request()->routeIs('student.addFile')
         text-decoration: none;
         transition: color .15s ease, background .15s ease;
     }
-    .app-tabs .nav-link i { font-size: 1.05rem; color: var(--gold); transition: color .15s ease; }
-    .app-tabs .nav-link:hover { color: var(--ink); background: #fff; }
+
+    .app-tabs .nav-link i {
+        font-size: 1.05rem;
+        color: var(--gold);
+        transition: color .15s ease;
+    }
+
+    .app-tabs .nav-link:hover {
+        color: var(--ink);
+        background: #fff;
+    }
+
     .app-tabs .nav-link.active {
         color: #fff;
         background: var(--primary);
-        box-shadow: 0 2px 6px rgba(0,101,89,.25);
+        box-shadow: 0 2px 6px rgba(0, 101, 89, .25);
     }
-    .app-tabs .nav-link.active i { color: #fff; }
+
+    .app-tabs .nav-link.active i {
+        color: #fff;
+    }
 </style>
 
 <ul class="nav nav-pills flex-column flex-md-row mb-4 ms-2 app-tabs" style="padding-right: 7px;">
-        <li class="nav-item"><a
-                        class="nav-link {{ $showActive ? 'active' : '' }}"
-                        href="{{ $showUrl }}"><i
-                                class="ti-xs ti ti-eye me-1"></i> العرض</a></li>
-        @if ($student)
-       
-    <li class="nav-item"><a
-            class="nav-link {{ request()->routeIs('scores.*') ? 'active' : '' }}"
-        href="{{ route('scores.index' , $student->id) }}"><i
-                class="ti-xs ti ti-file-description me-1"></i>النتائج</a></li> 
+    <li class="nav-item"><a class="nav-link {{ $showActive ? 'active' : '' }}" href="{{ $showUrl }}"><i
+                class="ti-xs ti ti-eye me-1"></i> العرض</a></li>
+    @if ($student)
 
-        <li class="nav-item"><a
-                        class="nav-link {{ request()->routeIs('penalties.*') ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
-                        href="{{ route('penalties.index', $student->id) }}"><i
-                                class="ti-xs ti ti-file-alert me-1"></i>عقوبات</a></li>
-        {{-- <li class="nav-item"><a
-            class="nav-link {{ false ? 'active' : '' }}"
-        href=""><i
-                class="ti ti-report-money ti-xs me-1"></i>مالية</a></li> --}}
-        @endif
+        <li class="nav-item"><a class="nav-link {{ request()->routeIs('scores.*') ? 'active' : '' }}"
+                href="{{ route('scores.index', $student->id) }}"><i
+                    class="ti-xs ti ti-file-description me-1"></i>النتائج</a></li>
 
-        @if ($staff)
-        <li class="nav-item"><a
-                        class="nav-link {{ request()->routeIs('employee_salary_adjustments.*') ? 'active' : '' }}" {{-- زبط شرط الهوفر --}}
-                        href="{{ route('employee_salary_adjustments.index',[$staff->id, 'from' => $staff->staff_type === 'teacher' ? 'teacher' : ($staff->staff_type === 'admin' ? 'admin' : 'other')]) }}"><i class="ti ti-arrows-right-left ti-xs me-1"></i> {{-- --}}
-                        التعديلات على الراتب</a></li>
-        @endif
+        <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.attendanceRecords.index') ? 'active' : '' }}"
+                href="{{ route('student.attendanceRecords.index', $student->id) }}"><i class="ti-xs ti ti-clipboard-list me-1"></i>
+                سجل الحضور</a></li>
 
-        @if ($subject || $student || $guardian || $staff || $section)
-        <li class="nav-item"><a
-                        class="nav-link {{ $filesActive ? 'active' : '' }}"
-                        href="{{ $filesUrl }}"> <i
-                                class="ti ti-file-upload ti-xs me-1"></i>إضافة
-                        ملف</a></li>
-        @endif
+        <li class="nav-item"><a class="nav-link {{ request()->routeIs('penalties.*') ? 'active' : '' }}" {{-- زبط شرط الهوفر
+                --}} href="{{ route('penalties.index', $student->id) }}"><i
+                    class="ti-xs ti ti-file-alert me-1"></i>عقوبات</a></li>
+    @endif
 
-        {{-- @if ($session)
-    <li class="nav-item"><a
-            class="nav-link {{ false ? 'active' : '' }}"
-        href="">
-        <i class="ti ti-adjustments-horizontal ti-xs me-1"></i>
-        التحكم بالجلسة
-        </a></li>
-        @endif --}}
+    @if ($section)
+        <li class="nav-item"><a class="nav-link {{ request()->routeIs('sections.attendanceRecords.index') ? 'active' : '' }}"
+                href="{{ route('sections.attendanceRecords.index', $section->id) }}"><i
+                    class="ti-xs ti ti-clipboard-list me-1"></i>
+                سجل الحضور</a></li>
+    @endif
+
+    @if ($staff)
+        <li class="nav-item"><a class="nav-link {{ request()->routeIs('employee_salary_adjustments.*') ? 'active' : '' }}"
+                {{-- زبط شرط الهوفر --}}
+                href="{{ route('employee_salary_adjustments.index', [$staff->id, 'from' => $staff->staff_type === 'teacher' ? 'teacher' : ($staff->staff_type === 'admin' ? 'admin' : 'other')]) }}"><i
+                    class="ti ti-arrows-right-left ti-xs me-1"></i> {{-- --}}
+                التعديلات على الراتب</a></li>
+    @endif
+
+    @if (($subject || $student || $guardian || $staff || $section) && $yearCanDo)
+        <li class="nav-item"><a class="nav-link {{ $filesActive ? 'active' : '' }}" href="{{ $filesUrl }}"> <i
+                    class="ti ti-file-upload ti-xs me-1"></i>إضافة
+                ملف</a></li>
+    @endif
 </ul>
-

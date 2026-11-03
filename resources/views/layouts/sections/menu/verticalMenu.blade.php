@@ -64,7 +64,7 @@
       // dd(!$isActiveSession);
 
     @endphp
-    @if (!$isActiveSession)
+    @if (!$isActiveSession && $yearCanDo)
       <li
         class="menu-item {{ request()->routeIs('activeSessions') || request()->routeIs('controlSession') ? 'active' : '' }}">
         <a href="{{ route('activeSessions') }}"
@@ -79,22 +79,21 @@
     @endif
 
     <li class="menu-item {{ request()->routeIs('studySchedules.*') ? 'active' : '' }}">
-      <a href="{{ route('studySchedules.superIndex') }}"
-        class="menu-link session-link {{ request()->routeIs('studySchedules.*') ? 'menu-active-text-white' : '' }}">
+      <a href="{{ route('studySchedules.superIndex') }}" style="height: 40px;"
+        class="menu-link {{ request()->routeIs('studySchedules.*') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-list-ul me-2"></i>
-        <span>البرامج الدراسية</span>
+        <div class="m-1">البرامج الدراسية</div>
       </a>
     </li>
 
     <li
       class="menu-item {{ request()->routeIs('finishedSessions.index') || request()->routeIs('finishedSessions.show') ? 'active' : '' }}">
-      <a href="{{ route('finishedSessions.index') }}"
-        class="menu-link session-link {{ request()->routeIs('finishedSessions.index') || request()->routeIs('finishedSessions.show') ? 'menu-active-text-white' : '' }}">
+      <a href="{{  route('finishedSessions.index') }}" style="height: 40px;"
+        class="menu-link {{ request()->routeIs('finishedSessions.index') || request()->routeIs('finishedSessions.show') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-check-circle me-2"></i>
-        <span>سجل الجلسات</span>
+        <div class="m-1">سجل الجلسات</div>
       </a>
     </li>
-
 
     <script>
       const dot = document.getElementById('dot');
@@ -110,26 +109,26 @@
     </li>
 
     <li class="menu-item {{ request()->routeIs('academicYears.index') ? 'active' : '' }}">
-      <a href="{{ route('academicYears.index') }}"
-        class="menu-link session-link {{ request()->routeIs('academicYears.index') ? 'menu-active-text-white' : '' }}">
+      <a href="{{ route('academicYears.index') }}" style="height: 40px;"
+        class="menu-link {{ request()->routeIs('academicYears.index') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-calendar-alt me-2"></i>
-        <span>السنوات الدراسية</span>
+        <div class="m-1">السنوات الدراسية</div>
       </a>
     </li>
 
     <li class="menu-item {{ request()->routeIs('sectionScores.*') ? 'active' : '' }}">
-      <a href="{{ route('sectionScores.index') }}"
-        class="menu-link session-link {{ request()->routeIs('sectionScores.*') ? 'menu-active-text-white' : '' }}">
-        <i class="fas fa-chart-line me-2"></i>
-        <span>رصد العلامات</span>
+      <a href="{{ route('sectionScores.index') }}" style="height: 40px;"
+        class="menu-link {{ request()->routeIs('sectionScores.*') ? 'menu-active-text-white' : '' }}">
+<i class="fas fa-clipboard-list me-2"></i>
+     <div class="m-1">رصد العلامات</div>
       </a>
     </li>
 
     <li class="menu-item {{ request()->routeIs('passFailLists.*') ? 'active' : '' }}">
-      <a href="{{ route('passFailLists.index') }}"
-        class="menu-link session-link {{ request()->routeIs('passFailLists.*') ? 'menu-active-text-white' : '' }}">
+      <a href="{{ route('passFailLists.index') }}" style="height: 40px;"
+        class="menu-link {{ request()->routeIs('passFailLists.*') ? 'menu-active-text-white' : '' }}">
         <i class="fas fa-chart-line me-2"></i>
-        <span>قوائم الترفع والرسوب</span>
+        <div class="m-1">قوائم الترفع والرسوب</div>
       </a>
     </li>
 
@@ -153,7 +152,7 @@
 
     {{-- ادارة الطلاب --}}
     <li
-      class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') || request()->routeIs('scores.*') ? 'active open' : '' }} ">
+      class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.*') || request()->routeIs('penalties.*') || request()->routeIs('scores.*') ? 'active open' : '' }} ">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="fas fa-user-graduate"></i>
         <div class="m-1">الطلاب</div>
@@ -161,7 +160,7 @@
 
       <ul class="menu-sub">
         <li
-          class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.addFile') || request()->routeIs('penalties.*') || request()->routeIs('scores.*') ? 'active' : '' }}">
+          class="menu-item {{ request()->routeIs('students.*') || request()->routeIs('student.*') || request()->routeIs('penalties.*') || request()->routeIs('scores.*') ? 'active' : '' }}">
           <a href="{{ route('students.index') }}" class="menu-link">قائمة الطلاب</a>
         </li>
       </ul>

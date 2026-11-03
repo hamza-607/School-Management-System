@@ -65,7 +65,8 @@
             color: var(--gold);
             margin-inline-end: .35rem;
         }
-          .staff-info-icon {
+
+        .staff-info-icon {
             width: 75px;
             height: 75px;
             min-width: 50px;
@@ -101,14 +102,14 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `<div>
-                                        هل أنت متأكد أنك تريد حذف هذه الشعبة؟
-                                        <br>
-                                        <span class="text-danger">
-                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات (بما فيها ملفات الحضور) المرتبطة بهذه الشعبة
-                                        </span>
-                                        <br>
-                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                        </div>`,
+                                            هل أنت متأكد أنك تريد حذف هذه الشعبة؟
+                                            <br>
+                                            <span class="text-danger">
+                                            هذه العملية سوف تؤدي إلى حذف جميع الملفات (بما فيها ملفات الحضور) المرتبطة بهذه الشعبة
+                                            </span>
+                                            <br>
+                                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                            </div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -169,7 +170,8 @@
                                 الصف: {{ $theSection->grade->name }}
                             </div>
                             <div class="staff-detail-sub">
-                                <i class="bi bi-people-fill me-1"></i> السعة: {{ $theSection->student_enrollments->count() }} /
+                                <i class="bi bi-people-fill me-1"></i> السعة:
+                                {{ $theSection->student_enrollments->count() }} /
                                 {{ $theSection->capacity }} طالب
                             </div>
                         </div>
@@ -177,19 +179,22 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top border-bottom pt-3 pb-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSection->id }})">
-                        حذف المادة
-                    </button>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSection->id }})">
+                            حذف المادة
+                        </button>
 
-                    <form id="delete-form-{{ $theSection->id }}" action="{{ route('sections.destroy', $theSection->id) }}"
-                        method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                        <form id="delete-form-{{ $theSection->id }}" action="{{ route('sections.destroy', $theSection->id) }}"
+                            method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
 
-                    <a href="{{ route('sections.edit', $theSection->id) }}" class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <a href="{{ route('sections.edit', $theSection->id) }}" class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
+
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع
                     </a>
@@ -203,15 +208,16 @@
                 <div class="d-flex flex-nowrap overflow-x-auto gap-3" style="overflow-x: scroll; scrollbar-width: none;">
                     @forelse ($theSection->student_enrollments as $student_enrollment)
                         <div class="parent-card border rounded-3 p-3 bg-light-subtle" style="min-width: 300px; flex: 0 0 auto;">
-                            <a href="{{ route('students.show', $student_enrollment->student->id) }}" class="d-flex align-items-center gap-3 mb-2">
+                            <a href="{{ route('students.show', $student_enrollment->student->id) }}"
+                                class="d-flex align-items-center gap-3 mb-2">
                                 <div>
                                     <h6 class="mb-0 fw-bold">{{ $student_enrollment->student->name }}</h6>
                                 </div>
                             </a>
                             <div class="mt-2 pt-2 border-top">
                                 <div>
-                                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $student_enrollment->student->phone) }}" target="_blank"
-                                        class="text-decoration-underline me-3 small mb-1">
+                                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $student_enrollment->student->phone) }}"
+                                        target="_blank" class="text-decoration-underline me-3 small mb-1">
                                         <i class="bi bi-whatsapp me-2 text-success"></i>
                                         {{ $student_enrollment->student->phoneNumber }} </a>
                                 </div>

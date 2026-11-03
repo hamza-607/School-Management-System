@@ -99,11 +99,15 @@
                                 <i class="ti ti-users ti-xs me-1"></i>{{ $section->student_enrollments->count() }} طالب
                             </div>
                         </div>
-                        
+
                         <div class="card-footer d-flex gap-2 py-2 px-3">
                             <a href="{{ route('sectionScores.create', $section->id) }}"
                                 class="btn btn-primary btn-sm py-1 flex-grow-1">
-                                <i class="ti ti-edit ti-xs me-1"></i>إدخال العلامات
+                                @if ($yearCanDo)
+                                    <i class="ti ti-edit ti-xs me-1"></i>إدخال العلامات
+                                @else
+                                    <i class="ti ti-eye ti-xs me-1"></i>عرض العلامات
+                                @endif
                             </a>
 
                             <button class="btn-staff-outline w-25 h-100">

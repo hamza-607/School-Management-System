@@ -150,7 +150,6 @@
             font-weight: 600;
         }
 
-        /* حالة الحصة */
         .theme-status-pill {
             display: inline-flex;
             align-items: center;
@@ -321,7 +320,7 @@
             border-top: 1px solid var(--line) !important;
         }
 
-     .swal2-popup-custom {
+        .swal2-popup-custom {
             border-radius: .4rem;
         }
 
@@ -377,11 +376,11 @@
                     Swal.fire({
                         title: 'تأكيد الحذف',
                         html: `
-                                    <div>
-                                        هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
-                                        <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
-                                    </div>
-                                `,
+                                        <div>
+                                            هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
+                                            <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                                        </div>
+                                    `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'نعم، احذف',
@@ -497,12 +496,16 @@
                                     $appointmentDay = $sectionSubjectTeacher->appointment->day;
                                     $currentStatus = $sectionSubjectTeacher->appointment->status; // scheduled | active | canceled
                                     $isToday = $appointmentDay === $today;
-                                    // $isLocked = $currentStatus === 'canceled' || $currentStatus === 'completed'; // ← قفل نهائي بعد الإلغاء
                                     $isLocked = in_array($currentStatus, ['canceled', 'completed', 'active']);
 
                                     $alternatives = array_diff(array_keys($statusMeta), [$currentStatus]);
 
                                     $isActiveLocked = $currentStatus === 'scheduled' && !$isToday;
+
+                                    // من مجدولة: فقط نشطة أو ملغية
+                                    if ($currentStatus === 'scheduled') {
+                                        $alternatives = ['active', 'canceled'];
+                                    }
 
                                     // من نشطة: الخيار الوحيد هو مكتملة
                                     if ($currentStatus === 'active') {
@@ -532,7 +535,8 @@
                                     <td class="align-middle">
                                         @if ($isLocked)
                                                         <span class="theme-status-pill {{ $statusInfo['badgeClass'] }} theme-status-locked"
-                                                            data-bs-toggle="tooltip" style="cursor: help;" title="{{ $currentStatus === 'completed' ? 'تم إكمال هذه الحصة نهائياً ولا يمكن تغيير حالتها إلا من قبل الإدارة او الانتظار لنهاية الاسبوع لتجدول تلقائياً.' : ($currentStatus === 'active'
+                                                            data-bs-toggle="tooltip" style="cursor: help;"
+                                                            title="{{ $currentStatus === 'completed' ? 'تم إكمال هذه الحصة نهائياً ولا يمكن تغيير حالتها إلا من قبل الإدارة او الانتظار لنهاية الاسبوع لتجدول تلقائياً.' : ($currentStatus === 'active'
                                             ? 'هذه الحصة نشطة حالياً ,لتغيير حالتها اذهب الى الجلسات الفعالة.'
                                             : 'تم إلغاء هذه الحصة نهائياً. لإعادة جدولتها يرجى التواصل مع قسم الجداول الدراسية.') }}">
                                                             <i class="ti ti-lock ti-xs"></i>{{ $statusInfo['label'] }}
@@ -580,7 +584,7 @@
                                     <td class="text-center align-middle">
                                         <span class="theme-badge-neutral">{{ $sessionType }}</span>
 
-                                        @if (($sessionType === 'اساسية' || $sessionType === 'تعويضية') && ($statusInfo['label'] === 'مجدولة'))
+                                        @if (($sessionType === 'اساسية' || $sessionType === 'تعويضية') && ($statusInfo['label'] === 'مجدولة') && $yearCanDo)
                                             <button type="button" class="btn btn-sm btn-outline-primary ms-1 add-quiz-btn"
                                                 data-bs-toggle="modal" data-bs-target="#addQuizModal"
                                                 data-session-id="{{ $sectionSubjectTeacher->id }}">

@@ -17,7 +17,7 @@
             const body = document.getElementById('resultsBody');
             const semesterCount = {{
         count($semesters)
-                            }};
+                                }};
 
             function getValue(el) {
                 if (!el) return 0;
@@ -122,14 +122,14 @@
             <h5 class="mb-0">جدول النتائج</h5>
 
             <div class="d-flex align-items-center gap-2">
-                @if (!$updateScores)
+                @if (!$updateScores && $yearCanDo)
                     <a href="{{ route('scores.index', [$theStudentEnrollment->student_id, 'updateScores' => true]) }}"
                         class="btn btn-sm btn-primary text-white">
                         <i class="ti ti-edit-circle me-1"></i> تعديل
                     </a>
                 @endif
 
-                @if ($updateScores)
+                @if ($updateScores && $yearCanDo)
                     <button type="submit" id="saveScoresBtn" class="btn-primary" form="updateScoresForm">
                         <i class="ti ti-device-floppy me-1"></i> حفظ التعديلات
                     </button>
@@ -198,7 +198,7 @@
                                     <td class="quizzes-col">
                                         @forelse($oneSemester['quizzes'] as $index => $oneQuiz)
 
-                                            @if ($updateScores)
+                                            @if ($updateScores && $yearCanDo)
                                                 <div class="small mb-1 d-flex flex-column align-items-center justify-content-center gap-1">
                                                     <span class="text-muted">{{ $oneQuiz['scoreName'] }}:</span>
                                                     <div class="d-flex align-items-center gap-1">
@@ -234,7 +234,7 @@
                                     </td>
 
                                     @if ($oneSemester['final'])
-                                        @if ($updateScores)
+                                        @if ($updateScores && $yearCanDo)
                                             <td class="final-col">
                                                 <div class="small mb-1 d-flex align-items-center justify-content-center gap-1">
                                                     <input type="number" form="updateScoresForm"
