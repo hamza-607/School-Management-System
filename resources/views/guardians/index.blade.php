@@ -74,16 +74,16 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `
-                                            <div>
-                                                هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟
-                                                <br>
-                                                <span class="text-danger">
-                                 هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة ب ولي الأمر هذا / لا يمكن حذف ولي الأمر إذا كان مرتبطًا بأي طالب.
-                                                                </span>
-                                                <br>
-                                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                            </div>
-                                        `,
+                                                    <div>
+                                                        هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟
+                                                        <br>
+                                                        <span class="text-danger">
+                                         هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة ب ولي الأمر هذا / لا يمكن حذف ولي الأمر إذا كان مرتبطًا بأي طالب.
+                                                                        </span>
+                                                        <br>
+                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                                    </div>
+                                                `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -236,9 +236,11 @@
                     </button>
                 </div>
 
-                <a href="{{ route('guardians.create') }}" class="btn btn-primary">
-                    <i class="ti ti-plus me-1"></i> إضافة ولي أمر جديد
-                </a>
+                @if ($yearCanDo)
+                    <a href="{{ route('guardians.create') }}" class="btn btn-primary">
+                        <i class="ti ti-plus me-1"></i> إضافة ولي أمر جديد
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -341,37 +343,39 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="d-inline-block text-nowrap">
-                                    <a href="{{ route('students.create', ['fromGuardianID' => $guardian->id]) }}"
-                                        class="staff-action-btn" title="إضافة طالب">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
-                                            width="18px" fill="#4BABC6">
-                                            <path
-                                                d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T106-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q31 15 48.5 43.5T682-272v112H40Z" />
-                                        </svg>
-                                    </a>
-
-                                    <a href="{{ route('guardians.edit', $guardian->id) }}" class="staff-action-btn">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
-                                            width="18px" fill="#ab8347">
-                                            <path
-                                                d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z" />
-                                        </svg>
-                                    </a>
-
-                                    <form action="{{ route('guardians.destroy', $guardian->id) }}" method="POST"
-                                        style="display:inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="staff-action-btn delete-record action-btn-hover">
+                                @if ($yearCanDo)
+                                    <div class="d-inline-block text-nowrap">
+                                        <a href="{{ route('students.create', ['fromGuardianID' => $guardian->id]) }}"
+                                            class="staff-action-btn" title="إضافة طالب">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
-                                                width="18px" fill="#7a3540">
+                                                width="18px" fill="#4BABC6">
                                                 <path
-                                                    d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
+                                                    d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T106-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q31 15 48.5 43.5T682-272v112H40Z" />
                                             </svg>
-                                        </button>
-                                    </form>
-                                </div>
+                                        </a>
+
+                                        <a href="{{ route('guardians.edit', $guardian->id) }}" class="staff-action-btn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
+                                                width="18px" fill="#ab8347">
+                                                <path
+                                                    d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z" />
+                                            </svg>
+                                        </a>
+
+                                        <form action="{{ route('guardians.destroy', $guardian->id) }}" method="POST"
+                                            style="display:inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="staff-action-btn delete-record action-btn-hover">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
+                                                    width="18px" fill="#7a3540">
+                                                    <path
+                                                        d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
                             </td>
                         </tr>
                     @empty

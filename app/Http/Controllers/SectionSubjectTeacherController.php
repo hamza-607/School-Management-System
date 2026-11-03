@@ -23,6 +23,11 @@ use Illuminate\Support\Facades\Auth;
 
 class SectionSubjectTeacherController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['superIndex', 'index', 'show']);
+    }
+
     public function controlSession($sessionID, $sectionID)
     {
         $theSession = SectionSubjectTeacher::with(['subject', 'staff', 'appointment'])->findOrFail($sessionID);
@@ -41,9 +46,9 @@ class SectionSubjectTeacherController extends Controller
         $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
 
         $query = SectionSubjectTeacher::query()->whereHas('section', function ($q) use ($academicYearID) {
-            $q->where('academic_year_id',$academicYearID);
+            $q->where('academic_year_id', $academicYearID);
         });
-        
+
         $query->with(['subject', 'staff', 'appointment'])->whereHas('appointment', function ($q) {
             $q->where('status', 'active');
         });

@@ -16,16 +16,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                                        <div>
-                                            هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟
-                                            <br>
-                                            <span class="text-danger">
-                             هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة ب ولي الأمر هذا / لا يمكن حذف ولي الأمر إذا كان مرتبطًا بأي طالب.
-                                                            </span>
-                                            <br>
-                                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                        </div>
-                                    `,
+                                            <div>
+                                                هل أنت متأكد أنك تريد حذف ولي الأمر هذا؟
+                                                <br>
+                                                <span class="text-danger">
+                                 هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة ب ولي الأمر هذا / لا يمكن حذف ولي الأمر إذا كان مرتبطًا بأي طالب.
+                                                                </span>
+                                                <br>
+                                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                            </div>
+                                        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -211,19 +211,23 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top border-bottom pt-3 pb-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theGuardian->id }})">
-                        حذف المادة
-                    </button>
 
-                    <form id="delete-form-{{ $theGuardian->id }}"
-                        action="{{ route('guardians.destroy', $theGuardian->id) }}" method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theGuardian->id }})">
+                            حذف المادة
+                        </button>
 
-                    <a href="{{ route('guardians.edit', $theGuardian->id) }}" class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <form id="delete-form-{{ $theGuardian->id }}"
+                            action="{{ route('guardians.destroy', $theGuardian->id) }}" method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+
+                        <a href="{{ route('guardians.edit', $theGuardian->id) }}" class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
+
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع
                     </a>

@@ -19,16 +19,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                        <div>
-                            هل أنت متأكد أنك تريد حذف هذه المادة؟
-                            <br>
-                            <span class="text-danger">
-                             هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذه المادة
-                             </span>
-                            <br>
-                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>
-                    `,
+                            <div>
+                                هل أنت متأكد أنك تريد حذف هذه المادة؟
+                                <br>
+                                <span class="text-danger">
+                                 هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذه المادة
+                                 </span>
+                                <br>
+                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -180,19 +180,22 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top border-bottom pt-3 pb-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSubject->id }})">
-                        حذف المادة
-                    </button>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSubject->id }})">
+                            حذف المادة
+                        </button>
 
-                    <form id="delete-form-{{ $theSubject->id }}" action="{{ route('subjects.destroy', $theSubject->id) }}"
-                        method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                        <form id="delete-form-{{ $theSubject->id }}" action="{{ route('subjects.destroy', $theSubject->id) }}"
+                            method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
 
-                    <a href="{{ route('subjects.edit', $theSubject->id) }}" class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <a href="{{ route('subjects.edit', $theSubject->id) }}" class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
+
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع
                     </a>

@@ -19,12 +19,12 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                        <div>
-                            هل أنت متأكد أنك تريد حذف عقوبة هذا الطالب؟
-                            <br>
-                            <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>
-                    `,
+                            <div>
+                                هل أنت متأكد أنك تريد حذف عقوبة هذا الطالب؟
+                                <br>
+                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -227,7 +227,8 @@
                                 @endif
                             </div><br>
 
-                            <div class="staff-detail-sub  mt-3 text-muted d-flex align-items-center flex-wrap" style="font-size: 1rem;">
+                            <div class="staff-detail-sub  mt-3 text-muted d-flex align-items-center flex-wrap"
+                                style="font-size: 1rem;">
                                 <i class="bi bi-record-circle me-2"></i>
                                 <span class="me-1">الحالة :</span>
                                 @if($thepenalty->status === 'applied')
@@ -248,7 +249,8 @@
                                 @endif
                             </div>
 
-                            <div class="staff-detail-sub mt-3 text-muted d-flex align-items-center flex-wrap" style="font-size: 1rem;">
+                            <div class="staff-detail-sub mt-3 text-muted d-flex align-items-center flex-wrap"
+                                style="font-size: 1rem;">
                                 <i class="bi bi-journal-text me-2"></i>
                                 الملاحظات :
                                 {{ $thepenalty->notes ?? '-' }}
@@ -258,21 +260,23 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $thepenalty->id }})">
-                        حذف العقوبة
-                    </button>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $thepenalty->id }})">
+                            حذف العقوبة
+                        </button>
 
-                    <form id="delete-form-{{ $thepenalty->id }}"
-                        action="{{ route('penalties.destroy', [$thepenalty->id, $theStudent->id]) }}" method="POST"
-                        style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                        <form id="delete-form-{{ $thepenalty->id }}"
+                            action="{{ route('penalties.destroy', [$thepenalty->id, $theStudent->id]) }}" method="POST"
+                            style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
 
-                    <a href="{{ route('penalties.edit', [$thepenalty->id, $theStudent->id]) }}"
-                        class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <a href="{{ route('penalties.edit', [$thepenalty->id, $theStudent->id]) }}"
+                            class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
 
                     <a href="{{ url()->previous() }}" class="btn-staff-outline px-4">
                         رجوع

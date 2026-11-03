@@ -19,6 +19,10 @@ use Illuminate\Validation\Rules\Password;
 
 class StaffController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -164,7 +168,7 @@ class StaffController extends Controller
                     'is_active' => 1,
                 ]);
             }
-            
+
             $successMessage[] = 'تم إضافة الموظف بنجاح';
 
             return redirect()->route('staff_members.index', ['from' => $validated['staff_type']])->with('success', $successMessage);

@@ -310,7 +310,7 @@
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">إدارة الترفع والرسوب</span>
             <a href="{{ route('passFailLists.index') }}" class="text-muted">القائمة</a> /
-            <span class="border-bottom border-2 border-primary">تحديد النتائج</span>
+            <span class="border-bottom border-2 border-primary">{{ $yearCanDo ? 'تحديد النتائج' : 'عرض النتائج' }}</span>
         </h4>
     </div>
 
@@ -320,21 +320,28 @@
             <div>
                 <h5 class="card-title mb-1">
                     {{ $section->grade->name }} - شعبة {{ $section->name }}
-                    <span id="lockedBadge" class="staff-status-pill staff-status-inactive ms-2 d-none">
-                        <span class="dot"></span> النتائج مقفلة
-                    </span>
                 </h5>
                 <span class="text-muted">السنة الدراسية {{ $year->name }} &middot; {{ count($students) }} طالب</span>
             </div>
-            <form action="{{ route('passFailLists.store', $section->id) }}" method="POST" class="d-flex gap-2" id="resultForm">
-                @csrf
-
-                <button type="button" id="saveBtn" class="btn btn-primary">
-                    <i class="ti ti-device-floppy me-1"></i> حفظ النتائج
-                </button>
-            </form>
-
+            
+            <div class="d-flex align-items-center gap-2">
+                @if ($yearCanDo)
+                    <form action="{{ route('passFailLists.store', $section->id) }}" method="POST" class="d-flex gap-2" id="resultForm">
+                        @csrf
+        
+                        <button type="button" id="saveBtn" class="btn btn-primary">
+                            <i class="ti ti-device-floppy me-1"></i> حفظ النتائج
+                        </button>
+                    </form>
+                @endif
+                <div class="vr mx-1"></div>
+                <a href="{{ url()->previous() }}" class="btn-staff-outline ">
+                    رجوع
+                </a>
+            </div>
         </div>
+
+              
 
         <div class="staff-filter-bar">
             <div class="row g-3 align-items-end">
@@ -449,12 +456,20 @@
                             </td>
 
                             <td class="text-end">
+                                @if ($yearCanDo)
                                 <select class="selectpicker decision-select w-100 @error('result') is-invalid @enderror"
                                     data-style="btn-default" name="students[{{ $index }}][result]" form="resultForm" required>
                                     <option value="">اختر</option>
                                     <option {{ $student['result'] === 'passed' ? 'selected' : '' }} value="passed">ناجح</option>
                                     <option {{ $student['result'] === 'failed' ? 'selected' : '' }} value="failed">راسب</option>
                                 </select>
+                                @else
+
+                                <div class="form-control text-center decision-select w-100 @error('result') is-invalid @enderror"
+                                    data-style="btn-default" name="students[{{ $index }}][result]" form="resultForm" required>
+                                    {{ $student['result'] === 'passed' ? 'ناجح' : ($student['result'] === 'passed' ? 'راسب' : 'غير محدد') }}
+                                </div>
+                                @endif
                             </td>
 
                            <input type="hidden" name="students[{{ $index }}][student_id]" form="resultForm" value="{{ $student['id'] }}">

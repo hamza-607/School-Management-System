@@ -49,4 +49,9 @@ class FinishedSession extends Model
     {
         return $this->belongsTo(Appointment::class, 'appointment_id');
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

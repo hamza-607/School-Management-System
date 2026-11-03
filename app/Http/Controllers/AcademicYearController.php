@@ -10,6 +10,11 @@ use function PHPSTORM_META\type;
 
 class AcademicYearController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index','setSessionYear']);
+    }
+
     public function index()
     {
         $academicYears = AcademicYear::with('semesters')->orderByDesc('name')->get();
@@ -87,7 +92,7 @@ class AcademicYearController extends Controller
 
             session(['newCurrentYearID' => $year->id]);
 
-            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.')->with('alert',['هذا التعديل سوف ينعكس على كل المستخدمين', 'يجب أن يتم تفعيل الفصل الدراسي من خلال الضغط على زر "تفعيل" بجانب الفصل الدراسي.']);
+            return redirect()->route('academicYears.index')->with('success', 'تم تفعيل السنة الدراسية بنجاح.')->with('alert', ['هذا التعديل سوف ينعكس على كل المستخدمين', 'يجب أن يتم تفعيل الفصل الدراسي من خلال الضغط على زر "تفعيل" بجانب الفصل الدراسي.']);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'حدث خطأ أثناء تفعيل السنة الدراسية: ' . $e->getMessage());
         }

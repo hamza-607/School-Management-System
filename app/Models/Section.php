@@ -37,8 +37,18 @@ class Section extends Model
         return $this->hasMany(SectionSubjectTeacher::class);
     }
 
+    public function finished_sessions()
+    {
+        return $this->hasMany(FinishedSession::class);
+    }
+
     public function student_enrollments()
     {
         return $this->hasMany(StudentEnrollment::class);
+    }
+
+    public function attendance_records()
+    {
+        return $this->hasMany(Attendance::class);
     }
 }

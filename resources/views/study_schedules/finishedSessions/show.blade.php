@@ -232,7 +232,7 @@
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
 
-                    @if ($theSession->status !== 'active')
+                    @if ($theSession->status !== 'active' && $yearCanDo)
                         <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSession->id }})">
                             حذف الحصة
                         </button>

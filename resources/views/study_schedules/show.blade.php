@@ -17,11 +17,11 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                        <div>
-                            هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
-                            <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>
-                    `,
+                            <div>
+                                هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
+                                <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                            </div>
+                        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -307,21 +307,23 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSession->id }})">
-                        حذف الحصة
-                    </button>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theSession->id }})">
+                            حذف الحصة
+                        </button>
 
-                    <form id="delete-form-{{ $theSession->id }}"
-                        action="{{ route('studySchedules.destroy', [$theSession->id, $theSection->id]) }}" method="POST"
-                        style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                        <form id="delete-form-{{ $theSession->id }}"
+                            action="{{ route('studySchedules.destroy', [$theSession->id, $theSection->id]) }}" method="POST"
+                            style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
 
-                    <a href="{{ route('studySchedules.edit', [$theSession->id, $theSection->id]) }}"
-                        class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <a href="{{ route('studySchedules.edit', [$theSession->id, $theSection->id]) }}"
+                            class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
 
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع

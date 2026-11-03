@@ -7,6 +7,7 @@ use App\Models\ScoreComponent;
 use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
 use App\Models\Semester;
+use App\Models\StudentEnrollment;
 use App\Models\StudentScore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Auth;
 
 class SectionScoresController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'create']);
+    }
     public function index()
     {
         // dd();
@@ -32,7 +37,10 @@ class SectionScoresController extends Controller
     public function create($sectionID)
     {
         // dd($sectionID);
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+
         $section = Section::findOrFail($sectionID);
+
         $semesterID = session('newCurrentSemesterID');
         if ($semesterID) {
             $semester = Semester::findOrFail($semesterID);
@@ -45,7 +53,11 @@ class SectionScoresController extends Controller
         })->get();
         // dd($scoreComponents);
 
-        $student_enrollments = $section->student_enrollments()->with('student')->get();
+        $student_enrollments = StudentEnrollment::where('section_id', $sectionID)->where('academic_year_id', $academicYearID)->with('student')->get();
+
+        if ($student_enrollments->isEmpty()) {
+            return redirect()->back()->with('error', 'لا يوجد طلاب مسجلين في هذه الشعبة الدراسية لهذا العام الدراسي.');
+        }
 
         return view('grades_sections.sections.addScores.create', [
             'section' => $section,

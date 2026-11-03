@@ -21,7 +21,7 @@ class Student extends Model
         'created_at',
         'updated_at'
     ];
-    
+
     public function student_parents()
     {
         return $this->hasMany(Student_parent::class, 'student_id', 'id');
@@ -45,5 +45,10 @@ class Student extends Model
     public function student_scores()
     {
         return $this->hasMany(StudentScore::class);
+    }
+
+    public function student_attendances()
+    {
+        return $this->hasMany(Attendance::class);
     }
 }

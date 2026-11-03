@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ScoreController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except('index');
+    }
+  
+    
     public function index($studentID, Request $request)
     {
         $theAcademicYear_id = session('newCurrentYearID') ?? AcademicYear::where('is_current', 1)
@@ -31,7 +34,7 @@ class ScoreController extends Controller
         // dd($semesters);
 
         $theStudentEnrollment = Student::findOrFail($studentID)->student_enrollments()->where('academic_year_id', $theAcademicYear_id)->with('student')->first();
-        
+
         if (!$theStudentEnrollment || $theStudentEnrollment->section_id === null) {
             return redirect()->back()->with('error', 'لم يتم ربط الطالب بشعبة دراسية بعد.');
         }

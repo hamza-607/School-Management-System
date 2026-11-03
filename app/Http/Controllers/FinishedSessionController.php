@@ -17,7 +17,11 @@ use Illuminate\Support\Facades\Auth;
 
 class FinishedSessionController extends Controller
 {
-
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
+    
     public function index(Request $request)
     {
         // dd($request->all());

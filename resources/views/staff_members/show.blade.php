@@ -17,14 +17,14 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `<div>
-                هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
-                <br>
-                <span class="text-danger">
-                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
-                </span>
-                <br>
-                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                </div>`,
+                    هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
+                    <br>
+                    <span class="text-danger">
+                    هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
+                    </span>
+                    <br>
+                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                    </div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -264,21 +264,23 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theStaff->id }})">
-                        حذف الموظف
-                    </button>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theStaff->id }})">
+                            حذف الموظف
+                        </button>
 
-                    <form id="delete-form-{{ $theStaff->id }}"
-                        action="{{ route('staff_members.destroy', [$theStaff->id, 'from' => $from]) }}" method="POST"
-                        style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                        <form id="delete-form-{{ $theStaff->id }}"
+                            action="{{ route('staff_members.destroy', [$theStaff->id, 'from' => $from]) }}" method="POST"
+                            style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
 
-                    <a href="{{ route('staff_members.edit', [$theStaff->id, 'from' => $from]) }}"
-                        class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <a href="{{ route('staff_members.edit', [$theStaff->id, 'from' => $from]) }}"
+                            class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
 
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع

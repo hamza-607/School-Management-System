@@ -12,6 +12,11 @@ use Illuminate\Http\Request;
 
 class passFailListController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'create']);
+    }
+
     public function index()
     {
         $academicYears = AcademicYear::with('sections')->orderByDesc('name')->get();

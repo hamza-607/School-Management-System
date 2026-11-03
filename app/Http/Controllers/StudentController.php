@@ -19,6 +19,11 @@ use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('isCurrentYear')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -234,8 +239,6 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
-
         $theStudent = Student::with([
             'student_enrollments',
             'student_enrollments.section',
@@ -252,15 +255,18 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
+        // dd(session('newCurrentYearID'));
         $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
         $student = Student::findOrFail($id);
         $grades = Grade::all();
         $sections = Section::where('academic_year_id', $academicYearID)->get();
 
+        // dd($academicYearID);
         return view('students.edit', [
             'theStudent' => $student,
             'sections' => $sections,
             'grades' => $grades,
+            'academicYearID' => $academicYearID,
         ]);
     }
 

@@ -82,7 +82,7 @@
 
         .btn-staff-outline:hover {
             border-color: #006559;
-            color:  #00352e;
+            color: #00352e;
         }
 
         .btn-staff-primary {
@@ -130,9 +130,11 @@
             <h5 class="mb-0">جدول النتائج</h5>
 
             <div class="mt-4 text-end">
-                <button type="submit" class="btn-staff-primary" form="updateScoresForm" id="saveScoresBtn">حفظ التعديلات <i
-                        class="ti ti-device-floppy me-1"></i>
-                </button>
+                @if ($yearCanDo)
+                    <button type="submit" class="btn-staff-primary" form="updateScoresForm" id="saveScoresBtn">حفظ التعديلات <i
+                            class="ti ti-device-floppy me-1"></i>
+                    </button>
+                @endif
                 <a href="{{ url()->previous() }}" class="btn-staff-outline">رجوع</a>
             </div>
 
@@ -172,10 +174,12 @@
                                                     form="updateScoresForm"
                                                     name="students[{{ $indexStudent }}][scores][{{ $scoreComponent->id }}]" min="0"
                                                     max="{{ $scoreComponent->max_score }}" step="0.01" placeholder="0"
-                                                    value="{{ $scoreComponent->students_scores->first() ? $scoreComponent->students_scores->where('student_id', $student_enrollment->student_id)->first()->score : null }}">
+                                                    value="{{ $scoreComponent->students_scores->first() ? $scoreComponent->students_scores->where('student_id', $student_enrollment->student_id)->first()->score : null }}"
+                                                    {{ $yearCanDo ? '' : 'readonly' }}>
                                                 <span class="text-muted">/{{ $scoreComponent->max_score }}</span>
                                             </div>
                                         </div>
+
                                     @empty
                                         <p class="text-muted">لا يوجد اختبارات او امتحان منتهي بعد</p>
                                     @endforelse

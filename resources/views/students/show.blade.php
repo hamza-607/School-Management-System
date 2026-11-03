@@ -19,16 +19,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                                                    <div>
-                                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                                                        <br>
-                                                        <span class="text-danger">
-                                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                                                        </span>
-                                                        <br>
-                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                                    </div>
-                                                `,
+                                                                    <div>
+                                                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                                                        <br>
+                                                                        <span class="text-danger">
+                                                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                                                        </span>
+                                                                        <br>
+                                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                                                    </div>
+                                                                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -258,19 +258,21 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
-                    <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theStudent->id }})">
-                        حذف الطالب
-                    </button>
+                    @if ($yearCanDo)
+                        <button type="button" class="btn btn-label-danger px-4" onclick="confirmDelete({{ $theStudent->id }})">
+                            حذف الطالب
+                        </button>
 
-                    <form id="delete-form-{{ $theStudent->id }}" action="{{ route('students.destroy', $theStudent->id) }}"
-                        method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                        <form id="delete-form-{{ $theStudent->id }}" action="{{ route('students.destroy', $theStudent->id) }}"
+                            method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
 
-                    <a href="{{ route('students.edit', $theStudent->id) }}" class="btn btn-primary px-4">
-                        تعديل
-                    </a>
+                        <a href="{{ route('students.edit', $theStudent->id) }}" class="btn btn-primary px-4">
+                            تعديل
+                        </a>
+                    @endif
 
                     <a href="{{ url()->previous() }}" class="btn-staff-outline">
                         رجوع
@@ -459,7 +461,7 @@
                                     };
                                 @endphp
                                 <div
-                                    class="p-3 border rounded-3 bg-white shadow-none position-relative {{ $index >= 4 ? 'enrollment-extra d-none' : '' }}">
+                                    class="p-3 border rounded-3 bg-white shadow-none position-relative {{ $index >= 2 ? 'enrollment-extra d-none' : '' }}">
                                     <!-- رأس البطاقة: الصف والسنة وزر التحميل -->
                                     <div class="d-flex align-items-start justify-content-between mb-2">
                                         <div>
@@ -467,7 +469,7 @@
                                                 {{ $enrollment->academic_year->name ?? '-' }}
                                             </span>
                                             <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">
-                                                {{ $enrollment->grade->name ?? '-' }}
+                                                الصف : {{ $enrollment->grade->name ?? '-' }}
                                             </h6>
                                         </div>
 
@@ -475,11 +477,6 @@
                                             <span class="badge {{ $result['class'] }} px-2 py-1" style="font-size: 0.75rem;">
                                                 {{ $result['label'] }}
                                             </span>
-                                            <!-- زر التحميل الخاص بهذه السنة -->
-                                            <button class="btn-staff-outline d-flex align-items-center px-2 py-1"
-                                                style="font-size: .8rem;" title="تحميل سجل حضور الطالب لهذه السنة">
-                                                <i class="ti ti-download fs-6 text-primary"></i>
-                                            </button>
                                         </div>
                                     </div>
 
@@ -488,8 +485,11 @@
                                         style="font-size: 0.75rem;">
                                         <span>
                                             قرر بواسطة:
-                                            @if($enrollment->decided_by && $enrollment->decided_by_user && $enrollment->decided_by_user->staff)
-                                                <a href="{{ route('staff_members.show', $enrollment->decided_by_user->staff->id) }}"
+                                            @if(
+                                                    $enrollment->decided_by && $enrollment->decided_by_user &&
+                                                    $enrollment->decided_by_user->staff
+                                                )
+                                                <a href="{{ route('staff_members.show', [$enrollment->decided_by_user->staff->id, 'from' => 'teacher']) }}"
                                                     class="fw-medium text-decoration-underline">
                                                     {{ $enrollment->decided_by_user->staff->name }}
                                                 </a>
@@ -507,11 +507,11 @@
                             $enrollmentCount = $theStudent->student_enrollments->count();
                         @endphp
 
-                        @if($enrollmentCount > 4)
+                        @if($enrollmentCount > 2)
                             <div class="text-center mt-3">
                                 <button type="button" class="btn btn-sm btn-link text-decoration-none fw-semibold"
                                     id="toggleEnrollmentsBtn">
-                                    عرض المزيد {{ '(' . ($enrollmentCount - 4) . ')' }}
+                                    عرض المزيد {{ '(' . ($enrollmentCount - 2) . ')' }}
                                 </button>
                             </div>
                         @endif
