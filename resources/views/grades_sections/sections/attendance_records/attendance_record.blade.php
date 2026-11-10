@@ -54,6 +54,24 @@
                     window.location.href = url.toString();
                 });
             }
+
+            // فلتر الشهر (جديد)
+            const monthFilter = document.getElementById('monthFilter');
+
+            if (monthFilter) {
+                $(monthFilter).on('change', function () {
+                    const url = new URL(window.location.href);
+
+                    if (this.value) {
+                        url.searchParams.set('month', this.value);
+                    } else {
+                        url.searchParams.delete('month');
+                    }
+
+                    url.searchParams.delete('page');
+                    window.location.href = url.toString();
+                });
+            }
         });
     </script>
 @endsection
@@ -238,10 +256,11 @@
 
     <div class="card">
 
+
         <div class="card-header border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
             <h5 class="card-title mb-0">سجل الحضور</h5>
 
-            <div class="d-flex align-items-stretch gap-2 attendance-filter" style="width: 300px; max-width: 100%;">
+            <div class="d-flex align-items-stretch gap-2 attendance-filter" style="width: 500px; max-width: 100%;">
                 <div class="flex-grow-1" style="min-width: 0;">
                     <select id="subjectsFilter" class="selectpicker w-100" data-style="btn-default" data-width="100%">
                         <option value="">كل المواد</option>
@@ -253,9 +272,40 @@
                     </select>
                 </div>
 
-                <button type="button" class="btn-staff-outline d-flex align-items-center flex-shrink-0 text-nowrap">
-                    <i class="ti ti-download me-1"></i> تحميل
-                </button>
+
+                @php
+                    $monthsMap = [
+                        1 => 'كانون الثاني',
+                        2 => 'شباط',
+                        3 => 'آذار',
+                        4 => 'نيسان',
+                        5 => 'أيار',
+                        6 => 'حزيران',
+                        7 => 'تموز',
+                        8 => 'آب',
+                        9 => 'أيلول',
+                        10 => 'تشرين الأول',
+                        11 => 'تشرين الثاني',
+                        12 => 'كانون الأول',
+                    ];
+                @endphp
+
+                <div class="flex-grow-1" style="min-width: 0;">
+                    <select id="monthFilter" class="selectpicker w-100" data-style="btn-default" data-width="100%"
+                        data-dropup-auto="false" data-size="6">
+                        <option value="">كل الشهور</option>
+                        @foreach ($monthsMap as $num => $name)
+                            <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <a href="{{ route('section.attendanceRecords.pdf', [$theSection->id, 'subject_id' => request('subject_id'), 'month' => request('month')]) }}"
+                    target="_blank" rel="noopener" class="btn-staff-outline">
+                    <i class="ti ti-printer me-1"></i> طباعة
+                </a>
             </div>
         </div>
 
@@ -263,7 +313,8 @@
             <table class="table table-hover border-top">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 20%;">التاريخ</th>
+                        <th style="width: 10%;">التاريخ</th>
+                        <th style="width: 10%;">الوقت</th>
                         <th style="width: 18%;">اليوم</th>
                         <th style="width: 10%;" class="col-auto-fit">المادة</th>
                         <th style="width: 16%;" class="col-auto-fit">المعلم</th>
@@ -285,10 +336,17 @@
                                 'friday' => 'الجمعة',
                                 'saturday' => 'السبت'
                             ];
+
+                            $countOfPresent = $session->attendances->where('status', 'present')->count();
+                            $countOfExcused = $session->attendances->where('status', 'excused')->count();
+                            $countOfAbsent = $session->attendances->where('status', 'absent')->count();
                         @endphp
                         <tr class="session-row" data-target="#detail{{ $session->id }}">
                             <td>
                                 <span>{{ $session->created_at->format('Y-m-d') }}</span>
+                            </td>
+                            <td>
+                                <span>{{ $session->created_at->format('H:i') }}</span>
                             </td>
                             <td>
                                 {{ $session->appointment ? $daysMap[$session->appointment->day] : '-' }}
@@ -383,7 +441,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">لا توجد سجلات ضمن هذه الفلاتر</td>
+                            <td colspan="8" class="text-center text-muted py-4">لا توجد سجلات ضمن هذه الفلاتر</td>
                         </tr>
                     @endforelse
                 </tbody>

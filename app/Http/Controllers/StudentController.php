@@ -12,7 +12,6 @@ use App\Models\Section;
 use App\Models\Student;
 use App\Models\Student_parent;
 use App\Models\StudentEnrollment;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +21,7 @@ class StudentController extends Controller
 
     public function __construct()
     {
-        $this->middleware('isCurrentYear')->except(['index', 'show']);
+        $this->middleware('isCurrentYear')->except(['index', 'show', 'pdfStudentsPage', 'pdfacademicYearPage']);
     }
     /**
      * Display a listing of the resource.
@@ -89,6 +88,7 @@ class StudentController extends Controller
         return view('students.index', [
             'students' => $students,
             'grades' => $gradesWithSections,
+            'academicYearID' => $academicYearID,
         ]);
     }
 
@@ -498,5 +498,100 @@ class StudentController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('students.show', $studentID)->with('error', 'حدث خطأ أثناء إضافة الملف' . $e->getMessage());
         }
+    }
+
+    public function pdfStudentsPage(Request $request)
+    {
+        $academicYearID = $request->yearID ?? session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+        $filters = [];
+        $query = Student::query();
+        $query->whereHas('student_enrollments', function ($q) use ($academicYearID, $request) {
+            $q->where('student_enrollments.academic_year_id', $academicYearID);
+        });
+
+        if ($request->has('search') && $request->search !== null) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('e_name', 'like', '%' . $request->search . '%')
+                    ->orWhere('address', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->has('status') && $request->status !== null) {
+            $query->where('is_active', $request->status);
+            $filters[] = ['label' => 'الحالة', 'value' => $request->status === '1' ? 'نشط' : 'غير نشط'];
+        }
+        if ($request->has('grade_id') && $request->grade_id !== null) {
+            $query->whereHas('student_enrollments', function ($q) use ($request) {
+                $q->where('grade_id', $request->grade_id);
+            });
+            $filters[] = ['label' => 'الصف', 'value' => Grade::find($request->grade_id)->name];
+        }
+        if ($request->has('section_id') && $request->section_id !== null) {
+            $query->whereHas('student_enrollments', function ($q) use ($request) {
+                $q->where('section_id', $request->section_id);
+            });
+            $filters[] = ['label' => 'الشعبة', 'value' => Section::find($request->section_id)->name];
+        }
+        if ($request->has('gender') && $request->gender !== null) {
+            $query->where('gender', $request->gender);
+            $filters[] = ['label' => 'الجنس', 'value' => $request->gender === 'male' ? 'ذكر' : 'أنثى'];
+        }
+        $students = $query->with([
+            'student_enrollments' => function ($q) use ($academicYearID) {
+                $q->where('academic_year_id', $academicYearID);
+            },
+            'student_enrollments.section',
+            'student_enrollments.grade'
+        ])->latest()->get()
+            ->map(function ($student) use ($academicYearID) {
+                $enrollment = $student->student_enrollments->first();
+                return [
+                    'name' => $student->name,
+                    'gender' => $student->gender,
+                    'section' => $enrollment ? ($enrollment->section ? $enrollment->section->name : '-') : '-',
+                    'grade' => $enrollment ? $enrollment->grade->name : '-',
+                    'phone' => $student->phoneNumber ?? '-',
+                    'date_of_birth' => $student->date_of_birth,
+                    'status' => $student->is_active == 1 ? 'نشط' : 'غير نشط',
+                    'enrollmentDate' => $enrollment ? $enrollment->created_at->format('Y-m-d') : '-',
+                    'financialStatus' => '-',
+                ];
+            })->toArray();
+
+        return view('students.PDF.students', [
+            'filters' => $filters,
+            'students' => $students,
+            'year' => AcademicYear::findOrFail($academicYearID),
+        ]);
+    }
+
+    public function pdfacademicYearPage($studentID)
+    {
+        $student = Student::findOrFail($studentID);
+
+        $studentEnrollments = StudentEnrollment::with([
+            'academic_year',
+            'grade',
+            'section'
+        ])
+            ->where('student_id', $studentID)
+            ->get()
+            ->map(function ($studentEnrollments) {
+                return [
+                    'academicYearName' => $studentEnrollments->academic_year->name,
+                    'gradeName' => $studentEnrollments->grade->name,
+                    'sectionName' => $studentEnrollments->section ? $studentEnrollments->section->name : '-',
+                    'result' => $studentEnrollments->result !== null ? ($studentEnrollments->result === 'passed' ? 'ناجح' : 'راسب') : 'قيد الدراسة'
+                ];
+            })
+            ->toArray();
+
+        // dd($studentEnrollments);
+
+        return view('students.PDF.academicYear', [
+            'theStudent' => $student,
+            'studentEnrollments' => $studentEnrollments,
+        ]);
     }
 }

@@ -135,9 +135,9 @@
                             class="ti ti-device-floppy me-1"></i>
                     </button>
                 @endif
+                <div class="vr mx-1"></div>
                 <a href="{{ url()->previous() }}" class="btn-staff-outline">رجوع</a>
             </div>
-
         </div>
 
         <div class="card-body">

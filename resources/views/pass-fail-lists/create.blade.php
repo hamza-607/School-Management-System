@@ -341,8 +341,6 @@
             </div>
         </div>
 
-              
-
         <div class="staff-filter-bar">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-4 w-100">

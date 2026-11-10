@@ -30,9 +30,9 @@ class AppServiceProvider extends ServiceProvider
 
       $sessionYearID = session('newCurrentYearID') ?? $currentYearID;
 
-      $yearCanDo = false;
-      if ($currentYearID && ($sessionYearID == $currentYearID)) {
-        $yearCanDo = true;
+      $yearCanDo = true;
+      if ( $sessionYearID != $currentYearID) {
+        $yearCanDo = false;
       }
 
       $view->with([

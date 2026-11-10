@@ -19,16 +19,16 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `
-                                                                    <div>
-                                                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                                                                        <br>
-                                                                        <span class="text-danger">
-                                                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                                                                        </span>
-                                                                        <br>
-                                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                                                    </div>
-                                                                `,
+                                                                                                    <div>
+                                                                                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                                                                                        <br>
+                                                                                                        <span class="text-danger">
+                                                                                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                                                                                        </span>
+                                                                                                        <br>
+                                                                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                                                                                    </div>
+                                                                                                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -445,10 +445,12 @@
                                 <i class="bi bi-journal-text fs-3 text-primary"></i>
                                 <h5 class="mb-0 fw-bold">السجل الأكاديمي</h5>
                             </div>
-                            <button class="btn-staff-outline d-flex align-items-center px-3 btn-sm"
-                                title="تحميل السجل الأكاديمي لهذا الطالب">
-                                <i class="ti ti-download me-1"></i> تحميل
-                            </button>
+
+                            <a href="{{ route('students.academicYear.pdf', $theStudent->id) }}"
+                                title="تحميل السجل الأكاديمي لهذا الطالب" target="_blank" rel="noopener"
+                                class="btn-staff-outline">
+                                <i class="ti ti-printer me-1"></i> طباعة
+                            </a>
                         </div>
 
                         <div class="d-flex flex-column gap-3" id="enrollmentsList">
@@ -544,9 +546,10 @@
                                 <h5 class="mb-0 fw-bold">السجل المالي</h5>
                             </div>
 
-                            <button class="btn-staff-outline d-flex align-items-center px-3">
-                                <i class="ti ti-download me-1"></i> تحميل
-                            </button>
+                            <a href="#"
+                                class="btn-staff-outline">
+                                <i class="ti ti-printer me-1"></i> طباعة
+                            </a>
                         </div>
 
                         <div class="row g-3">

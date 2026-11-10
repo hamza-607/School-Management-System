@@ -15,7 +15,16 @@
 
   .icon-actions-group {
     gap: 4px;
+    min-width: 0;
+    max-width: 100%;
   }
+
+
+  .navbar-nav-right>.navbar-nav:last-child {
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
 
   .icon-action {
     display: flex;
@@ -100,8 +109,37 @@
     color: #8a6530 !important;
   }
 
+
+  @media (max-width: 575.98px) {
+    .floating-navbar {
+      margin: 8px !important;
+      overflow: hidden;
+    }
+
+    #navbar-collapse {
+      flex-wrap: nowrap;
+      min-width: 0;
+    }
+
+    #academicYearLabel {
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
   .alert .btn-close {
     filter: none;
+  }
+
+  #navInformationID {
+    display: flex;
+  }
+
+  @media (width < 1200px) {
+    #navInformationID {
+      display: none;
+    }
   }
 </style>
 
@@ -136,17 +174,17 @@
     <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
 
       <ul class="navbar-nav flex-row align-items-center m-0">
-        <li class="nav-item d-flex align-items-center">
+        <li id="navInformationID">
           <div class="avatar avatar-online">
             <img src="{{ Storage::url(Auth::user()->staff->picture ?? null) }}" alt="gf" class="h-auto rounded-circle">
           </div>
-          <div class="ms-2 d-none d-sm-flex flex-column">
+          <div class="ms-2 d-sm-flex flex-column">
             @if (Auth::check())
               <span class="fw-semibold" style="line-height:1;">{{ Auth::user()->name }}</span>
               <small class="text-muted">{{ Auth::user()->staff->staff_type }}</small>
             @else
-              <span class="fw-semibold" style="line-height:1;">John Doe</span>
-              <small class="text-muted">admin</small>
+              <span class="fw-semibold" style="line-height:1;">-</span>
+              <small class="text-muted">-</small>
             @endif
           </div>
         </li>
@@ -254,10 +292,12 @@
 
   @if(session('alert'))
     @foreach(\Illuminate\Support\Arr::wrap(session('alert')) as $message)
-      <div class="alert alert-warning alert-dismissible" role="alert">
-        {{ $message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+      @if ($message !== null)
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          {{ $message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      @endif
     @endforeach
   @endif
 </div>
