@@ -17,7 +17,7 @@ return [
     'menuFixed' => true, // options[Boolean]: true(default), false // Layout(menu) Fixed
     'menuCollapsed' => false, // options[Boolean]: false(default), true // Show menu collapsed, Only for vertical Layout
     'navbarFixed' => false, // options[Boolean]: false(default), true // Navbar Fixed
-    'footerFixed' => false, // options[Boolean]: false(default), true // Footer Fixed
+    'footerFixed' => true, // options[Boolean]: false(default), true // Footer Fixed
     'showDropdownOnHover' => true, // true, false (for horizontal layout only)
     'customizerControls' => [
       // 'rtl',

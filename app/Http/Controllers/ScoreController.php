@@ -18,10 +18,9 @@ class ScoreController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('isCurrentYear')->except('index');
+        $this->middleware('isCurrentYear')->except('index', 'pdfScoresPage');
     }
-  
-    
+
     public function index($studentID, Request $request)
     {
         $theAcademicYear_id = session('newCurrentYearID') ?? AcademicYear::where('is_current', 1)
@@ -30,8 +29,6 @@ class ScoreController extends Controller
         $semesters = Semester::where('academic_year_id', $theAcademicYear_id)
             ->get(['id', 'name'])
             ->toArray();
-
-        // dd($semesters);
 
         $theStudentEnrollment = Student::findOrFail($studentID)->student_enrollments()->where('academic_year_id', $theAcademicYear_id)->with('student')->first();
 
@@ -46,8 +43,6 @@ class ScoreController extends Controller
             ->get(['id', 'name'])
             ->toArray();
 
-        // dd($subjects);
-        // dd($studentID);
         $scoresAsModes = ScoreComponent::join('student_scores', 'student_scores.score_component_id', '=', 'score_components.id')
             ->join('semesters', 'semesters.id', '=', 'score_components.semester_id')
             ->join('finished_sessions', 'finished_sessions.id', '=', 'score_components.finished_session_id')
@@ -62,7 +57,6 @@ class ScoreController extends Controller
                 'finished_sessions.subject_id as subjectID',
                 'score_components.semester_id'
             ]);
-        // dd($scoresAsModes);
 
         $scoresAsArray = [];
 
@@ -77,24 +71,19 @@ class ScoreController extends Controller
 
                 $final = $subjectSemesterScores->where('scoreType', 'final_exam')
                     ->first();
-                // dd($final);
-
                 $quizzes = $subjectSemesterScores->where('scoreType', 'quiz');
-                // dd($quizzes);
-
                 $semestersScores[$index + 1] = [
                     'id' => $semester['id'],
                     'final' => $final ? $final->toArray() : null,
                     'quizzes' => $quizzes ? $quizzes->toArray() : null,
                 ];
             }
-            // dd($semestersScores);
 
             $subject['semesters'] = $semestersScores;
             $scoresAsArray[] = $subject;
         }
-        // dd($scoresAsArray);
-        // dd($theStudentEnrollment, $semesters, $scoresAsArray);
+
+
         return view('students.scores.index', [
             'theStudentEnrollment' => $theStudentEnrollment,
             'semesters' => $semesters,
@@ -175,5 +164,73 @@ class ScoreController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'حدث خطأ اثناء تعديل العلامات' . $e->getMessage());
         }
+    }
+
+    public function pdfScoresPage($studentID, Request $request)
+    {
+        $theAcademicYear_id = session('newCurrentYearID') ?? AcademicYear::where('is_current', 1)
+            ->first()->id;
+
+        $semesters = Semester::where('academic_year_id', $theAcademicYear_id)
+            ->get(['id', 'name']);
+
+        $theStudent = Student::findOrFail($studentID);
+
+        $subjectIDs = $theStudent->student_enrollments()->where('academic_year_id', $theAcademicYear_id)->first()->section->section_subject_teachers->unique('subject_id')
+            ->pluck('subject_id')
+            ->toArray();
+        $subjects = Subject::whereIn('id', $subjectIDs)
+            ->get(['id', 'name'])
+            ->toArray();
+
+        $scoresAsModes = ScoreComponent::join('student_scores', 'student_scores.score_component_id', '=', 'score_components.id')
+            ->join('semesters', 'semesters.id', '=', 'score_components.semester_id')
+            ->join('finished_sessions', 'finished_sessions.id', '=', 'score_components.finished_session_id')
+            ->where('academic_year_id', $theAcademicYear_id)
+            ->where('student_id', $studentID)
+            ->get([
+                'score_components.name as scoreName',
+                'score_components.type as scoreType',
+                'student_scores.score as scoreValue',
+                'student_scores.id as scoreID',
+                'score_components.max_score as scoreMaxValue',
+                'finished_sessions.subject_id as subjectID',
+                'score_components.semester_id',
+            ]);
+
+        $scoresAsArray = [];
+        $total = [];
+        foreach ($subjects as $subject) {
+            foreach ($semesters as $index => $semester) {
+
+                $subjectSemesterScores = $scoresAsModes->where('subjectID', $subject['id'])
+                    ->where('semester_id', $semester->id);
+
+                $final = $subjectSemesterScores->where('scoreType', 'final_exam')
+                    ->first();
+                $quizzes = $subjectSemesterScores->where('scoreType', 'quiz');
+
+                $subject['quizzes' . $index + 1] = !$quizzes->isEmpty() ? $quizzes->sum('scoreValue') . '/' . $quizzes->sum('scoreMaxValue') : null;
+                $subject['final' . $index + 1] = $final ? $final->scoreValue . '/' . $final->scoreMaxValue : null;
+                $subject['sum' . $index + 1] = ($final ? $final->scoreValue : 0) + (!$quizzes->isEmpty() ? $quizzes->sum('scoreValue') : 0)
+                    . '/' . ($final ? $final->scoreMaxValue : 0) + (!$quizzes->isEmpty() ? $quizzes->sum('scoreMaxValue') : 0);
+
+                $finalScore = $final?->scoreValue ?? 0;
+                $quizScore = $quizzes->sum('scoreValue');
+                $totalSum[$index + 1] = ($totalSum[$index + 1] ?? 0) + $finalScore + $quizScore;
+                $maxTotalSum[$index + 1] = ($maxTotalSum[$index + 1] ?? 0) + ($final?->scoreMaxValue ?? 0) + $quizzes->sum('scoreMaxValue');
+                $total[$index + 1] = $totalSum[$index + 1] . '/' . $maxTotalSum[$index + 1];
+            }
+            unset($subject['id']);
+            $scoresAsArray[] = $subject;
+        }
+
+        return view('students.PDF.scores', [
+            'semesters' => $semesters->pluck('name')->toArray(),
+            'scoresAsArray' => $scoresAsArray,
+            'theStudent' => $theStudent,
+            'year' => AcademicYear::findOrFail($theAcademicYear_id),
+            'total' => $total,
+        ]);
     }
 }

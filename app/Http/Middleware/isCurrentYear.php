@@ -18,13 +18,13 @@ class isCurrentYear
     {
         $currentYear = AcademicYear::where('is_current', true)->first();
 
-        if (!$currentYear) {
-            return redirect()->back()->with('error', 'أنت في إحدى سنين سابقة وليس لديك سوى صلاحيات العرض في هذه السنة');
-        }
+        // if (!$currentYear && AcademicYear::count() > 0) {
+        //     return redirect()->back()->with('error', 'أنت في إحدى سنين سابقة وليس لديك سوى صلاحيات العرض في هذه السنة');
+        // }
 
-        $sessionYearID = session('newCurrentYearID') ?? $currentYear->id;
+        $sessionYearID = session('newCurrentYearID') ?? $currentYear?->id;
 
-        if ($sessionYearID != $currentYear->id) {
+        if ($sessionYearID != $currentYear?->id) {
             return redirect()->back()->with('error', 'أنت في إحدى سنين سابقة وليس لديك سوى صلاحيات العرض في هذه السنة');
         }
 

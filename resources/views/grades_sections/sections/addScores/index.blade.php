@@ -102,7 +102,7 @@
 
                         <div class="card-footer d-flex gap-2 py-2 px-3">
                             <a href="{{ route('sectionScores.create', $section->id) }}"
-                                class="btn btn-primary btn-sm py-1 flex-grow-1">
+                                class="btn btn-primary btn-sm py-2 flex-grow-1">
                                 @if ($yearCanDo)
                                     <i class="ti ti-edit ti-xs me-1"></i>إدخال العلامات
                                 @else
@@ -110,9 +110,10 @@
                                 @endif
                             </a>
 
-                            <button class="btn-staff-outline w-25 h-100">
-                                <i class="ti ti-download me-1"></i> طباعة
-                            </button>
+                            <a href="{{ route('section.scores.pdf', $section->id) }}" target="_blank" rel="noopener"
+                                class="btn-staff-outline">
+                                <i class="ti ti-printer me-1"></i> طباعة
+                            </a>
                         </div>
                     </div>
                 </div>

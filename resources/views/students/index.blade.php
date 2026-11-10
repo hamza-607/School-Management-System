@@ -258,16 +258,16 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `
-                                            <div>
-                                                هل أنت متأكد أنك تريد حذف هذا الطالب؟
-                                                <br>
-                                                <span class="text-danger">
-                                                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
-                                                </span>
-                                                <br>
-                                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                                            </div>
-                                        `,
+                                                    <div>
+                                                        هل أنت متأكد أنك تريد حذف هذا الطالب؟
+                                                        <br>
+                                                        <span class="text-danger">
+                                                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الطالب
+                                                        </span>
+                                                        <br>
+                                                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                                    </div>
+                                                `,
                     icon: 'warning',
                     icon: 'warning',
                     showCancelButton: true,
@@ -445,9 +445,16 @@
             <h5 class="card-title mb-0">قائمة الطلاب</h5>
             <div class="d-flex">
                 <div class="btn-group me-2">
-                    <button class="btn-staff-outline">
-                        <i class="ti ti-download me-1"></i> طباعة
-                    </button>
+                    <a href="{{ route('students.pdf', [
+                            'yearID' => $academicYearID,
+                            'grade_id' => request('grade_id'),
+                            'section_id' => request('section_id'),
+                            'status' => request('status'),
+                            'gender' => request('gender'),
+                            'financial_status' => request('financial_status')
+                        ]) }}" target="_blank" rel="noopener" class="btn-staff-outline">
+                        <i class="ti ti-printer me-1"></i> طباعة
+                    </a>
                 </div>
 
                 @if ($yearCanDo)
@@ -605,7 +612,8 @@
                                     <span class="dot"></span> {{ $status }}
                                 </a>
                             </td>
-                            <td>{{ $student->created_at ? $student->created_at->format('Y-m-d') : '-' }}</td>
+                            <td>{{ $student->student_enrollments->first() ? $student->student_enrollments->first()->created_at->format('Y-m-d') : '-' }}
+                            </td>
                             <td>
                                 @if ($yearCanDo)
                                     <div class="d-inline-block text-nowrap">

@@ -64,18 +64,23 @@ Route::middleware(['auth', 'currentYearAndSemester'])->group(function () {
     Route::get('editPasswordPage', [AuthController::class, 'editPassword'])->withoutMiddleware('currentYearAndSemester')->name('editPasswordPage');
     Route::post('editPassword', [AuthController::class, 'editPasswordStore'])->withoutMiddleware('currentYearAndSemester')->name('editPasswordStore');
 
+    Route::get('students/pdf', [StudentController::class, 'pdfStudentsPage'])->name('students.pdf')->withoutMiddleware('currentYearAndSemester');
     Route::resource('students', StudentController::class);
     Route::get('toggleStatus/{studentID}', [StudentController::class, 'toggle'])->name('toggleStatus');
     Route::prefix('student/{studentID}')
         ->group(function () {
+            Route::get('academicYear/pdf', [StudentController::class, 'pdfacademicYearPage'])->name('students.academicYear.pdf')->withoutMiddleware('currentYearAndSemester');
+
             Route::get('addFile', [StudentController::class, 'addFile'])->name('student.addFile');
             Route::post('files', [StudentController::class, 'saveFile'])->name('student.saveFile');
 
             Route::resource('penalties', StudentPenaltiesController::class);
 
+            Route::get('scores/pdf', [ScoreController::class, 'pdfScoresPage'])->name('students.scores.pdf')->withoutMiddleware('currentYearAndSemester');
             Route::get('scores', [ScoreController::class, 'index'])->name('scores.index');
             Route::put('scores/update', [ScoreController::class, 'updateScores'])->name('scores.update');
 
+            Route::get('attendanceRecords/pdf', [AttendanceRecordController::class, 'pdfAttendanceStudentPage'])->name('students.attendanceRecords.pdf')->withoutMiddleware('currentYearAndSemester');
             Route::get('attendanceRecords', [AttendanceRecordController::class, 'studentIndex'])->name('student.attendanceRecords.index');
         });
     Route::get('penalties/{penaltyID}', [StudentPenaltiesController::class, 'penaltyStatusToggel'])->name('penaltyStatus');
@@ -110,12 +115,15 @@ Route::middleware(['auth', 'currentYearAndSemester'])->group(function () {
             Route::get('addFile', [SectionController::class, 'addFile'])->name('sections.addFile');
             Route::post('files', [SectionController::class, 'saveFile'])->name('sections.saveFile');
 
+            Route::get('scores/pdf', [SectionScoresController::class, 'pdfSectionScoresPage'])->name('section.scores.pdf')->withoutMiddleware('currentYearAndSemester');
             Route::get('scores/create', [SectionScoresController::class, 'create'])->name('sectionScores.create');
             Route::post('scores', [SectionScoresController::class, 'store'])->name('sectionScores.store');
 
+            Route::get('passFailLists/pdf', [passFailListController::class, 'pdfPassFailPage'])->name('section.passFailLists.pdf')->withoutMiddleware('currentYearAndSemester');
             Route::get('passFailLists/create', [passFailListController::class, 'create'])->name('passFailLists.create')->middleware('nextYearMiddleware');
             Route::post('passFailLists', [passFailListController::class, 'store'])->name('passFailLists.store')->middleware('nextYearMiddleware');
 
+            Route::get('attendanceRecords/pdf', [AttendanceRecordController::class, 'pdfAttendanceSectionPage'])->name('section.attendanceRecords.pdf')->withoutMiddleware('currentYearAndSemester');
             Route::get('attendanceRecords', [AttendanceRecordController::class, 'sectionIndex'])->name('sections.attendanceRecords.index');
         });
     Route::get('section/scores', [SectionScoresController::class, 'index'])->name('sectionScores.index');
@@ -134,6 +142,8 @@ Route::middleware(['auth', 'currentYearAndSemester'])->group(function () {
     Route::get('setYearCurrent/{yearID}', [AcademicYearController::class, 'setSessionYear'])->name('setYearCurrent');
     Route::get('Services Guide', function () {
         return view('servicesGuide');
-    })->name('ServicesGuide');
+    })->name('ServicesGuide')->withoutMiddleware('currentYearAndSemester');
+
+
 });
 

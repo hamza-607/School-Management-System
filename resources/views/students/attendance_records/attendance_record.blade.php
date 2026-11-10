@@ -35,6 +35,7 @@
 
             bindFilter('subjectsFilter', 'subject_id');
             bindFilter('statusFilter', 'status');
+            bindFilter('monthFilter', 'month');
         });
     </script>
 @endsection
@@ -206,9 +207,40 @@
                     </select>
                 </div>
 
-                <button type="button" class="btn-staff-outline d-flex align-items-center flex-shrink-0 text-nowrap">
-                    <i class="ti ti-download me-1"></i> تحميل
-                </button>
+
+                @php
+                    $monthsMap = [
+                        1 => 'كانون الثاني',
+                        2 => 'شباط',
+                        3 => 'آذار',
+                        4 => 'نيسان',
+                        5 => 'أيار',
+                        6 => 'حزيران',
+                        7 => 'تموز',
+                        8 => 'آب',
+                        9 => 'أيلول',
+                        10 => 'تشرين الأول',
+                        11 => 'تشرين الثاني',
+                        12 => 'كانون الأول',
+                    ];
+                @endphp
+
+                <div class="flex-grow-1" style="min-width: 0;">
+                    <select id="monthFilter" class="selectpicker w-100" data-style="btn-default" data-width="100%"
+                        data-dropup-auto="false" data-size="6">
+                        <option value="">كل الشهور</option>
+                        @foreach ($monthsMap as $num => $name)
+                            <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <a href="{{ route('students.attendanceRecords.pdf', [$theStudent->id, 'subject_id' => request('subject_id'), 'status' => request('status'), 'month' => request('month')]) }}"
+                    target="_blank" rel="noopener" class="btn-staff-outline">
+                    <i class="ti ti-printer me-1"></i> طباعة
+                </a>
             </div>
         </div>
 

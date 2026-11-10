@@ -376,11 +376,11 @@
                     Swal.fire({
                         title: 'تأكيد الحذف',
                         html: `
-                                        <div>
-                                            هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
-                                            <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
-                                        </div>
-                                    `,
+                                            <div>
+                                                هل أنت متأكد أنك تريد حذف هذه الحصة الدرسية؟<br>
+                                                <strong class="text-danger">هذه العملية لا يمكن التراجع عنها.</strong>
+                                            </div>
+                                        `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'نعم، احذف',
@@ -466,10 +466,13 @@
                         @foreach ($daysMap as $dayKey => $dayLabel)
                             <div class="col">
                                 <a href="{{ request()->fullUrlWithQuery(['day' => $dayKey]) }}" class="text-decoration-none">
-                                    <div class="theme-day-pill {{ $selectedDay === $dayKey ? 'active' : '' }}">
-                                        {{ $dayLabel }}
+                                    <div class="card border {{ $selectedDay === $dayKey ? 'border-primary bg-label-primary' : '' }} px-3 py-2 text-center"
+                                        style="min-width: 90px; border-radius: 0.5rem; transition: all .2s ease;">
+                                        <span class="fw-bold {{ $selectedDay === $dayKey ? 'text-primary' : 'text-dark' }}">
+                                            {{ $dayLabel }}
+                                        </span>
                                         @if ($dayKey === $today)
-                                            <small>اليوم</small>
+                                            <small class="text-muted d-block" style="font-size: 10px;">اليوم</small>
                                         @endif
                                     </div>
                                 </a>
@@ -477,6 +480,8 @@
                         @endforeach
                     </div>
                 </div>
+
+                
 
                 <div class="table-responsive">
                     <table class="table table-theme">

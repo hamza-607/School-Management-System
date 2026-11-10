@@ -17,7 +17,7 @@ class SectionScoresController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('isCurrentYear')->except(['index', 'create']);
+        $this->middleware('isCurrentYear')->except(['index', 'create', 'pdfSectionScoresPage']);
     }
     public function index()
     {
@@ -112,4 +112,45 @@ class SectionScoresController extends Controller
         }
     }
 
+    public function pdfSectionScoresPage($sectionID)
+    {
+        // dd($sectionID);
+        $academicYearID = session('newCurrentYearID') ?? AcademicYear::where('is_current', true)->first()->id;
+
+        $section = Section::findOrFail($sectionID);
+
+        $semesterID = session('newCurrentSemesterID');
+        if ($semesterID) {
+            $semester = Semester::findOrFail($semesterID);
+        } else {
+            $semester = Semester::where('is_current', 1)->first();
+        }
+
+        $scoreComponents = $semester->score_components()->whereHas('finished_session', function ($query) use ($sectionID) {
+            $query->where('teacher_id', Auth::user()->staff->id)->where('section_id', $sectionID);
+        })->get(['id', 'max_score', 'finished_session_id']);
+
+        $subject = $scoreComponents->first()->finished_session->subject;
+
+        $student_enrollments = StudentEnrollment::where('section_id', $sectionID)->where('academic_year_id', $academicYearID)->with('student')->get();
+
+        if ($student_enrollments->isEmpty()) {
+            return redirect()->back()->with('error', 'لا يوجد طلاب مسجلين في هذه الشعبة الدراسية لهذا العام الدراسي.');
+        }
+
+        $scores = [];
+        foreach ($student_enrollments as $index => $enrollment) {
+            $scores[$index][] = $enrollment->student->name;
+            $totalMaxScores = $scoreComponents->sum('max_score');
+            $totalScore = StudentScore::whereIn('score_component_id', $scoreComponents->pluck('id'))->where('student_id', $enrollment->student_id)->sum('score');
+            $scores[$index][] = $totalScore . '/' . $totalMaxScores;
+        }
+
+        return view('grades_sections.sections.PDF.scores', [
+            'scores' => $scores,
+            'section' => $section,
+            'semester' => $semester,
+            'subject' => $subject,
+        ]);
+    }
 }

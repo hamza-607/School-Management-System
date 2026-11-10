@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="text_center">صفحة تجريبية</h1>
+<h1 class="text-center">صفحة تجريبية</h1>
 
     <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">

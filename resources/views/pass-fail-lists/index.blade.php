@@ -5,8 +5,9 @@
 @section('vendor-style')
     <!-- استدعاء ملفات الـ CSS الخاصة بـ Flatpickr -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
-@endsection
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" />
+@endsection
 @section('vendor-script')
     <!-- استدعاء ملفات الـ JS الخاصة بـ Flatpickr -->
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
@@ -110,6 +111,7 @@
             border-top: 1px solid var(--line) !important;
         }
     </style>
+    
     <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">إدارة الترفع والرسوب</span>
@@ -131,7 +133,7 @@
 
                     <div class="accordion-item">
                         <h2 class="accordion-header d-flex align-items-center justify-content-between">
-                            <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" type="button"
+                            <button class="accordion-button" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#yearCollapse{{ $year->id }}"
                                 style="background-color: #e6f1ef !important; color: #00352e !important;">
                                 <span class="fw-bold">{{ $year->name }}</span>
@@ -145,7 +147,7 @@
                         </h2>
 
                         <div id="yearCollapse{{ $year->id }}"
-                            class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }} m-3"
+                            class="accordion-collapse collapse m-3"
                             data-bs-parent="#yearsAccordion">
                             <div class="accordion-body">
 
@@ -180,15 +182,16 @@
                                                             <i class="ti ti-eye ti-xs me-1"></i>عرض النتائج
                                                         </a>
                                                     @endif
-                                                    <button type="button" class="btn-staff-outline">
-                                                        <i class="ti ti-download me-1"></i> طباعة
-                                                    </button>
+                                                    <a href="{{ route('section.passFailLists.pdf', $section->id) }}"
+                                                        target="_blank" rel="noopener" class="btn-staff-outline">
+                                                        <i class="ti ti-printer me-1"></i> طباعة
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
                                     @empty
                                         <div class="col-12">
-                                            <div class="text-center text-muted py-5">لا يوجد شعب مسندة لك حالياً</div>
+                                            <div class="text-center text-muted py-5">لا يوجد شعب مسندة لهذه السنة حالياً</div>
                                         </div>
                                     @endforelse
                                 </div>

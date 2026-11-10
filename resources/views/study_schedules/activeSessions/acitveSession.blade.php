@@ -301,7 +301,7 @@
 
                             <td class="text-center align-middle">
                                 <span
-                                    class="badge bg-label-secondary text-dark">{{ $activeSession->type === 'regular' ? 'اساسية' : 'تعويضية' }}</span>
+                                    class="badge bg-label-secondary text-dark">{{ $activeSession->type === 'regular' ? 'اساسية' : ($activeSession->type === 'final' ? 'امتحان نهائي' : ($activeSession->type === 'quiz' ? 'اختبار' : 'تعويضية')) }}</span>
                             </td>
                         </tr>
                     @empty

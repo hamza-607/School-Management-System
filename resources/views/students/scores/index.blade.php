@@ -17,7 +17,7 @@
             const body = document.getElementById('resultsBody');
             const semesterCount = {{
         count($semesters)
-                                }};
+                                    }};
 
             function getValue(el) {
                 if (!el) return 0;
@@ -144,9 +144,10 @@
 
                 @if (!$updateScores)
                     <div class="vr mx-1"></div>
-                    <button class="btn-staff-outline d-flex align-items-center px-3">
-                        <i class="ti ti-download me-1"></i> تحميل
-                    </button>
+                    <a href="{{ route('students.scores.pdf', $theStudentEnrollment->student_id) }}" 
+                    target="_blank" rel="noopener" class="btn-staff-outline">
+                        <i class="ti ti-printer me-1"></i> طباعة
+                    </a>
                 @endif
             </div>
         </div>
