@@ -136,6 +136,31 @@
     display: flex;
   }
 
+  .avatar {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+  }
+
+  .avatar img,
+  .avatar .avatar-initial {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .avatar .avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #006559;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    user-select: none;
+  }
+
   @media (width < 1200px) {
     #navInformationID {
       display: none;
@@ -176,7 +201,11 @@
       <ul class="navbar-nav flex-row align-items-center m-0">
         <li id="navInformationID">
           <div class="avatar avatar-online">
-            <img src="{{ Storage::url(Auth::user()->staff->picture ?? null) }}" alt="gf" class="h-auto rounded-circle">
+            @if (Auth::user()->staff->picture)
+              <img src="{{ Storage::url(Auth::user()->staff->picture ?? null) }}" alt="gf" class="h-auto rounded-circle">
+            @else
+        <div class="avatar-initial rounded-circle">{{ mb_substr(Auth::user()->staff->name, 0, 1) }}</div>
+            @endif
           </div>
           <div class="ms-2 d-sm-flex flex-column">
             @if (Auth::check())

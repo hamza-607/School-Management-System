@@ -64,8 +64,10 @@ class Kernel extends HttpKernel
     'signed' => \App\Http\Middleware\ValidateSignature::class,
     'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+
     'currentYearAndSemester' => \App\Http\Middleware\currentYearAndSemester::class,
     'nextYearMiddleware' => \App\Http\Middleware\nextYearMiddleware::class,
     'isCurrentYear' => \App\Http\Middleware\isCurrentYear::class,
+    'systemLocked' => \App\Http\Middleware\systemLocked::class,
   ];
 }

@@ -447,6 +447,7 @@
                 <div class="btn-group me-2">
                     <a href="{{ route('students.pdf', [
                             'yearID' => $academicYearID,
+                            'search' => request('search'),
                             'grade_id' => request('grade_id'),
                             'section_id' => request('section_id'),
                             'status' => request('status'),

@@ -130,8 +130,6 @@
             let gender = $('#teacher_gender_select').val();
             let salary = $('#teacher_salary_input').val().trim();
             let createAccount = $('#createAccountCheckbox').is(':checked') ? 'on' : 'off';
-            let password = $('#passwordInput').val().trim();
-            let passwordConfirm = $('#confirmPasswordInput').val();
             let contractFile = $('#contract_file_input')[0].files[0];
 
             if (!name || !phone || !email || !birth || !salary || !contractFile) {
@@ -147,59 +145,11 @@
             $('#hidden_staff_gender').val(gender);
             $('#hidden_staff_salary').val(salary);
             $('#hidden_staff_create_account').val(createAccount);
-            $('#hidden_staff_password').val(password);
-            $('#hidden_staff_password_confirmation').val(passwordConfirm);
-
+    
             let option = new Option(name, 'NEW', true, true);
             $('#staff_select').append(option).trigger('change');
 
             bootstrap.Modal.getInstance(document.getElementById('teacherModal')).hide();
-        });
-
-        $(document).ready(function () {
-            function toggleAccountFields() {
-                if ($('#createAccountCheckbox').is(':checked')) {
-                    $('#passwordFieldsContainer').slideDown();
-                    $('#passwordInput').prop('required', true);
-                    $('#confirmPasswordInput').prop('required', true);
-                } else {
-                    $('#passwordFieldsContainer').slideUp();
-                    $('#passwordInput').prop('required', false);
-                    $('#confirmPasswordInput').prop('required', false);
-                }
-            }
-
-            $('#createAccountCheckbox').on('change', function () {
-                toggleAccountFields();
-            });
-
-            toggleAccountFields();
-
-            $('#passwordInput, #confirmPasswordInput').on('keyup', function () {
-                if (!$('#createAccountCheckbox').is(':checked')) return;
-                let password = $('#passwordInput').val();
-                let confirmPassword = $('#confirmPasswordInput').val();
-
-                if (password !== confirmPassword && confirmPassword !== '') {
-                    $('#confirmPasswordInput').addClass('is-invalid');
-                    $('#passwordError').show();
-                } else {
-                    $('#confirmPasswordInput').removeClass('is-invalid');
-                    $('#passwordError').hide();
-                }
-            });
-
-            $('form').on('submit', function (e) {
-                if (!$('#createAccountCheckbox').is(':checked')) return;
-                let password = $('#passwordInput').val();
-                let confirmPassword = $('#confirmPasswordInput').val();
-
-                if (password !== confirmPassword) {
-                    e.preventDefault();
-                    $('#confirmPasswordInput').addClass('is-invalid').focus();
-                    $('#passwordError').show();
-                }
-            });
         });
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -486,23 +436,6 @@
                                         </label>
                                     </div>
                                 </div>
-
-                                <div class="col-12" id="passwordFieldsContainer" style="display: none;">
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label class="form-label">كلمة السر <span class="text-danger">*</span></label>
-                                            <input type="password" id="passwordInput" class="form-control"
-                                                placeholder="············">
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">إعادة كلمة السر <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="password" id="confirmPasswordInput" class="form-control"
-                                                placeholder="············">
-                                            <div id="passwordError" class="invalid-feedback">كلمتا السر غير متطابقتين!</div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" id="confirmTeacher" class="btn btn-primary">تأكيد</button>
@@ -519,8 +452,6 @@
                 <input type="hidden" id="hidden_staff_gender" name="new_staff_gender">
                 <input type="hidden" id="hidden_staff_salary" name="new_staff_salary">
                 <input type="hidden" id="hidden_staff_create_account" name="new_staff_create_account">
-                <input type="hidden" id="hidden_staff_password" name="new_staff_password">
-                <input type="hidden" id="hidden_staff_password_confirmation" name="new_staff_password_confirmation">
 
                 <input type="hidden" id="hidden_subject_name" name="new_subject_name">
                 <input type="hidden" id="hidden_subject_e_name" name="new_subject_e_name">

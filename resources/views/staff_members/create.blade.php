@@ -281,7 +281,7 @@
                     <div class="col-md-6">
                         <label class="form-label">الراتب<span class="text-danger">*</span></label>
                         <input class="form-control @error('salary') is-invalid @enderror" type="number" step="any"
-                            name="salary" value="{{ old('salary') }}" placeholder="0.0SP/%">
+                            name="salary" value="{{ old('salary') }}" placeholder="0.0SP">
                         @error('salary')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror

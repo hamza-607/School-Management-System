@@ -515,6 +515,7 @@ class StudentController extends Controller
                     ->orWhere('e_name', 'like', '%' . $request->search . '%')
                     ->orWhere('address', 'like', '%' . $request->search . '%');
             });
+            $filters[] = ['label' => 'بحث', 'value' => $request->search];
         }
 
         if ($request->has('status') && $request->status !== null) {
@@ -549,8 +550,8 @@ class StudentController extends Controller
                 return [
                     'name' => $student->name,
                     'gender' => $student->gender,
-                    'section' => $enrollment ? ($enrollment->section ? $enrollment->section->name : '-') : '-',
                     'grade' => $enrollment ? $enrollment->grade->name : '-',
+                    'section' => $enrollment ? ($enrollment->section ? $enrollment->section->name : '-') : '-',
                     'phone' => $student->phoneNumber ?? '-',
                     'date_of_birth' => $student->date_of_birth,
                     'status' => $student->is_active == 1 ? 'نشط' : 'غير نشط',
@@ -558,6 +559,7 @@ class StudentController extends Controller
                     'financialStatus' => '-',
                 ];
             })->toArray();
+
 
         return view('students.PDF.students', [
             'filters' => $filters,

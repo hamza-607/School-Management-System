@@ -101,14 +101,14 @@
                 Swal.fire({
                     title: 'تأكيد الحذف',
                     html: `<div>
-                        هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
-                        <br>
-                        <span class="text-danger">
-                        هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
-                        </span>
-                        <br>
-                        <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                        </div>`,
+                                    هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
+                                    <br>
+                                    <span class="text-danger">
+                                    هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
+                                    </span>
+                                    <br>
+                                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                    </div>`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'نعم، احذف',
@@ -276,9 +276,16 @@
             <h5 class="card-title mb-0">قائمة الموظفين</h5>
             <div class="d-flex">
                 <div class="btn-group me-2">
-                    <button class="btn-staff-outline">
-                        <i class="ti ti-download me-1"></i> طباعة
-                    </button>
+
+                    <a href="{{ route('staffMembers.pdf', [
+        'from' => $from,
+        'search' => request('search'),
+        'subject' => request('subject'),
+        'status' => request('status'),
+        'gender' => request('gender'),
+    ]) }}" target="_blank" rel="noopener" class="btn-staff-outline">
+                        <i class="ti ti-printer me-1"></i> طباعة
+                    </a>
                 </div>
 
                 @if ($yearCanDo)
@@ -364,9 +371,11 @@
                         @if ($from == 'teacher')
                             <th>المادة</th>
                         @endif
+                        <th>الراتب</th>
                         <th>حالة الموظف</th>
                         @if ($from !== 'other')
-                        <th>حالة الحساب</th> @endif
+                            <th>حالة الحساب</th>
+                        @endif
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
@@ -403,6 +412,7 @@
                                         href="{{ route('subjects.show', $staff->subject->id) }}">{{ $staff->subject->name }}</a>
                                 </td>
                             @endif
+                            <td>{{ $staff->contract->salary . 'SP' }}</td>
                             @php
                                 $staffStatus = $staff->is_active ? 'نشط' : 'غير نشط';
                                 $staffClass = $staff->is_active ? 'staff-status-active' : 'staff-status-inactive';
@@ -415,7 +425,7 @@
                             </td>
                             @if ($from !== 'other')
                                 @php
-                                    $userStatus = ($staff->user ? $staff->user->is_active : 0) ? 'نشط' : 'غير نشط';
+                                    $userStatus = $staff->user ? ($staff->user->is_active ? 'نشط' : 'غير نشط') : 'لا يوجد حساب';
                                     $userClass = ($staff->user ? $staff->user->is_active : 0) ? 'staff-status-active' : 'staff-status-inactive';
                                 @endphp
                                 <td>
@@ -455,7 +465,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">لا يوجد موظفين للعرض</td>
+                            <td colspan="9" class="text-center">لا يوجد موظفين للعرض</td>
                         </tr>
                     @endforelse
                 </tbody>

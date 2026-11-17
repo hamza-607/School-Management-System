@@ -397,8 +397,8 @@
                             </td>
 
                             <td class="align-middle">
-                                <a href="{{ route('staff_members.show', $finishedSession->staff->id) }}"
-                                    class="fw-bold">{{ $finishedSession->staff->name }}</a>
+                                <a href="{{ $finishedSession->staff ? route('staff_members.show', $finishedSession->staff->id) : '#' }}"
+                                    class="fw-bold">{{ $finishedSession->staff ? $finishedSession->staff->name : '-' }}</a>
                             </td>
 
                             <td class="align-middle">

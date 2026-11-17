@@ -230,12 +230,6 @@
         <div class="card-header border-bottom d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">قائمة أولياء الأمور</h5>
             <div class="d-flex">
-                <div class="btn-group me-2">
-                    <button class="btn-staff-outline">
-                        <i class="ti ti-download me-1"></i> طباعة
-                    </button>
-                </div>
-
                 @if ($yearCanDo)
                     <a href="{{ route('guardians.create') }}" class="btn btn-primary">
                         <i class="ti ti-plus me-1"></i> إضافة ولي أمر جديد
