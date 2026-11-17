@@ -76,7 +76,8 @@
         }
 
         .btn-staff-outline:hover {
-            border-color: #006559 color: #00352e;
+            border-color: #006559;
+            color: #00352e;
         }
 
         .btn-staff-primary {
@@ -95,7 +96,78 @@
             border-color: #00473f;
             color: #fff;
         }
+
+        .static-danger-alert {
+            background-color: #e6d4d4;
+            border: 1px solid #e6d4d4;
+            border-inline-start: 4px solid #7a3540;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.08);
+        }
+
+        .static-danger-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 0.5rem;
+            background-color: #f6ecec;
+            color: #7a3540;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .static-danger-title {
+            color: #7a3540;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .static-danger-text {
+            color: #7a3540;
+            font-size: 0.875rem;
+            line-height: 1.65;
+            margin-bottom: 0;
+        }
+
+        .static-warning-alert {
+            background-color: #fdf3e3;
+            border: 1px solid #f5dcb0;
+            border-inline-start: 4px solid #b26a00;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.08);
+        }
+
+        .static-warning-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 0.5rem;
+            background-color: #fbeccc;
+            color: #b26a00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .static-warning-title {
+            color: #b26a00;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .static-warning-text {
+            color: #8a5300;
+            font-size: 0.875rem;
+            line-height: 1.65;
+            margin-bottom: 0;
+        }
     </style>
+
     <div class="mb-4">
         <h4 class="fs-3 fw-bold text-body-emphasis d-inline-block pb-2 mb-0">
             <span class="d-block fs-6 fw-medium text-muted">إدارة السنوات الدراسية</span>
@@ -103,14 +175,55 @@
         </h4>
     </div>
 
+    <div class="static-danger-alert d-flex align-items-start gap-3 mb-4">
+        <div class="static-danger-icon">
+            <i class="ti ti-alert-triangle fs-4"></i>
+        </div>
+        <div>
+            <h6 class="static-danger-title">تنبيه هام قبل إجراء أي تعديل</h6>
+            <p class="static-danger-text">
+                أي تعديل في هذه الصفحة سيؤثر على جميع العمليات داخل المشروع عند جميع المستخدمين، لذا يرجى توخي الحذر وإخبار
+                جميع المستخدمين لتسجيل الخروج من حساباتهم عند إجراء أي تغييرات.
+            </p>
+        </div>
+    </div>
+
+    @if (App\Models\System::where('key', 'system_locked')->first()->value)
+        <div class="static-warning-alert d-flex align-items-start gap-3 mb-4">
+            <div class="static-warning-icon">
+                <i class="ti ti-alert-triangle fs-4"></i>
+            </div>
+            <div>
+                <h6 class="static-warning-title">تنبيه</h6>
+                <p class="static-warning-text">
+                    حسابات المعلمين متوقفة كلياً, <br>
+                    حسابات الإداريين متوقفة عن تسجيل الدخول والخروج .
+                </p>
+            </div>
+        </div>
+    @endif
+
     <div class="card">
         <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
             <h5 class="mb-0">قائمة السنوات الدراسية</h5>
-            @if ($yearCanDo)
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addYearModal">
-                    <i class="ti ti-plus me-1"></i>إضافة سنة دراسية جديدة
-                </button>
-            @endif
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                @if ($yearCanDo)
+                    @if (App\Models\System::where('key', 'system_locked')->first()->value)
+                        <a href="{{ route('systemSettings') }}" class="btn btn-primary">
+                            <i class="ti ti-power me-1"></i> تفعيل النظام
+                        </a>
+                    @else
+                        <a href="{{ route('systemSettings') }}" class="btn btn-label-danger">
+                            <i class="ti ti-power me-1"></i> إيقاف النظام
+                        </a>
+                    @endif
+
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addYearModal">
+                        <i class="ti ti-plus me-1"></i>إضافة سنة دراسية جديدة
+                    </button>
+                @endif
+            </div>
         </div>
 
         <div class="card-body">

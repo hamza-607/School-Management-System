@@ -202,7 +202,7 @@ class AttendanceRecordController extends Controller
 
         $moreInfo = [
             ['label' => 'عدد حصص الحضور', 'value' => $countOfPresent],
-            ['label' => 'عدد حصص العذر', 'value' => $countOfExcused],
+            ['label' => 'عدد حصص الغياب بعذر', 'value' => $countOfExcused],
             ['label' => 'عدد حصص الغياب', 'value' => $countOfAbsent],
             ['label' => 'نسبة الحضور', 'value' => number_format($rateOfAttendances, 2) . '%'],
         ];

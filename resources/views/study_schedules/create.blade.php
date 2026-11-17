@@ -339,13 +339,13 @@
                         <label class="form-label">اليوم<span class="text-danger">*</span></label>
                         <select name="day" class="select2 form-select @error('day') is-invalid @enderror" required>
                             <option value="">اختر اليوم</option>
-                            <option value="sunday">الأحد</option>
-                            <option value="monday">الاثنين</option>
-                            <option value="tuesday">الثلاثاء</option>
-                            <option value="wednesday">الأربعاء</option>
-                            <option value="thursday">الخميس</option>
-                            <option value="friday">الجمعة</option>
-                            <option value="saturday">السبت</option>
+                            <option {{ old('day') == 'sunday' ? 'selected' : '' }} value="sunday">الأحد</option>
+                            <option {{ old('day') == 'monday' ? 'selected' : '' }} value="monday">الاثنين</option>
+                            <option {{ old('day') == 'tuesday' ? 'selected' : '' }} value="tuesday">الثلاثاء</option>
+                            <option {{ old('day') == 'wednesday' ? 'selected' : '' }} value="wednesday">الأربعاء</option>
+                            <option {{ old('day') == 'thursday' ? 'selected' : '' }} value="thursday">الخميس</option>
+                            <option {{ old('day') == 'friday' ? 'selected' : '' }} value="friday">الجمعة</option>
+                            <option {{ old('day') == 'saturday' ? 'selected' : '' }} value="saturday">السبت</option>
                         </select>
                         @error('day')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -367,7 +367,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">وقت البدء<span class="text-danger">*</span></label>
-                        <input type="text" name="start_time" class="form-control time-mask" placeholder="23:59:59" required>
+                        <input type="text" name="start_time" class="form-control time-mask" placeholder="23:59:59" value="{{ old('start_time') }}" required>
                         @error('staff')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -375,7 +375,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">وقت الانتهاء<span class="text-danger">*</span></label>
-                        <input type="text" name="end_time" class="form-control time-mask" placeholder="23:59:59" required>
+                        <input type="text" name="end_time" class="form-control time-mask" placeholder="23:59:59" value="{{ old('end_time') }}" required>
                         @error('staff')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -512,8 +512,6 @@
                 <input type="hidden" id="hidden_staff_gender" name="new_staff_gender">
                 <input type="hidden" id="hidden_staff_salary" name="new_staff_salary">
                 <input type="hidden" id="hidden_staff_create_account" name="new_staff_create_account">
-                <input type="hidden" id="hidden_staff_password" name="new_staff_password">
-                <input type="hidden" id="hidden_staff_password_confirmation" name="new_staff_password_confirmation">
 
                 <input type="hidden" id="hidden_subject_name" name="new_subject_name">
                 <input type="hidden" id="hidden_subject_e_name" name="new_subject_e_name">

@@ -7,6 +7,7 @@ use App\Models\Section;
 use App\Models\SectionSubjectTeacher;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
+use App\Models\System;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -81,7 +82,7 @@ class passFailListController extends Controller
             }
             // dd($yearMark/count($marks));
             $students[$index]['marks'] = $marks;
-            $students[$index]['yearMark'] = number_format($yearMark / count($marks), 3) . '%';
+            $students[$index]['yearMark'] = count($marks) !== 0 ? number_format($yearMark / count($marks), 3) : 0;
 
             //تفاصيل المواد الراسبة
             $scores = $student->student_scores()
@@ -149,14 +150,16 @@ class passFailListController extends Controller
 
     public function store(Request $request, $sectionID)
     {
-        // dd($request->all());
-
         try {
             $validated = $request->validate([
                 'students' => 'required|array',
                 'students.*.student_id' => 'required|exists:students,id',
                 'students.*.result' => 'required|in:passed,failed',
             ]);
+
+            if (!System::where('key', 'system_locked')->first()->value) {
+                return redirect()->back()->withInput()->with('error', 'يجب إغلاق النظام قبل وضع النتائج ,لمراجعة طريقة تنفيذ هذه العملية الذهاب لقسم دليل الخدمات');
+            }
 
             $graduatedStudents = [];
             $grade = Section::findOrFail($sectionID)->grade;
@@ -178,8 +181,7 @@ class passFailListController extends Controller
 
                     $nextYear = AcademicYear::where('start_date', '>', $thisYear->start_date)
                         ->orderBy('start_date', 'asc')->first();
-                    // dd($nextYear);
-                    // dd($studentEnrollment->grade->next_grade_id, $studentEnrollment->result);
+
                     if ($studentEnrollment->grade->next_grade_id === null) {
                         if ($studentEnrollment->result === 'passed') {
                             $graduatedStudents[] = $studentEnrollment->student->name;
@@ -216,8 +218,6 @@ class passFailListController extends Controller
                 }
             }
 
-            // dd($grade);
-
             return redirect()->route('passFailLists.index')->with(
                 'success',
                 [
@@ -228,8 +228,8 @@ class passFailListController extends Controller
                 ->with(
                     'alert',
                     [
-                        'يجب أن يتم تسجيل الطلاب في الشعبة المناسبة من خلال قسم الطلاب',
-                        'يجب أن يتم تفعيل السنة الدراسية "' . ($nextYear ? $nextYear->name : 'غير متوفرة') . '" من خلال قسم السنوات الدراسية بعد الانتهاء من وضع النتائج لجميع الشعب',
+                        'يجب أن يتم تسجيل الطلاب في الشعبة المناسبة من خلال قسم الطلاب *داخل السنة الجديدة*',
+                        ' لتفعيل السنة الدراسية "' . ($nextYear ? $nextYear->name : 'غير متوفرة') . '" من خلال قسم السنوات الدراسية بعد الانتهاء من وضع النتائج لجميع الشعب',
                         $grade->next_grade_id === null ? 'الطلاب التالية أسماهم كانوا في الصف الأخير وتم اعتبارهم (خريجين/أتموا المرحلة الدراسية في الموجودة في هذه المدرسة) ولم يتم نقلهم لسنة دراسية لاحقة داخل النظام : [\n' . ($graduatedStudents) . '\n' : null,
                     ]
                 );

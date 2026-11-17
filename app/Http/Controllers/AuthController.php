@@ -57,12 +57,10 @@ class AuthController extends Controller
                 }
                 Cache::put('is_carried_out', false, now()->addDays(1));
             }
-            // dd('i am not here');
-
 
             $oldCurrentSemester = Semester::where('is_current', 1)->get();
             $oldCurrentYears = AcademicYear::where('is_current', 1)->get();
-            // dd($nowSemester, $oldCurrentSemester);
+
             foreach ($oldCurrentSemester as $semester) {
                 $semester->update([
                     'is_current' => 0,
@@ -78,7 +76,7 @@ class AuthController extends Controller
                 ->where('end_date', '>=', now())
                 ->orderBy('created_at', 'desc')
                 ->first();
-            // dd($newCurrentYear->get());
+
             if ($newCurrentYear) {
                 $newCurrentYear->update([
                     'is_current' => 1,
@@ -89,7 +87,7 @@ class AuthController extends Controller
                     ->where('end_date', '>=', now())
                     ->orderByDesc('start_date')
                     ->first();
-                    
+
                 if ($newCurrentSemester) {
                     $newCurrentSemester->update([
                         'is_current' => 1,
@@ -175,8 +173,6 @@ class AuthController extends Controller
                 return back()->withErrors(['error' => 'الإيميل غير موجود في قاعدة البيانات']);
             }
 
-            // dd($user->id);
-
             if (Cache::get('lock_otp_' . $user->email)) {
                 return back()->withErrors(['error' => 'لقد تم إرسال رمز التحقق مسبقًا او انك تجاوزت الحد المسموح لمحاولات التحقق. يرجى الانتظار لمدة دقيقة قبل طلب رمز جديد.']);
             }
@@ -193,8 +189,7 @@ class AuthController extends Controller
                 $message->to($user->email)->subject('زمر التحقق الخاص بك / تعديل كلمة سر حسابك في مدرسة افق النموذجية');
             });
 
-            return redirect()->route('VerificationCode', $user->id)->with('success', 'تم إرسال رمز التحقق إلى بريدك الإلكتروني. رمز التحقق: '); // هون هي لازم تتغير لصفحة التحقق من الرمز اول شي
-
+            return redirect()->route('VerificationCode', $user->id)->with('success', 'تم إرسال رمز التحقق إلى بريدك الإلكتروني:' . (mb_substr($user->email, 0, 3) . '********' . mb_substr($user->email, -9)) . ' رمز التحقق: '); // هون هي لازم تتغير لصفحة التحقق من الرمز اول شي
         } catch (Exception $e) {
             return back()->withErrors(['error' => 'حدث خطأ أثناء إرسال رمز التحقق. يرجى المحاولة مرة أخرى.']);
         }

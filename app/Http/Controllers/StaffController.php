@@ -31,7 +31,7 @@ class StaffController extends Controller
         // dd($request->all());
 
         $staffType = $request->from;
-        $query = Staff::query();
+        $query = Staff::query()->with(['subject', 'user', 'contract']);
         // dd($staffType);
 
         if ($staffType === 'teacher') {
@@ -265,20 +265,6 @@ class StaffController extends Controller
             // تعديلات الحساب
             $acc = $validated['create_account'] ?? null;
             if ($acc !== null && $acc === 'on') {
-                // $user = [
-                //     'name' => $validated['name'],
-                //     'email' => $validated['email'],
-                //     'password' => $validated['password'],
-                // ];
-
-                // $newUser = User::create($user);
-                // $staff['user_id'] = $newUser->id;
-
-                // SpatieModelHasRole::create([
-                //     'role_id' => $validated['staff_type'] === 'teacher' ? 3 : 2,
-                //     'model_type' => User::class,
-                //     'model_id' => $newUser->id,
-                // ]);
                 $AccountUrl = URL::temporarySignedRoute(
                     'account.create',
                     now()->addHour(),
@@ -496,5 +482,113 @@ class StaffController extends Controller
         } catch (\Exception $e) {
             return redirect(url()->previous())->with('error', 'حدث خطأ أثناء تغيير حالة حساب الموظف: ' . $e->getMessage());
         }
+    }
+
+    public function pdfStaffMemberPage(Request $request)
+    {
+        // dd($request->all());
+
+        $staffType = $request->from;
+        $query = Staff::query()->with(['subject', 'user', 'contract']);
+        $filters = [];
+
+        if ($staffType === 'teacher') {
+            $query->where('staff_type', 'teacher');
+            $filters[] = [
+                'label' => 'نوع العمل',
+                'value' => 'معلم',
+            ];
+        }
+
+        if ($staffType === 'admin') {
+            $query->where('staff_type', 'admin');
+            $filters[] = [
+                'label' => 'نوع العمل',
+                'value' => 'إداري',
+            ];
+        }
+
+        if ($staffType === 'other') {
+            $query->whereNotIn('staff_type', ['teacher', 'admin', 'Super Admin']);
+            $filters[] = [
+                'label' => 'نوع العمل',
+                'value' => 'كادر عام',
+            ];
+        }
+
+        if ($request->has('status') && $request->status !== null) {
+            $query->where('is_active', $request->status);
+            $filters[] = [
+                'label' => 'الحالة',
+                'value' => $request->status == 1 ? 'نشط' : 'غير نشط',
+            ];
+        }
+
+        if ($request->has('gender') && $request->gender !== null) {
+            $query->where('gender', $request->gender);
+            $filters[] = [
+                'label' => 'الجنس',
+                'value' => $request->gender == 'male' ? 'ذكر' : 'انثى',
+            ];
+        }
+
+        if ($request->has('subject') && $request->subject !== null) {
+            $query->whereHas('subject', function ($q) use ($request) {
+                $q->where('id', $request->subject);
+            });
+            $filters[] = [
+                'label' => 'المادة',
+                'value' => Subject::findOrFail($request->subject)->name,
+            ];
+        }
+
+        if ($request->has(('search')) && $request->search !== null) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('e_name', 'like', '%' . $request->search . '%')
+                    ->orWhere('phone', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+            $filters[] = ['label' => 'بحث', 'value' => $request->search];
+        }
+        // dd($staffType);
+
+        $staffMembers = $query->latest()->get()->map(function ($staffMember) use ($staffType) {
+            $data = [
+                'name' => $staffMember->name,
+                'phone' => $staffMember->phone,
+                'email' => $staffMember->email,
+                'created_at' => $staffMember->created_at->format('Y-m-d'),
+                'staff_type' => $staffMember->staff_type,
+                'subject_id' => $staffMember->subject_id ? $staffMember->subject->name : null,
+                'salary' => $staffMember->contract ? $staffMember->contract->salary . 'SP' : null,
+                'is_active' => $staffMember->is_active ? 'نشط' : 'غير نشط',
+                'user_is_active' => $staffMember->user ? ($staffMember->user->is_active ? 'نشط' : 'غير نشط') : 'لا يوجد حساب',
+            ];
+
+            if ($staffType === 'teacher') {
+                unset($data['staff_type']);
+            }
+
+            if ($staffType === 'admin') {
+                unset($data['staff_type']);
+                unset($data['subject_id']);
+            }
+
+            if ($staffType === 'other') {
+                unset($data['subject_id']);
+                unset($data['user_is_active']);
+            }
+
+            return $data;
+        });
+
+        // dd($staffMembers);
+
+        return view('staff_members.PDF.staff_members', [
+            'staffMembers' => $staffMembers,
+            'from' => $staffType,
+            'filters' => $filters,
+        ]);
     }
 }

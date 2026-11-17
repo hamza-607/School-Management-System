@@ -48,13 +48,6 @@ class SessionRequest extends FormRequest
             "new_staff_contract_file" => 'exclude_unless:staff,NEW|required|file|max:20480',
             "new_staff_salary" => 'exclude_unless:staff,NEW|required|numeric|min:0',
             "new_staff_create_account" => 'exclude_unless:staff,NEW|nullable|string|in:on,off',
-            "new_staff_password" => [
-                'exclude_unless:new_staff_create_account,on',
-                'required',
-                'confirmed',
-                Password::min(6)
-            ],
-
         ];
 
         return $data;

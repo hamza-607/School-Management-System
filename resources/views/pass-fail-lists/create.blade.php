@@ -424,7 +424,7 @@
 
 
                             <td class="text-center fw-bold" style="color:{{$student['yearMark'] < 50 ? '#7a3540' : '#006559'}}">
-                                {{ $student['yearMark'] !== null ? $student['yearMark'] : '-' }}
+                                {{ $student['yearMark'] !== null ? $student['yearMark'] . '%' : '-' }}
                             </td>
 
                             <td class="text-center">

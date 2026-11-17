@@ -20,6 +20,8 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class SectionSubjectTeacherController extends Controller
 {
@@ -216,6 +218,7 @@ class SectionSubjectTeacherController extends Controller
                     'date_of_birth' => $validated['new_staff_date_of_birth'],
                     'gender' => $validated['new_staff_gender'],
                     'is_active' => true,
+                    'user_id' => null,
                     'subject_id' => $subjectID,
                     'staff_type' => 'teacher',
                 ];
@@ -227,26 +230,6 @@ class SectionSubjectTeacherController extends Controller
                 }
                 $staff['picture'] = $staffPhoto;
 
-                //انشاء حساب
-                $userID = null;
-                if ($request->has('new_staff_create_account') && $validated['new_staff_create_account'] === 'on') {
-                    $user = [
-                        'name' => $validated['new_staff_name'],
-                        'email' => $validated['new_staff_email'],
-                        'password' => $validated['new_staff_password'],
-                        'is_active' => true,
-                    ];
-
-                    $newUser = User::create($user);
-                    $userID = $newUser->id;
-
-                    SpatieModelHasRole::create([
-                        'role_id' => 3,
-                        'model_type' => User::class,
-                        'model_id' => $userID,
-                    ]);
-                }
-                $staff['user_id'] = $userID;
 
                 //  "new_staff_contract_file" => Illuminate\Http\UploadedFile{#1435 ▶}
                 //   "" => "321312"
@@ -254,6 +237,21 @@ class SectionSubjectTeacherController extends Controller
 
                 $newStaff = Staff::create($staff);
                 $staffID = $newStaff->id;
+
+                //انشاء حساب
+                if ($request->has('new_staff_create_account') && $validated['new_staff_create_account'] === 'on') {
+                    $AccountUrl = URL::temporarySignedRoute(
+                        'account.create',
+                        now()->addHour(),
+                        ['staffID' => $newStaff->id]
+                    );
+
+                    Mail::raw("رابط إنشاء الحساب: \n{$AccountUrl}\n هذا الرابط صالح لساعة واحدة فقط", function ($message) use ($newStaff) {
+                        $message->to($newStaff->email)->subject('إنشاء حساب في مدرسةأفق النموذجية');
+                    });
+
+                    $successMessage = 'تم إرسال رابط إنشاء الحساب إلى البريد الإلكتروني للموظف.';
+                }
 
                 $contractPath = null;
                 if ($request->hasFile('new_staff_contract_file')) {
@@ -380,33 +378,27 @@ class SectionSubjectTeacherController extends Controller
                 }
                 $staff['picture'] = $staffPhoto;
 
-                //انشاء حساب
-                $userID = null;
-                if ($request->has('new_staff_create_account') && $validated['new_staff_create_account'] === 'on') {
-                    $user = [
-                        'name' => $validated['new_staff_name'],
-                        'email' => $validated['new_staff_email'],
-                        'password' => $validated['new_staff_password'],
-                        'is_active' => true,
-                    ];
-
-                    $newUser = User::create($user);
-                    $userID = $newUser->id;
-
-                    SpatieModelHasRole::create([
-                        'role_id' => 3,
-                        'model_type' => User::class,
-                        'model_id' => $userID,
-                    ]);
-                }
-                $staff['user_id'] = $userID;
-
                 //  "new_staff_contract_file" => Illuminate\Http\UploadedFile{#1435 ▶}
                 //   "" => "321312"
 
 
                 $newStaff = Staff::create($staff);
                 $staffID = $newStaff->id;
+
+                //انشاء حساب
+                if ($request->has('new_staff_create_account') && $validated['new_staff_create_account'] === 'on') {
+                    $AccountUrl = URL::temporarySignedRoute(
+                        'account.create',
+                        now()->addHour(),
+                        ['staffID' => $newStaff->id]
+                    );
+
+                    Mail::raw("رابط إنشاء الحساب: \n{$AccountUrl}\n هذا الرابط صالح لساعة واحدة فقط", function ($message) use ($newStaff) {
+                        $message->to($newStaff->email)->subject('إنشاء حساب في مدرسةأفق النموذجية');
+                    });
+
+                    $successMessage = 'تم إرسال رابط إنشاء الحساب إلى البريد الإلكتروني للموظف.';
+                }
 
                 $contractPath = null;
                 if ($request->hasFile('new_staff_contract_file')) {

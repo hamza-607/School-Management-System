@@ -17,14 +17,14 @@
             Swal.fire({
                 title: 'تأكيد الحذف',
                 html: `<div>
-                    هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
-                    <br>
-                    <span class="text-danger">
-                    هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
-                    </span>
-                    <br>
-                    <strong>هذه العملية لا يمكن التراجع عنها.</strong>
-                    </div>`,
+                                هل أنت متأكد أنك تريد حذف هذا الموظف؟ 
+                                <br>
+                                <span class="text-danger">
+                                هذه العملية سوف تؤدي إلى حذف جميع الملفات المرتبطة بهذا الموظف
+                                </span>
+                                <br>
+                                <strong>هذه العملية لا يمكن التراجع عنها.</strong>
+                                </div>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
@@ -302,7 +302,7 @@
                         </div>
 
                         @php
-                            $job = $theStaff->staff_type === 'teacher' ? 'مدرس' : ($theStaff->staff_type === 'admin' ? 'إداري' : $theStaff->type);
+                            $job = $theStaff->staff_type === 'teacher' ? 'مدرس' : ($theStaff->staff_type === 'admin' ? 'إداري' : $theStaff->staff_type);
                         @endphp
                         <div class="row g-4">
                             <div class="col-6 col-md-4">
@@ -376,6 +376,20 @@
                                         <span class="fw-bold mb-1">الجنس:</span>
                                         <span class="text-secondary fw-medium" style="font-size: 0.9rem;">
                                             {{ $theStaff->gender == 'male' ? 'ذكر' : 'أنثى' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="staff-info-icon">
+                                        <i class="bi bi-credit-card text-primary fs-4"></i>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold mb-1">الراتب:</span>
+                                        <span class="text-secondary fw-medium" style="font-size: 0.9rem;">
+                                            {{ $theStaff->contract->salary . 'SP' }}
                                         </span>
                                     </div>
                                 </div>
